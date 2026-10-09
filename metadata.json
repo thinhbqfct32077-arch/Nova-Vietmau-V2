@@ -1,0 +1,8 @@
+{
+  "name": "Nova - Đồng hành chăm sóc mẹ và bé",
+  "description": "Ứng dụng đồng hành chăm sóc thai kỳ và em bé toàn diện chuẩn Apple UI/UX với trợ lý ảo Nova, biểu đồ theo dõi sức khỏe và cửa hàng tiện ích.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
