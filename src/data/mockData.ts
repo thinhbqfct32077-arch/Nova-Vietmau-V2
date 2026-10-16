@@ -1,4 +1,13 @@
-import { ActivityItem, DayProgress, ProductItem, ChatMessage, CommunityPost } from '../types';
+import {
+  ActivityItem,
+  DayProgress,
+  ProductItem,
+  ChatMessage,
+  CommunityPost,
+  UserProfile,
+  EmergencyContact,
+  ShippingAddress,
+} from '../types';
 
 import onboardingArt from '../assets/images/onboarding_art_1790926203382.jpg';
 import motherAvatar from '../assets/images/mother_avatar_1790926298307.jpg';
@@ -460,3 +469,201 @@ export const NOVA_VIDEOS_DATA = [
     comments: [],
   },
 ];
+
+export const DEFAULT_EMERGENCY_CONTACTS: EmergencyContact[] = [
+  {
+    id: 'em-1',
+    name: 'Cấp cứu Y tế Toàn quốc (115)',
+    relationship: 'Khẩn cấp 24/7',
+    phone: '115',
+    isPrimary: true,
+    notes: 'Gọi xe cấp cứu và sơ cứu y tế tức thời',
+  },
+  {
+    id: 'em-2',
+    name: 'Nguyễn Minh Đức',
+    relationship: 'Chồng yêu',
+    phone: '0912 345 678',
+    isPrimary: true,
+    notes: 'Liên hệ đầu tiên khi có dấu hiệu chuyển dạ',
+  },
+  {
+    id: 'em-3',
+    name: 'Bác sĩ Yến Khoa',
+    relationship: 'Bác sĩ sản khoa theo dõi',
+    phone: '0903 888 999',
+    notes: 'Phòng khám Sản Bệnh viện Phụ Sản',
+  },
+  {
+    id: 'em-4',
+    name: 'Mẹ Hà (Bà ngoại)',
+    relationship: 'Mẹ ruột',
+    phone: '0988 765 432',
+    notes: 'Hỗ trợ đưa đón và chăm sóc bé',
+  },
+  {
+    id: 'em-5',
+    name: 'BV Phụ Sản Trung Ương / Từ Dũ',
+    relationship: 'Hotline Cấp cứu Sản khoa',
+    phone: '1900 6922',
+    notes: 'Trực cấp cứu sản khoa 24/24',
+  },
+];
+
+export const AVATAR_PRESETS = [
+  {
+    id: 'preset-1',
+    name: 'Khánh Băng (Hiện tại)',
+    url: ASSETS.motherAvatar,
+    tag: 'Mặc định',
+  },
+  {
+    id: 'preset-2',
+    name: 'Mẹ bầu dịu dàng',
+    url: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?q=80&w=400&h=400&fit=crop',
+    tag: 'Yoga Bầu',
+  },
+  {
+    id: 'preset-3',
+    name: 'Mẹ ôm bé yêu thương',
+    url: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?q=80&w=400&h=400&fit=crop',
+    tag: 'Yêu thương',
+  },
+  {
+    id: 'preset-4',
+    name: 'Bé con thiên thần',
+    url: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?q=80&w=400&h=400&fit=crop',
+    tag: 'Thiên thần nhỏ',
+  },
+  {
+    id: 'preset-5',
+    name: 'Mẹ bầu rạng rỡ',
+    url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=400&h=400&fit=crop',
+    tag: 'Rạng rỡ',
+  },
+  {
+    id: 'preset-6',
+    name: 'Nữ bác sĩ thân thiện',
+    url: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?q=80&w=400&h=400&fit=crop',
+    tag: 'Chuyên gia',
+  },
+];
+
+export const DEFAULT_SHIPPING_ADDRESSES: ShippingAddress[] = [
+  {
+    id: 'addr-1',
+    fullName: 'Khánh Băng',
+    phone: '0987 654 321',
+    province: 'TP. Hồ Chí Minh',
+    district: 'Quận 3',
+    ward: 'Phường Võ Thị Sáu',
+    streetAddress: '142 Nguyễn Thị Minh Khai, Tòa nhà Rosana, Căn hộ 502',
+    isDefault: true,
+    label: 'Nhà riêng',
+    deliveryNote: 'Nhà có mẹ bầu & trẻ sơ sinh, xin gọi trước khi đến, không bấm chuông to',
+  },
+  {
+    id: 'addr-2',
+    fullName: 'Khánh Băng (Văn phòng)',
+    phone: '0987 654 321',
+    province: 'TP. Hồ Chí Minh',
+    district: 'Quận 1',
+    ward: 'Phường Bến Nghé',
+    streetAddress: '33 Lê Duẩn, Tòa nhà Diamond Plaza, Tầng 8',
+    isDefault: false,
+    label: 'Văn phòng',
+    deliveryNote: 'Gửi lễ tân tòa nhà trong giờ hành chính (8h30 - 17h30)',
+  },
+  {
+    id: 'addr-3',
+    fullName: 'Bà Ngoại (Nguyễn Thị Mai)',
+    phone: '0912 345 678',
+    province: 'Hà Nội',
+    district: 'Quận Cầu Giấy',
+    ward: 'Phường Dịch Vọng Hậu',
+    streetAddress: 'Số 18 Ngõ 86 Duy Tân',
+    isDefault: false,
+    label: 'Nhà người thân',
+    deliveryNote: 'Giao trực tiếp cho bà ngoại nhận đồ bé yêu',
+  },
+];
+
+export const VIETNAM_PROVINCES = [
+  {
+    name: 'TP. Hồ Chí Minh',
+    districts: [
+      { name: 'Quận 1', wards: ['Phường Bến Nghé', 'Phường Bến Thành', 'Phường Đa Kao', 'Phường Tân Định'] },
+      { name: 'Quận 3', wards: ['Phường Võ Thị Sáu', 'Phường 1', 'Phường 2', 'Phường 9', 'Phường 14'] },
+      { name: 'Quận 7', wards: ['Phường Tân Phong', 'Phường Tân Phú', 'Phường Phú Mỹ', 'Phường Tân Quy'] },
+      { name: 'TP. Thủ Đức', wards: ['Phường An Phú', 'Phường Thảo Điền', 'Phường Linh Trung', 'Phường Hiệp Bình Chánh'] },
+      { name: 'Quận Bình Thạnh', wards: ['Phường 25', 'Phường 19', 'Phường 22', 'Phường 2'] },
+      { name: 'Quận Phú Nhuận', wards: ['Phường 1', 'Phường 2', 'Phường 7', 'Phường 9'] },
+      { name: 'Quận Tân Bình', wards: ['Phường 2', 'Phường 4', 'Phường 12', 'Phường 13'] },
+    ],
+  },
+  {
+    name: 'Hà Nội',
+    districts: [
+      { name: 'Quận Cầu Giấy', wards: ['Phường Dịch Vọng Hậu', 'Phường Nghĩa Tân', 'Phường Quan Hoa', 'Phường Yên Hòa'] },
+      { name: 'Quận Hoàn Kiếm', wards: ['Phường Hàng Bạc', 'Phường Tràng Tiền', 'Phường Lý Thái Tổ', 'Phường Hàng Đào'] },
+      { name: 'Quận Ba Đình', wards: ['Phường Điện Bàn', 'Phường Kim Mã', 'Phường Liễu Giai', 'Phường Ngọc Hà'] },
+      { name: 'Quận Đống Đa', wards: ['Phường Láng Hạ', 'Phường Ô Chợ Dừa', 'Phường Nam Đồng', 'Phường Khâm Thiên'] },
+      { name: 'Quận Tây Hồ', wards: ['Phường Quảng An', 'Phường Xuân La', 'Phường Yên Phụ', 'Phường Bưởi'] },
+      { name: 'Quận Hai Bà Trưng', wards: ['Phường Bách Khoa', 'Phường Lê Đại Hành', 'Phường Minh Khai'] },
+    ],
+  },
+  {
+    name: 'Đà Nẵng',
+    districts: [
+      { name: 'Quận Hải Châu', wards: ['Phường Thạch Thang', 'Phường Hải Châu 1', 'Phường Hòa Thuận Đông'] },
+      { name: 'Quận Sơn Trà', wards: ['Phường An Hải Bắc', 'Phường Phước Mỹ', 'Phường Thọ Quang'] },
+      { name: 'Quận Ngũ Hành Sơn', wards: ['Phường Mỹ An', 'Phường Khuê Mỹ'] },
+    ],
+  },
+  {
+    name: 'Bình Dương',
+    districts: [
+      { name: 'TP. Thủ Dầu Một', wards: ['Phường Phú Hòa', 'Phường Chánh Nghĩa', 'Phường Định Hòa'] },
+      { name: 'TP. Dĩ An', wards: ['Phường Đông Hòa', 'Phường Dĩ An', 'Phường An Bình'] },
+      { name: 'TP. Thuận An', wards: ['Phường Lái Thiêu', 'Phường An Phú', 'Phường Thuận Giao'] },
+    ],
+  },
+  {
+    name: 'Cần Thơ',
+    districts: [
+      { name: 'Quận Ninh Kiều', wards: ['Phường An Cư', 'Phường Tân An', 'Phường Xuân Khánh'] },
+      { name: 'Quận Cái Răng', wards: ['Phường Lê Bình', 'Phường Hưng Phú'] },
+    ],
+  },
+  {
+    name: 'Hải Phòng',
+    districts: [
+      { name: 'Quận Hồng Bàng', wards: ['Phường Minh Khai', 'Phường Hoàng Văn Thụ'] },
+      { name: 'Quận Ngô Quyền', wards: ['Phường Lạc Viên', 'Phường Cầu Đất'] },
+    ],
+  },
+];
+
+export const INITIAL_USER_PROFILE: UserProfile = {
+  id: 'usr-1',
+  name: 'Khánh Băng',
+  email: 'khanhbang.mom@gmail.com',
+  phone: '0987 654 321',
+  avatar: ASSETS.motherAvatar,
+  pregnancyWeek: 24,
+  dueDate: '15/11/2026',
+  babyNickname: 'Bé Bơ',
+  babyGender: 'girl',
+  bloodType: 'O+',
+  weightKg: 58.5,
+  heightCm: 162,
+  isVip: true,
+  vipPlan: 'yearly',
+  vipExpiry: '12/2026',
+  streakDays: 18,
+  completedExercises: 34,
+  novaPoints: 1250,
+  emergencyContacts: DEFAULT_EMERGENCY_CONTACTS,
+  shippingAddresses: DEFAULT_SHIPPING_ADDRESSES,
+};
+

@@ -17,6 +17,7 @@ import {
   Sparkles,
   Tag,
   ArrowUpDown,
+  Package,
 } from 'lucide-react';
 
 interface ShopScreenProps {
@@ -26,6 +27,7 @@ interface ShopScreenProps {
   onSelectProduct: (product: ProductItem) => void;
   isVip?: boolean;
   onOpenVipModal?: () => void;
+  onNavigateToOrderInfo?: () => void;
 }
 
 type FilterType = 'all' | 'price' | 'rating' | 'promo';
@@ -39,6 +41,7 @@ export const ShopScreen: React.FC<ShopScreenProps> = ({
   onSelectProduct,
   isVip = false,
   onOpenVipModal,
+  onNavigateToOrderInfo,
 }) => {
   const [selectedFilter, setSelectedFilter] = useState<FilterType>('all');
   const [priceSortOrder, setPriceSortOrder] = useState<PriceSortOrder>('asc');
@@ -180,24 +183,38 @@ export const ShopScreen: React.FC<ShopScreenProps> = ({
           )}
         </div>
 
-        {/* Shopping Cart Button */}
-        <motion.button
-          whileTap={{ scale: 0.88 }}
-          onClick={onOpenCart}
-          className="w-10 h-10 rounded-full bg-white border border-[#EFEAE5] shadow-xs flex items-center justify-center text-[#3A2E2B] relative hover:bg-[#FAF6F3] cursor-pointer"
-          aria-label="Giỏ hàng"
-        >
-          <ShoppingBag className="w-5 h-5 text-[#3A2E2B] stroke-[1.8]" />
-          {cartCount > 0 && (
-            <motion.span
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              className="absolute -top-1 -right-1 w-5 h-5 bg-[#C84B4B] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs"
+        <div className="flex items-center gap-2">
+          {onNavigateToOrderInfo && (
+            <motion.button
+              whileTap={{ scale: 0.92 }}
+              onClick={onNavigateToOrderInfo}
+              className="px-3 py-1.5 rounded-full bg-[#FFF2EE] text-[#C84B4B] text-[11px] font-bold flex items-center gap-1 border border-[#F5DFD5] hover:bg-[#FFE5DF] transition-colors cursor-pointer"
+              title="Thông tin đặt hàng & Sổ địa chỉ"
             >
-              {cartCount}
-            </motion.span>
+              <Package className="w-3.5 h-3.5" />
+              <span>Đơn hàng</span>
+            </motion.button>
           )}
-        </motion.button>
+
+          {/* Shopping Cart Button */}
+          <motion.button
+            whileTap={{ scale: 0.88 }}
+            onClick={onOpenCart}
+            className="w-10 h-10 rounded-full bg-white border border-[#EFEAE5] shadow-xs flex items-center justify-center text-[#3A2E2B] relative hover:bg-[#FAF6F3] cursor-pointer"
+            aria-label="Giỏ hàng"
+          >
+            <ShoppingBag className="w-5 h-5 text-[#3A2E2B] stroke-[1.8]" />
+            {cartCount > 0 && (
+              <motion.span
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                className="absolute -top-1 -right-1 w-5 h-5 bg-[#C84B4B] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs"
+              >
+                {cartCount}
+              </motion.span>
+            )}
+          </motion.button>
+        </div>
       </header>
 
       {/* VIP 10% banner prompt if not VIP */}

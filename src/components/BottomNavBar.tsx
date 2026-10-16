@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Home, PlayCircle, Heart, Users, ShoppingBag } from 'lucide-react';
+import { Home, PlayCircle, Heart, Users, ShoppingBag, User } from 'lucide-react';
 import { ScreenType } from '../types';
 
 interface BottomNavBarProps {
@@ -43,18 +43,23 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
       icon: ShoppingBag,
       badge: cartCount > 0 ? cartCount : undefined,
     },
+    {
+      id: 'profile' as ScreenType,
+      label: 'Hồ sơ',
+      icon: User,
+    },
   ];
 
   return (
     <nav
       aria-label="Điều hướng chính"
-      className={`shrink-0 w-full px-2 py-1.5 z-40 select-none transition-colors duration-200 relative ${
+      className={`shrink-0 w-full px-1.5 py-1 z-40 select-none transition-colors duration-200 relative ${
         isVideoScreen
           ? 'bg-black/90 backdrop-blur-xl border-t border-white/10 shadow-2xl text-white'
-          : 'bg-white/90 backdrop-blur-xl border-t border-[#EFEAE5] ios-nav-shadow text-[#3A2E2B]'
+          : 'bg-white/95 backdrop-blur-xl border-t border-[#EFEAE5] ios-nav-shadow text-[#3A2E2B]'
       }`}
     >
-      <div className="grid grid-cols-5 items-center relative">
+      <div className="grid grid-cols-6 items-center relative">
         {tabs.map((tab) => {
           const isActive = activeScreen === tab.id;
           const Icon = tab.icon;
@@ -63,7 +68,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
             <button
               key={tab.id}
               onClick={() => onSelectTab(tab.id)}
-              className="relative flex flex-col items-center justify-center py-1 cursor-pointer focus:outline-none group min-h-[48px]"
+              className="relative flex flex-col items-center justify-center py-1 cursor-pointer focus:outline-none group min-h-[44px]"
               aria-label={tab.label}
             >
               {/* Tab Icon with Tactile iOS Physics */}
@@ -73,7 +78,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
                 className="relative flex items-center justify-center"
               >
                 <Icon
-                  className={`w-6 h-6 transition-colors duration-200 ${
+                  className={`w-5.5 h-5.5 transition-colors duration-200 ${
                     isActive
                       ? isVideoScreen
                         ? 'text-white stroke-[2.3]'
@@ -87,7 +92,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
 
                 {/* Cart Badge with Pulse */}
                 {tab.badge !== undefined && (
-                  <span className="absolute -top-1.5 -right-2 bg-[#C84B4B] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-xs">
+                  <span className="absolute -top-1 -right-2 bg-[#C84B4B] text-white text-[9.5px] font-bold w-3.5 h-3.5 rounded-full flex items-center justify-center shadow-xs">
                     {tab.badge}
                   </span>
                 )}
@@ -95,7 +100,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
 
               {/* Tab Label */}
               <span
-                className={`text-[10px] mt-1 transition-colors duration-200 tracking-tight leading-none ${
+                className={`text-[9.5px] mt-0.5 transition-colors duration-200 tracking-tight leading-none ${
                   isActive
                     ? isVideoScreen
                       ? 'text-white font-bold'
@@ -113,7 +118,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
                 <motion.div
                   layoutId="activeBottomTabPill"
                   transition={{ type: 'spring', stiffness: 450, damping: 30 }}
-                  className={`absolute -bottom-0.5 w-5 h-1 rounded-full ${
+                  className={`absolute -bottom-0.5 w-4 h-0.5 rounded-full ${
                     isVideoScreen ? 'bg-white' : 'bg-[#C84B4B]'
                   }`}
                 />
@@ -125,3 +130,4 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
     </nav>
   );
 };
+

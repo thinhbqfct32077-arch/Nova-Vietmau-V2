@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { ScreenType, ProductItem, CartItem } from './types';
+import { ScreenType, ProductItem, CartItem, UserProfile, EmergencyContact } from './types';
 import { PhoneFrame } from './components/PhoneFrame';
 import { BottomNavBar } from './components/BottomNavBar';
 import { OnboardingScreen } from './components/screens/OnboardingScreen';
@@ -15,11 +15,17 @@ import { ShopScreen } from './components/screens/ShopScreen';
 import { VoiceChatScreen } from './components/screens/VoiceChatScreen';
 import { CommunityScreen } from './components/screens/CommunityScreen';
 import { VideoShortsScreen } from './components/screens/VideoShortsScreen';
+import { ProfileScreen } from './components/screens/ProfileScreen';
+import { LoginScreen } from './components/screens/LoginScreen';
+import { PaymentScreen } from './components/screens/PaymentScreen';
+import { EmergencyScreen } from './components/screens/EmergencyScreen';
+import { OrderInfoScreen } from './components/screens/OrderInfoScreen';
+import { AvatarModal } from './components/AvatarModal';
 import { CartModal } from './components/CartModal';
 import { ProductDetailModal } from './components/ProductDetailModal';
 import { NotificationModal } from './components/NotificationModal';
 import { VipSubscriptionModal } from './components/VipSubscriptionModal';
-import { PRODUCTS_DATA } from './data/mockData';
+import { PRODUCTS_DATA, INITIAL_USER_PROFILE } from './data/mockData';
 import confetti from 'canvas-confetti';
 
 export default function App() {
@@ -27,9 +33,14 @@ export default function App() {
   const [previousScreen, setPreviousScreen] = useState<ScreenType>('home');
   const [isVoiceListening, setIsVoiceListening] = useState(false);
 
+  // User Profile state
+  const [user, setUser] = useState<UserProfile>(INITIAL_USER_PROFILE);
+  const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
+
   // VIP Subscription state
-  const [isVip, setIsVip] = useState(false);
+  const [isVip, setIsVip] = useState(INITIAL_USER_PROFILE.isVip);
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
+  const [paymentPlan, setPaymentPlan] = useState<'yearly' | 'monthly' | 'lifetime'>('yearly');
 
   // Cart State
   const [cartItems, setCartItems] = useState<CartItem[]>([
@@ -78,19 +89,41 @@ export default function App() {
     setCartItems((prev) => prev.filter((i) => i.product.id !== productId));
   };
 
-  const handleCheckout = () => {
-    try {
-      confetti({
-        particleCount: 50,
-        spread: 60,
-        origin: { y: 0.6 },
-        colors: ['#C84B4B', '#FCEEEB', '#2ECC71'],
-      });
-    } catch {
-      // ignore
-    }
+  const handleCheckoutFromCart = () => {
     setIsCartOpen(false);
+    navigateTo('order_info');
+  };
+
+  const handleSelectAvatar = (newAvatarUrl: string) => {
+    setUser((prev) => ({ ...prev, avatar: newAvatarUrl }));
+  };
+
+  const handleUpdateUser = (updatedInfo: Partial<UserProfile>) => {
+    setUser((prev) => ({ ...prev, ...updatedInfo }));
+  };
+
+  const handleAddEmergencyContact = (contact: EmergencyContact) => {
+    setUser((prev) => ({
+      ...prev,
+      emergencyContacts: [contact, ...prev.emergencyContacts],
+    }));
+  };
+
+  const handleLoginSuccess = (loggedInUser: UserProfile) => {
+    setUser(loggedInUser);
+    setIsVip(loggedInUser.isVip);
+    navigateTo('home');
+  };
+
+  const handleLogout = () => {
+    navigateTo('login');
+  };
+
+  const handlePaymentSuccess = () => {
+    setIsVip(true);
+    setUser((prev) => ({ ...prev, isVip: true }));
     setCartItems([]);
+    navigateTo('home');
   };
 
   // Instant, rock-solid iOS view transitions (Zero blur lag, zero delay)
@@ -115,7 +148,12 @@ export default function App() {
     },
   };
 
-  const showBottomNav = activeScreen !== 'onboarding' && activeScreen !== 'chat';
+  const showBottomNav =
+    activeScreen !== 'onboarding' &&
+    activeScreen !== 'chat' &&
+    activeScreen !== 'login' &&
+    activeScreen !== 'payment' &&
+    activeScreen !== 'order_info';
 
   return (
     <PhoneFrame
@@ -123,6 +161,7 @@ export default function App() {
       isVoiceListening={isVoiceListening}
       onResetOnboarding={() => navigateTo('onboarding')}
       onOpenVoiceChat={() => navigateTo('chat')}
+      onNavigateToScreen={(screen) => navigateTo(screen)}
     >
       {/* Dynamic Screen Viewport with Reliable Apple Transitions */}
       <div className="flex-1 relative flex flex-col overflow-hidden w-full h-full bg-[#FFFBF7]">
@@ -154,6 +193,9 @@ export default function App() {
                 onNavigateToCare={() => navigateTo('care')}
                 onOpenNotifications={() => setIsNotificationOpen(true)}
                 onOpenVipModal={() => setIsVipModalOpen(true)}
+                onOpenProfile={() => navigateTo('profile')}
+                onOpenEmergency={() => navigateTo('emergency')}
+                user={user}
                 isVip={isVip}
               />
             </motion.div>
@@ -214,6 +256,7 @@ export default function App() {
                 onSelectProduct={(p) => setSelectedProduct(p)}
                 isVip={isVip}
                 onOpenVipModal={() => setIsVipModalOpen(true)}
+                onNavigateToOrderInfo={() => navigateTo('order_info')}
               />
             </motion.div>
           )}
@@ -236,6 +279,111 @@ export default function App() {
               />
             </motion.div>
           )}
+
+          {/* New Profile Screen */}
+          {activeScreen === 'profile' && (
+            <motion.div
+              key="profile"
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="absolute inset-0 flex flex-col w-full h-full"
+            >
+              <ProfileScreen
+                user={user}
+                onUpdateUser={handleUpdateUser}
+                onBack={() => navigateTo(previousScreen === 'profile' ? 'home' : previousScreen)}
+                onOpenAvatarModal={() => setIsAvatarModalOpen(true)}
+                onNavigateToEmergency={() => navigateTo('emergency')}
+                onNavigateToPayment={() => navigateTo('payment')}
+                onNavigateToOrderInfo={() => navigateTo('order_info')}
+                onLogout={handleLogout}
+              />
+            </motion.div>
+          )}
+
+          {/* New Login Screen */}
+          {activeScreen === 'login' && (
+            <motion.div
+              key="login"
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="absolute inset-0 flex flex-col w-full h-full"
+            >
+              <LoginScreen
+                onBack={() => navigateTo('home')}
+                onLoginSuccess={handleLoginSuccess}
+              />
+            </motion.div>
+          )}
+
+          {/* New Payment Screen */}
+          {activeScreen === 'payment' && (
+            <motion.div
+              key="payment"
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="absolute inset-0 flex flex-col w-full h-full"
+            >
+              <PaymentScreen
+                onBack={() => navigateTo(previousScreen === 'payment' ? 'home' : previousScreen)}
+                onPaymentSuccess={handlePaymentSuccess}
+                cartItems={cartItems}
+                defaultPlan={paymentPlan}
+              />
+            </motion.div>
+          )}
+
+          {/* New Emergency SOS Screen */}
+          {activeScreen === 'emergency' && (
+            <motion.div
+              key="emergency"
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="absolute inset-0 flex flex-col w-full h-full"
+            >
+              <EmergencyScreen
+                contacts={user.emergencyContacts}
+                onAddContact={handleAddEmergencyContact}
+                onBack={() => navigateTo(previousScreen === 'emergency' ? 'home' : previousScreen)}
+              />
+            </motion.div>
+          )}
+
+          {/* New Order Info Screen (Address, Phone, Shipping, Notes, Checkout) */}
+          {activeScreen === 'order_info' && (
+            <motion.div
+              key="order_info"
+              variants={pageVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+              className="absolute inset-0 flex flex-col w-full h-full"
+            >
+              <OrderInfoScreen
+                user={user}
+                cartItems={cartItems}
+                onBack={() => navigateTo(previousScreen === 'order_info' ? 'shop' : previousScreen)}
+                onNavigateToPayment={(_order) => {
+                  navigateTo('payment');
+                }}
+                onOrderSuccess={(_order) => {
+                  setCartItems([]);
+                }}
+                onUpdateUserAddresses={(addresses) => {
+                  setUser((prev) => ({ ...prev, shippingAddresses: addresses }));
+                }}
+                onUpdateCart={(items) => setCartItems(items)}
+              />
+            </motion.div>
+          )}
         </AnimatePresence>
       </div>
 
@@ -249,13 +397,20 @@ export default function App() {
       )}
 
       {/* Global Modals & Sheets */}
+      <AvatarModal
+        isOpen={isAvatarModalOpen}
+        onClose={() => setIsAvatarModalOpen(false)}
+        currentAvatar={user.avatar}
+        onSelectAvatar={handleSelectAvatar}
+      />
+
       <CartModal
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         cartItems={cartItems}
         onUpdateQuantity={handleUpdateQuantity}
         onRemoveItem={handleRemoveFromCart}
-        onCheckout={handleCheckout}
+        onCheckout={handleCheckoutFromCart}
         isVip={isVip}
       />
 
@@ -274,8 +429,17 @@ export default function App() {
         isOpen={isVipModalOpen}
         onClose={() => setIsVipModalOpen(false)}
         isVip={isVip}
-        onSubscribe={() => setIsVip(true)}
+        onSubscribe={() => {
+          setIsVip(true);
+          setUser((prev) => ({ ...prev, isVip: true }));
+        }}
+        onNavigateToPayment={() => {
+          setIsVipModalOpen(false);
+          setPaymentPlan('yearly');
+          navigateTo('payment');
+        }}
       />
     </PhoneFrame>
   );
 }
+

@@ -17,6 +17,7 @@ interface VipSubscriptionModalProps {
   onClose: () => void;
   isVip: boolean;
   onSubscribe: () => void;
+  onNavigateToPayment?: () => void;
 }
 
 export const VipSubscriptionModal: React.FC<VipSubscriptionModalProps> = ({
@@ -24,6 +25,7 @@ export const VipSubscriptionModal: React.FC<VipSubscriptionModalProps> = ({
   onClose,
   isVip,
   onSubscribe,
+  onNavigateToPayment,
 }) => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [isProcessing, setIsProcessing] = useState(false);
@@ -217,6 +219,20 @@ export const VipSubscriptionModal: React.FC<VipSubscriptionModalProps> = ({
                 </div>
               )}
             </motion.button>
+
+            {onNavigateToPayment && !isVip && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onNavigateToPayment();
+                }}
+                className="w-full py-2.5 text-[12.5px] font-bold text-[#3A2E2B] bg-white border border-[#E8DFD5] hover:bg-[#FDF9F6] rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+              >
+                <span>Thanh toán qua VietQR, MoMo, Thẻ ngân hàng</span>
+                <ArrowRight className="w-3.5 h-3.5 text-[#C84B4B]" />
+              </button>
+            )}
 
             {/* Apple Guarantee Footnote */}
             <p className="text-[11px] text-[#8C7B75] text-center leading-relaxed">

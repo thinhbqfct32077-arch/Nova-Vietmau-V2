@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ASSETS } from '../../data/mockData';
+import { UserProfile } from '../../types';
 import {
   Bell,
   Mic,
@@ -11,6 +12,7 @@ import {
   Droplet,
   Crown,
   Zap,
+  ShieldAlert,
 } from 'lucide-react';
 
 interface HomeScreenProps {
@@ -18,6 +20,9 @@ interface HomeScreenProps {
   onNavigateToCare: () => void;
   onOpenNotifications: () => void;
   onOpenVipModal: () => void;
+  onOpenProfile?: () => void;
+  onOpenEmergency?: () => void;
+  user?: UserProfile;
   isVip?: boolean;
 }
 
@@ -26,6 +31,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onNavigateToCare,
   onOpenNotifications,
   onOpenVipModal,
+  onOpenProfile,
+  onOpenEmergency,
+  user,
   isVip = false,
 }) => {
   const [selectedMood, setSelectedMood] = useState<'happy' | 'calm' | 'tired' | 'excited'>('happy');
@@ -69,13 +77,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         {/* User Profile with Tactile Tap */}
         <motion.div
           whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-3 cursor-pointer"
+          onClick={onOpenProfile}
+          className="flex items-center gap-3 cursor-pointer group"
+          title="Chạm để xem hồ sơ và đổi ảnh đại diện"
         >
           <div className="relative">
-            <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-sm ring-1 ring-[#EFEAE5] transition-transform hover:scale-105">
+            <div className="w-11 h-11 rounded-full overflow-hidden border-2 border-white shadow-sm ring-1 ring-[#EFEAE5] transition-transform group-hover:scale-105">
               <img
-                src={ASSETS.motherAvatar}
-                alt="Khánh Băng"
+                src={user?.avatar || ASSETS.motherAvatar}
+                alt={user?.name || 'Khánh Băng'}
                 className="w-full h-full object-cover"
                 loading="eager"
                 referrerPolicy="no-referrer"
@@ -106,28 +116,43 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 </span>
               )}
             </div>
-            <span className="text-[17px] font-bold text-[#3A2E2B] leading-tight tracking-tight">
-              Khánh Băng
+            <span className="text-[17px] font-bold text-[#3A2E2B] leading-tight tracking-tight group-hover:text-[#C84B4B] transition-colors">
+              {user?.name || 'Khánh Băng'}
             </span>
           </div>
         </motion.div>
 
-        {/* Notification Bell Button with iOS Tap Dynamics */}
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.88 }}
-          transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-          onClick={onOpenNotifications}
-          className="w-10 h-10 rounded-full bg-white border border-[#EFEAE5] shadow-xs flex items-center justify-center text-[#3A2E2B] relative hover:bg-[#FAF6F3] cursor-pointer"
-          aria-label="Thông báo thai kỳ"
-        >
-          <Bell className="w-5 h-5 text-[#3A2E2B] stroke-[1.8]" />
-          <motion.span
-            animate={{ scale: [1, 1.25, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#C84B4B] ring-2 ring-white"
-          />
-        </motion.button>
+        {/* Right Action Buttons: Emergency SOS + Notification Bell */}
+        <div className="flex items-center gap-2">
+          {/* Quick SOS Emergency Button */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={onOpenEmergency}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#FDF2F0] border border-[#FADCD5] text-[#E74C3C] text-[11px] font-black shadow-xs cursor-pointer hover:bg-[#FCEAE6] transition-colors active:scale-95"
+            title="Số điện thoại cấp cứu 115 & Bệnh viện phụ sản"
+          >
+            <ShieldAlert className="w-3.5 h-3.5 text-[#E74C3C]" />
+            <span>SOS</span>
+          </motion.button>
+
+          {/* Notification Bell Button with iOS Tap Dynamics */}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.88 }}
+            transition={{ type: 'spring', stiffness: 450, damping: 20 }}
+            onClick={onOpenNotifications}
+            className="w-10 h-10 rounded-full bg-white border border-[#EFEAE5] shadow-xs flex items-center justify-center text-[#3A2E2B] relative hover:bg-[#FAF6F3] cursor-pointer"
+            aria-label="Thông báo thai kỳ"
+          >
+            <Bell className="w-5 h-5 text-[#3A2E2B] stroke-[1.8]" />
+            <motion.span
+              animate={{ scale: [1, 1.25, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#C84B4B] ring-2 ring-white"
+            />
+          </motion.button>
+        </div>
       </header>
 
       {/* Main Animated List Stagger */}
