@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Wifi, Battery, Signal, Sparkles, Smartphone, Maximize2, RotateCcw, Package, ShieldAlert, User } from 'lucide-react';
+import { Wifi, Battery, Signal, Sparkles } from 'lucide-react';
 
 interface PhoneFrameProps {
   children: React.ReactNode;
   activeScreen: string;
   isVoiceListening?: boolean;
-  onResetOnboarding: () => void;
+  onResetOnboarding?: () => void;
   onOpenVoiceChat?: () => void;
   onNavigateToScreen?: (screen: any) => void;
 }
@@ -20,102 +20,15 @@ export const PhoneFrame: React.FC<PhoneFrameProps> = ({
   onNavigateToScreen,
 }) => {
   const [isDynamicIslandExpanded, setIsDynamicIslandExpanded] = useState(false);
-  const [isDesktopFullScreen, setIsDesktopFullScreen] = useState(false);
 
   // Dynamic Island status info
   const currentTime = '09:41';
 
   return (
     <div className="min-h-screen bg-[#1A1817] flex flex-col items-center justify-center p-0 md:p-6 overflow-x-hidden font-sans">
-      {/* Desktop helper bar */}
-      <aside aria-label="Desktop Controls" className="hidden md:flex items-center gap-3 mb-4 px-5 py-2.5 bg-[#2B2625]/90 backdrop-blur-md rounded-full border border-white/10 shadow-lg text-white/90 text-xs font-medium">
-        <div className="flex items-center gap-2">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#C84B4B] animate-pulse" />
-          <span className="font-semibold text-white">Nova App</span>
-          <span className="text-white/40">|</span>
-          <span className="text-white/70">Mẹ & Bé iOS 18</span>
-        </div>
-
-        <div className="h-3 w-px bg-white/15" />
-
-        {onNavigateToScreen && (
-          <div className="flex items-center gap-1.5">
-            <button
-              onClick={() => onNavigateToScreen('order_info')}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-colors cursor-pointer ${
-                activeScreen === 'order_info'
-                  ? 'bg-[#C84B4B] text-white font-bold'
-                  : 'hover:bg-white/10 text-white/80'
-              }`}
-              title="Trang thông tin đặt hàng & địa chỉ số điện thoại"
-            >
-              <Package className="w-3.5 h-3.5" />
-              <span>Đặt hàng & Địa chỉ</span>
-            </button>
-
-            <button
-              onClick={() => onNavigateToScreen('profile')}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-colors cursor-pointer ${
-                activeScreen === 'profile'
-                  ? 'bg-[#C84B4B] text-white font-bold'
-                  : 'hover:bg-white/10 text-white/80'
-              }`}
-            >
-              <User className="w-3.5 h-3.5" />
-              <span>Hồ sơ</span>
-            </button>
-
-            <button
-              onClick={() => onNavigateToScreen('emergency')}
-              className={`flex items-center gap-1 px-2.5 py-1 rounded-md transition-colors cursor-pointer ${
-                activeScreen === 'emergency'
-                  ? 'bg-red-600 text-white font-bold'
-                  : 'hover:bg-red-500/20 text-red-400'
-              }`}
-            >
-              <ShieldAlert className="w-3.5 h-3.5" />
-              <span>SOS</span>
-            </button>
-          </div>
-        )}
-
-        <div className="h-3 w-px bg-white/15" />
-
-        <button
-          onClick={() => setIsDesktopFullScreen(!isDesktopFullScreen)}
-          className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer px-2 py-1 rounded-md hover:bg-white/10"
-          title="Chuyển chế độ xem"
-        >
-          {isDesktopFullScreen ? (
-            <>
-              <Smartphone className="w-3.5 h-3.5 text-[#C84B4B]" />
-              <span>Khung iPhone</span>
-            </>
-          ) : (
-            <>
-              <Maximize2 className="w-3.5 h-3.5 text-[#C84B4B]" />
-              <span>Toàn màn hình</span>
-            </>
-          )}
-        </button>
-
-        <button
-          onClick={onResetOnboarding}
-          className="flex items-center gap-1.5 hover:text-white transition-colors cursor-pointer px-2 py-1 rounded-md hover:bg-white/10 text-white/70"
-          title="Xem lại màn hình Chào mừng"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-          <span>Về Onboarding</span>
-        </button>
-      </aside>
-
       {/* iPhone 15 Pro Max Mockup Container */}
       <div
-        className={`relative transition-all duration-500 ease-out ${
-          isDesktopFullScreen
-            ? 'w-full max-w-[500px] h-[100dvh] md:h-[932px] rounded-none md:rounded-[48px]'
-            : 'w-full max-w-[430px] h-[100dvh] md:h-[932px] rounded-none md:rounded-[48px]'
-        } bg-[#FFFBF7] text-[#3A2E2B] shadow-2xl flex flex-col overflow-hidden border-0 md:border-[10px] md:border-[#2C2725] md:ring-1 md:ring-white/20`}
+        className="relative transition-all duration-500 ease-out w-full max-w-[430px] h-[100dvh] md:h-[932px] rounded-none md:rounded-[48px] bg-[#FFFBF7] text-[#3A2E2B] shadow-2xl flex flex-col overflow-hidden border-0 md:border-[10px] md:border-[#2C2725] md:ring-1 md:ring-white/20"
         style={{
           boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.1)',
         }}
