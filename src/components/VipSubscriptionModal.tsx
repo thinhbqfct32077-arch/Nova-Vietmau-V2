@@ -234,10 +234,19 @@ export const VipSubscriptionModal: React.FC<VipSubscriptionModalProps> = ({
               </button>
             )}
 
-            {/* Apple Guarantee Footnote */}
-            <p className="text-[11px] text-[#8C7B75] text-center leading-relaxed">
-              Dùng thử miễn phí 7 ngày. Hủy bất kỳ lúc nào trong Cài đặt App Store.
-            </p>
+            {/* Tiếp tục dùng bản Miễn phí (Minh bạch, không áp lực) */}
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full py-2.5 text-[13px] font-semibold text-[#8C7B75] hover:text-[#3A2E2B] transition-colors cursor-pointer text-center"
+            >
+              Tiếp tục sử dụng bản Miễn phí
+            </button>
+
+            {/* Apple Guarantee Footnote & Free Forever Transparency */}
+            <div className="p-2.5 rounded-xl bg-[#FDF9F6] border border-[#F2ECE7] text-center text-[10.5px] text-[#8C7B75] leading-relaxed">
+              ✨ Tính tuổi thai, nước uống, nhắc nhở và cẩm nang 40 tuần luôn miễn phí 100% trọn đời. Gói VIP là tiện ích mở rộng tùy chọn.
+            </div>
           </div>
         </motion.div>
       </div>

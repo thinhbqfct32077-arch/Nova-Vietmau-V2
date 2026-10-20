@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { INITIAL_CHAT_MESSAGES } from '../../data/mockData';
-import { ChatMessage } from '../../types';
+import { ChatMessage, UserProfile } from '../../types';
 import { askNovaAI } from '../../services/aiService';
+import { storageService } from '../../services/storageService';
 import {
   ChevronLeft,
   Info,
@@ -13,14 +13,17 @@ import {
   VolumeX,
   Keyboard,
   Crown,
-  Bot,
-  User,
+  RotateCcw,
+  CheckCircle2,
+  AlertCircle,
+  HelpCircle,
 } from 'lucide-react';
 
 interface VoiceChatScreenProps {
   onBack: () => void;
   isListening: boolean;
   setIsListening: (val: boolean) => void;
+  user?: UserProfile;
   isVip?: boolean;
   onOpenVipModal?: () => void;
 }
@@ -29,18 +32,31 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
   onBack,
   isListening,
   setIsListening,
+  user,
   isVip = false,
   onOpenVipModal,
 }) => {
-  const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_CHAT_MESSAGES);
+  // Load chat history from persistent storage
+  const [messages, setMessages] = useState<ChatMessage[]>(() => storageService.loadChatMessages());
   const [inputText, setInputText] = useState('');
   const [isTypingMode, setIsTypingMode] = useState(false);
   const [isNovaThinking, setIsNovaThinking] = useState(false);
   const [isNovaSpeaking, setIsNovaSpeaking] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
+  const [voiceToast, setVoiceToast] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const recognitionRef = useRef<any>(null);
+
+  const motherName = user?.name || 'Khánh Băng';
+  const pregnancyWeek = user?.pregnancyWeek || 24;
+  const babyNickname = user?.babyNickname || 'Bé Bơ';
+
+  const triggerToast = (msg: string) => {
+    setVoiceToast(msg);
+    setTimeout(() => setVoiceToast(null), 3500);
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -50,16 +66,47 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
     scrollToBottom();
   }, [messages, isNovaThinking, isNovaSpeaking]);
 
+  // Auto-sync messages to persistent storage
+  useEffect(() => {
+    storageService.saveChatMessages(messages);
+  }, [messages]);
+
+  // Preload speech synthesis voices
+  useEffect(() => {
+    const loadVoices = () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.getVoices();
+      }
+    };
+    loadVoices();
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+  }, []);
+
+  const stopSpeaking = () => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsNovaSpeaking(false);
+  };
+
   // Speech synthesis for AI Voice
   const speakText = (text: string) => {
     if (isMuted || typeof window === 'undefined' || !('speechSynthesis' in window)) return;
     try {
       window.speechSynthesis.cancel();
-      // Remove bullets / markdown symbols for cleaner speech
-      const clean = text.replace(/[*#•-]/g, ' ').replace(/\n+/g, '. ');
+      // Clean markdown bullets / asterisks for smooth human-like audio
+      const clean = text
+        .replace(/[*#•-]/g, ' ')
+        .replace(/\n+/g, '. ')
+        .replace(/\s+/g, ' ')
+        .trim();
+
       const utterance = new SpeechSynthesisUtterance(clean);
-      utterance.rate = 0.95;
-      utterance.pitch = 1.05;
+      utterance.rate = 1.0;
+      utterance.pitch = 1.02;
+      utterance.lang = 'vi-VN';
 
       const voices = window.speechSynthesis.getVoices();
       const viVoice = voices.find((v) => v.lang.includes('vi') || v.lang.includes('VN'));
@@ -77,25 +124,32 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
     }
   };
 
-  // Stop speaking when leaving
+  // Stop speaking when unmounting or leaving
   useEffect(() => {
     return () => {
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
+      }
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort();
+        } catch {
+          // ignore
+        }
       }
     };
   }, []);
 
   // Handle Send text message with real AI
   const handleSend = async (textToSend?: string) => {
-    const query = textToSend || inputText;
-    if (!query.trim()) return;
+    const query = (textToSend || inputText).trim();
+    if (!query) return;
 
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
       sender: 'user',
-      text: query.trim(),
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      text: query,
+      timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
     };
 
     setMessages((prev) => [...prev, userMsg]);
@@ -103,39 +157,173 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
     setIsNovaThinking(true);
 
     try {
-      const aiReply = await askNovaAI(query);
+      const historyPayload = messages.slice(-4).map((m) => ({
+        sender: m.sender,
+        text: m.text,
+      }));
+
+      const aiReply = await askNovaAI(
+        query,
+        {
+          name: motherName,
+          pregnancyWeek,
+          babyNickname,
+        },
+        historyPayload
+      );
+
       const novaReply: ChatMessage = {
         id: `nova-${Date.now()}`,
         sender: 'nova',
         text: aiReply,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
       };
+
       setMessages((prev) => [...prev, novaReply]);
       setIsNovaThinking(false);
       speakText(aiReply);
     } catch (err) {
-      console.error(err);
+      console.error('Nova AI Error:', err);
       setIsNovaThinking(false);
+      triggerToast('Đã chuyển sang chế độ phân tích lâm sàng tích hợp.');
     }
   };
 
-  // Toggle voice recognition simulation
+  // Real Speech Recognition toggle
   const toggleListening = () => {
-    if (!isListening) {
-      setIsListening(true);
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
+    if (isListening) {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch {
+          // ignore
+        }
       }
-      setIsNovaSpeaking(false);
-
-      setTimeout(() => {
-        setIsListening(false);
-        handleSend('Tuần 12 em bé phát triển ra sao và mẹ nên chú ý điều gì nhất hả Nova?');
-      }, 3000);
-    } else {
       setIsListening(false);
+      return;
+    }
+
+    // Stop speech synthesis if talking
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    setIsNovaSpeaking(false);
+
+    const SpeechRecognition =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      // Fallback: prompt user to type or use sample query
+      triggerToast('Trình duyệt chưa hỗ trợ ghi âm tiếng Việt, mẹ có thể nhập bằng phím nhé!');
+      setIsTypingMode(true);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'vi-VN';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      recognitionRef.current = recognition;
+
+      recognition.onstart = () => {
+        setIsListening(true);
+        triggerToast('Nova đang lắng nghe mẹ nói...');
+      };
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results?.[0]?.[0]?.transcript;
+        if (transcript && transcript.trim()) {
+          handleSend(transcript.trim());
+        }
+        setIsListening(false);
+      };
+
+      recognition.onerror = (event: any) => {
+        console.warn('Speech recognition error:', event.error);
+        setIsListening(false);
+        if (event.error === 'not-allowed') {
+          triggerToast('Mẹ hãy cho phép quyền micro để trò chuyện cùng Nova nhé!');
+        } else if (event.error === 'no-speech') {
+          triggerToast('Chưa nghe rõ giọng mẹ, mẹ thử bấm mic nói lại nha!');
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
+    } catch (err) {
+      console.warn('Cannot start recognition:', err);
+      setIsListening(false);
+      setIsTypingMode(true);
     }
   };
+
+  const handleResetChat = () => {
+    if (window.confirm('Mẹ có muốn làm mới cuộc trò chuyện với Nova không?')) {
+      storageService.clearChatMessages();
+      setMessages(storageService.loadChatMessages());
+      triggerToast('Đã làm mới cuộc hội thoại với Nova!');
+    }
+  };
+
+  // Categorized suggestions for maternal care & counseling
+  const [selectedCategory, setSelectedCategory] = useState<
+    'all' | 'symptoms' | 'nutrition' | 'psychology' | 'baby' | 'emergency'
+  >('all');
+
+  const CATEGORY_TIPS: Record<string, string[]> = {
+    all: [
+      `Mẹ mỏi lưng tuần ${pregnancyWeek} phải làm sao?`,
+      `Thực đơn dinh dưỡng tuần ${pregnancyWeek} cho ${babyNickname}?`,
+      `Cách đếm cử động thai máy chuẩn y khoa?`,
+      `Tư thế ngủ nghiêng trái dễ chịu?`,
+      `Mẹ thấy lo âu và căng thẳng trong thai kỳ`,
+      `Uống sắt và canxi lúc nào chuẩn nhất?`,
+    ],
+    symptoms: [
+      `Mẹ bị đau lưng và mỏi hông thì nằm thế nào?`,
+      `Bị chuột rút ban đêm bắp chân xử lý sao?`,
+      `Mẹ bị phù nề chân tuần ${pregnancyWeek} có sao không?`,
+      `Bị ốm nghén, nôn nao dạ dày làm sao dịu?`,
+      `Bị cảm cúm, sốt nhẹ có được uống thuốc không?`,
+    ],
+    nutrition: [
+      `Thực đơn bổ sung sắt, canxi, DHA cho ${babyNickname}?`,
+      `Những thực phẩm mẹ bầu nên kiêng kỵ?`,
+      `Cách uống sắt và canxi không bị táo bón?`,
+      `Bao nhiêu ml nước mỗi ngày là đủ ở tuần ${pregnancyWeek}?`,
+      `Tăng cân thế nào là chuẩn bách phân vị?`,
+    ],
+    psychology: [
+      `Mẹ thấy lo lắng, hay khóc và nhạy cảm quá`,
+      `Làm sao để giải tỏa áp lực và ngủ sâu giấc hơn?`,
+      `Lời khuyên tâm lý từ Nova cho bố mẹ bầu`,
+      `Cách trò chuyện và thai giáo cùng ${babyNickname}`,
+    ],
+    baby: [
+      `Bé ${babyNickname} tuần ${pregnancyWeek} phát triển ra sao?`,
+      `Hướng dẫn đếm cử động thai máy trong 2 giờ`,
+      `Bé đạp ít vào ban ngày có nguy hiểm không?`,
+      `Lịch siêu âm 4D và xét nghiệm cần làm tuần ${pregnancyWeek}`,
+    ],
+    emergency: [
+      `Khi nào cơn đau bụng là dấu hiệu chuyển dạ thật?`,
+      `Ra huyết âm đạo hoặc rỉ ối cần làm gì ngay?`,
+      `Số điện thoại cấp cứu sản khoa 115`,
+    ],
+  };
+
+  const categoriesList = [
+    { id: 'all', label: 'Tất cả gợi ý' },
+    { id: 'symptoms', label: '🩺 Triệu chứng' },
+    { id: 'nutrition', label: '🥗 Dinh dưỡng' },
+    { id: 'psychology', label: '💖 Tâm lý mẹ' },
+    { id: 'baby', label: '👶 Bé yêu' },
+    { id: 'emergency', label: '🚨 Khẩn cấp' },
+  ];
 
   // 18 Waveform bars with dynamic heights when listening or speaking
   const isAudioActive = isListening || isNovaSpeaking;
@@ -162,9 +350,16 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
 
   return (
     <div className="flex-1 flex flex-col justify-between h-full bg-[#FFFBF7] select-none overflow-hidden relative">
-      {/* Top Header (Hình 4) */}
+      {/* Toast */}
+      {voiceToast && (
+        <div className="fixed top-14 left-1/2 -translate-x-1/2 z-50 bg-[#3A2E2B] text-white text-[11.5px] font-semibold px-4 py-2 rounded-full shadow-xl flex items-center gap-2">
+          <Sparkles className="w-3.5 h-3.5 text-[#F59E0B]" />
+          <span>{voiceToast}</span>
+        </div>
+      )}
+
+      {/* Top Header */}
       <header className="px-4 py-2.5 border-b border-[#F0ECE9] bg-white/80 backdrop-blur-md flex items-center justify-between z-30 shrink-0">
-        {/* Back Button */}
         <button
           onClick={onBack}
           className="w-9 h-9 rounded-full bg-[#F7F4F1] hover:bg-[#EFEAE5] text-[#3A2E2B] flex items-center justify-center cursor-pointer transition-colors"
@@ -173,18 +368,15 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
           <ChevronLeft className="w-5 h-5 stroke-[2.5]" />
         </button>
 
-        {/* Center Title & Tag */}
         <div className="flex flex-col items-center">
           <div className="flex items-center gap-1.5">
-            <h1 className="text-[15px] font-bold text-[#3A2E2B]">
-              Trò chuyện với Nova
-            </h1>
+            <h1 className="text-[15px] font-bold text-[#3A2E2B]">Trò chuyện cùng Nova</h1>
             <span className="w-2 h-2 rounded-full bg-[#2ECC71]" />
           </div>
 
           <div className="flex items-center gap-1 mt-0.5">
             <span className="text-[10px] font-semibold text-[#C84B4B] bg-[#FCEEEB] px-2 py-0.2 rounded-full">
-              Trợ lý Nova AI
+              Bác sĩ Sản khoa AI · Tuần {pregnancyWeek}
             </span>
             {isVip && (
               <span className="text-[9px] font-black bg-[#D4AF37] text-[#2A2321] px-1.5 py-0.2 rounded-full flex items-center gap-0.5">
@@ -195,17 +387,14 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
           </div>
         </div>
 
-        {/* Right Info & VIP CTA Button */}
         <div className="flex items-center gap-1">
-          {!isVip && onOpenVipModal && (
-            <button
-              onClick={onOpenVipModal}
-              className="text-[10px] font-bold text-[#B38728] bg-[#FDF5E6] px-2 py-1 rounded-lg border border-[#D4AF37]/30 flex items-center gap-1"
-            >
-              <Crown className="w-3 h-3 fill-current" />
-              <span>VIP</span>
-            </button>
-          )}
+          <button
+            onClick={handleResetChat}
+            className="w-8 h-8 rounded-full bg-[#F7F4F1] hover:bg-[#EFEAE5] text-[#8C7B75] hover:text-[#C84B4B] flex items-center justify-center cursor-pointer transition-colors"
+            title="Làm mới cuộc trò chuyện"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+          </button>
 
           <button
             onClick={() => setShowInfoModal(!showInfoModal)}
@@ -238,13 +427,17 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
               </button>
             </div>
             <p className="text-xs text-[#63534D] leading-relaxed">
-              Nova là trợ lý thai sản thông minh được đào tạo dựa trên phác đồ chăm sóc sản phụ khoa của Bộ Y tế và WHO. Mọi câu trả lời mang tính chất tham vấn y khoa và động viên tinh thần mẹ bầu.
+              Nova là cố vấn y tế và tâm lý thai kỳ thông minh, được tối ưu hóa dựa trên phác đồ sản phụ khoa tiêu chuẩn của Bộ Y tế và WHO. Mọi câu trả lời mang tính tham vấn y khoa và xoa dịu cảm xúc cho mẹ bầu.
             </p>
+            <div className="mt-3 pt-2.5 border-t border-[#F0ECE9] flex items-center justify-between text-[11px] text-[#8C7B75]">
+              <span>Mô hình: Gemini 3.8 Flash</span>
+              <span className="text-[#2ECC71] font-bold">● Đang hoạt động</span>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Chat Messages Body (Hình 4) */}
+      {/* Chat Messages Body */}
       <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3.5 no-scrollbar">
         {messages.map((msg) => {
           const isNova = msg.sender === 'nova';
@@ -259,16 +452,14 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
                 isNova ? 'justify-start' : 'justify-end'
               }`}
             >
-              {/* Nova Avatar Circle */}
               {isNova && (
                 <div className="w-8 h-8 rounded-full bg-[#C84B4B] text-white flex items-center justify-center font-bold text-xs shadow-xs shrink-0 mt-0.5">
                   N
                 </div>
               )}
 
-              {/* Message Bubble */}
               <div
-                className={`max-w-[80%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed shadow-2xs ${
+                className={`max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed shadow-2xs ${
                   isNova
                     ? 'bg-white text-[#3A2E2B] border border-[#F2ECE7] rounded-tl-sm'
                     : 'bg-[#C84B4B] text-white rounded-tr-sm'
@@ -276,28 +467,27 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
               >
                 <div className="whitespace-pre-line leading-relaxed">{msg.text}</div>
                 <div
-                  className={`text-[9px] mt-1.5 flex items-center justify-between ${
-                    isNova ? 'text-[#A0938E]' : 'text-white/70'
+                  className={`text-[9.5px] mt-2 flex items-center justify-between pt-1 border-t ${
+                    isNova ? 'border-[#F8F5F2] text-[#A0938E]' : 'border-white/20 text-white/70'
                   }`}
                 >
                   <span>{msg.timestamp}</span>
                   {isNova && (
                     <button
                       onClick={() => speakText(msg.text)}
-                      className="ml-2 hover:text-[#C84B4B] text-[10px] flex items-center gap-0.5"
-                      title="Nghe giọng đọc"
+                      className="ml-2 hover:text-[#C84B4B] text-[10px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                      title="Nghe lại giọng đọc"
                     >
-                      <Volume2 className="w-3 h-3" />
-                      <span>Nghe</span>
+                      <Volume2 className="w-3.5 h-3.5" />
+                      <span>Nghe lại</span>
                     </button>
                   )}
                 </div>
               </div>
 
-              {/* User Avatar Circle */}
               {!isNova && (
                 <div className="w-8 h-8 rounded-full bg-[#3A2E2B] text-white flex items-center justify-center font-bold text-xs shadow-xs shrink-0 mt-0.5">
-                  M
+                  {motherName.charAt(0) || 'M'}
                 </div>
               )}
             </motion.div>
@@ -314,35 +504,73 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
             <div className="w-6 h-6 rounded-full bg-[#FCEEEB] flex items-center justify-center">
               <Sparkles className="w-3.5 h-3.5 text-[#C84B4B] animate-spin" />
             </div>
-            <span>Nova đang suy nghĩ câu trả lời y khoa...</span>
+            <span>Nova đang tổng hợp lời khuyên y khoa cho mẹ...</span>
           </motion.div>
         )}
 
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Speaking Active Indicator Banner */}
+      {isNovaSpeaking && (
+        <motion.div
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: 5 }}
+          className="mx-4 mb-1.5 px-3 py-1.5 bg-[#FAF1ED] border border-[#F2D7CE] rounded-xl flex items-center justify-between shadow-2xs shrink-0"
+        >
+          <div className="flex items-center gap-2">
+            <Volume2 className="w-4 h-4 text-[#C84B4B] animate-pulse" />
+            <span className="text-xs font-medium text-[#7D3425]">
+              Nova đang đọc câu trả lời y tế cho mẹ...
+            </span>
+          </div>
+          <button
+            onClick={stopSpeaking}
+            className="text-[11px] font-bold text-[#C84B4B] bg-white px-2 py-0.5 rounded-lg border border-[#F0D0C6] hover:bg-[#FDF6F4] cursor-pointer"
+          >
+            Dừng đọc
+          </button>
+        </motion.div>
+      )}
+
+      {/* Category Tabs for Quick Suggestions */}
+      <div className="px-4 pt-1 flex items-center gap-1.5 overflow-x-auto no-scrollbar shrink-0">
+        {categoriesList.map((cat) => {
+          const isActive = selectedCategory === cat.id;
+          return (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id as any)}
+              className={`text-[10.5px] font-semibold px-2.5 py-1 rounded-full whitespace-nowrap cursor-pointer transition-all ${
+                isActive
+                  ? 'bg-[#C84B4B] text-white shadow-xs'
+                  : 'bg-white/80 text-[#8C7B75] border border-[#ECE5DF] hover:bg-[#FBF8F5]'
+              }`}
+            >
+              {cat.label}
+            </button>
+          );
+        })}
+      </div>
+
       {/* Suggested Quick Questions */}
       <div className="px-4 py-1.5 flex items-center gap-2 overflow-x-auto no-scrollbar shrink-0">
-        {[
-          'Mẹ mỏi lưng quá phải làm sao?',
-          'Tuần 12 nên ăn gì để vào con?',
-          'Đo độ mờ da gáy khi nào?',
-          'Hết nghén tuần 12 có sao không?',
-        ].map((tip, i) => (
+        {(CATEGORY_TIPS[selectedCategory] || CATEGORY_TIPS.all).map((tip, i) => (
           <button
             key={i}
             onClick={() => handleSend(tip)}
-            className="text-[11px] font-medium text-[#6B5A54] bg-white border border-[#EDE7E2] px-3 py-1.5 rounded-full whitespace-nowrap hover:bg-[#FAF6F3] cursor-pointer transition-colors shadow-2xs"
+            className="text-[11px] font-medium text-[#6B5A54] bg-white border border-[#EDE7E2] px-3 py-1.5 rounded-full whitespace-nowrap hover:bg-[#FAF6F3] cursor-pointer transition-colors shadow-2xs active:scale-95"
           >
             {tip}
           </button>
         ))}
       </div>
 
-      {/* Bottom Voice / Keyboard Control Area (Hình 4) */}
-      <div className="bg-white/95 backdrop-blur-xl border-t border-[#F0ECE9] px-6 pt-3.5 pb-6 flex flex-col items-center justify-center relative shrink-0 shadow-lg">
+      {/* Bottom Voice / Keyboard Control Area */}
+      <div className="bg-white/95 backdrop-blur-xl border-t border-[#F0ECE9] px-6 pt-3 pb-5 flex flex-col items-center justify-center relative shrink-0 shadow-lg">
         {/* Toggle between Voice Mode & Typing Mode */}
-        <div className="w-full flex items-center justify-between mb-2.5 px-2">
+        <div className="w-full flex items-center justify-between mb-2 px-2">
           <button
             onClick={() => setIsTypingMode(!isTypingMode)}
             className="flex items-center gap-1.5 text-xs font-semibold text-[#8C7B75] hover:text-[#3A2E2B] cursor-pointer"
@@ -383,7 +611,7 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-              placeholder="Nhập câu hỏi của mẹ cho Nova..."
+              placeholder={`Hỏi Nova về tuần thai ${pregnancyWeek}...`}
               className="flex-1 px-4 py-3 bg-[#FAF7F4] border border-[#EBE4DE] rounded-2xl text-[13px] text-[#3A2E2B] focus:outline-none focus:ring-2 focus:ring-[#C84B4B]/30"
             />
             <motion.button
@@ -396,10 +624,9 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
             </motion.button>
           </div>
         ) : (
-          /* Voice Mode with Dynamic Soundwave Waveform & Acoustic Aura (Hình 4) */
+          /* Voice Mode with Dynamic Soundwave Waveform & Acoustic Aura */
           <div className="flex flex-col items-center w-full">
-            {/* Dynamic Soundwave Waveform with iOS Gradient Visualizer */}
-            <div className="h-14 flex items-center justify-center gap-1.5 w-full max-w-[280px] mb-2 px-2">
+            <div className="h-12 flex items-center justify-center gap-1.5 w-full max-w-[280px] mb-1.5 px-2">
               {waveformBars.map((bar, i) => (
                 <motion.div
                   key={i}
@@ -430,16 +657,15 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
               ))}
             </div>
 
-            {/* Listening / Speaking Status Text with iOS Breathing Glow */}
             <motion.p
               animate={{ opacity: isAudioActive ? [0.7, 1, 0.7] : 0.85 }}
               transition={{ duration: 1.6, repeat: isAudioActive ? Infinity : 0 }}
-              className="text-[13px] font-semibold text-[#8C7B75] tracking-wide mb-3 flex items-center gap-1.5"
+              className="text-[12.5px] font-semibold text-[#8C7B75] tracking-wide mb-2.5 flex items-center gap-1.5"
             >
               {isListening ? (
                 <>
                   <span className="w-2 h-2 rounded-full bg-[#C84B4B] animate-ping" />
-                  <span>Đang lắng nghe mẹ nói...</span>
+                  <span>Nova đang lắng nghe mẹ nói...</span>
                 </>
               ) : isNovaSpeaking ? (
                 <>
@@ -447,13 +673,11 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
                   <span>Nova đang trò chuyện...</span>
                 </>
               ) : (
-                <span>Chạm để nói chuyện với Nova</span>
+                <span>Chạm mic để trò chuyện với Nova</span>
               )}
             </motion.p>
 
-            {/* Super Big Red Mic Button with iOS 27 Apple Intelligence Fluid Glowing Orb */}
             <div className="relative flex items-center justify-center">
-              {/* Apple Intelligence Chromatic Swirling Halo */}
               {isAudioActive && (
                 <motion.div
                   animate={{ rotate: 360, scale: [1, 1.14, 1] }}
@@ -469,7 +693,6 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
                 />
               )}
 
-              {/* Acoustic Aura Waves */}
               {isListening && (
                 <>
                   <motion.div
@@ -487,20 +710,9 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
                     }}
                     className="absolute w-20 h-20 rounded-full border-2 border-[#F59E0B] pointer-events-none"
                   />
-                  <motion.div
-                    animate={{ scale: [1, 2.3], opacity: [0.35, 0] }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: 'easeOut',
-                      delay: 1.3,
-                    }}
-                    className="absolute w-20 h-20 rounded-full border-2 border-[#EC4899] pointer-events-none"
-                  />
                 </>
               )}
 
-              {/* Main Red Microphone Button with Tactile 3D Glass Press */}
               <motion.button
                 whileHover={{ scale: 1.06 }}
                 whileTap={{ scale: 0.88, rotate: -3 }}

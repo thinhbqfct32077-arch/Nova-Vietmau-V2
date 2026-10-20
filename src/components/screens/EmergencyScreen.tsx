@@ -16,18 +16,22 @@ import {
   FileText,
   Ambulance,
   PhoneForwarded,
+  Trash2,
+  Database,
 } from 'lucide-react';
 import { EmergencyContact } from '../../types';
 
 interface EmergencyScreenProps {
   contacts: EmergencyContact[];
   onAddContact: (contact: EmergencyContact) => void;
+  onDeleteContact?: (id: string) => void;
   onBack: () => void;
 }
 
 export const EmergencyScreen: React.FC<EmergencyScreenProps> = ({
   contacts,
   onAddContact,
+  onDeleteContact,
   onBack,
 }) => {
   const [showAddModal, setShowAddModal] = useState(false);
@@ -218,16 +222,43 @@ export const EmergencyScreen: React.FC<EmergencyScreenProps> = ({
                   )}
                 </div>
 
-                <motion.button
-                  whileTap={{ scale: 0.88 }}
-                  onClick={() => handleCall(contact.phone, contact.name)}
-                  className="w-10 h-10 rounded-full bg-[#2ECC71] text-white flex items-center justify-center shadow-md hover:bg-[#27AE60] transition-colors cursor-pointer shrink-0"
-                  title="Gọi ngay"
-                >
-                  <PhoneCall className="w-5 h-5" />
-                </motion.button>
+                <div className="flex items-center gap-1.5 shrink-0">
+                  {onDeleteContact && contacts.length > 1 && (
+                    <button
+                      onClick={() => {
+                        if (window.confirm(`Xóa số liên hệ của ${contact.name}?`)) {
+                          onDeleteContact(contact.id);
+                          triggerToast('Đã xóa số liên hệ khỏi bộ nhớ!');
+                        }
+                      }}
+                      className="w-8 h-8 rounded-full bg-[#F5EFEB] text-[#8C7B75] hover:text-[#E74C3C] hover:bg-[#FDF2F0] flex items-center justify-center transition-colors cursor-pointer"
+                      title="Xóa liên hệ"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                  <motion.button
+                    whileTap={{ scale: 0.88 }}
+                    onClick={() => handleCall(contact.phone, contact.name)}
+                    className="w-10 h-10 rounded-full bg-[#2ECC71] text-white flex items-center justify-center shadow-md hover:bg-[#27AE60] transition-colors cursor-pointer shrink-0"
+                    title="Gọi ngay"
+                  >
+                    <PhoneCall className="w-5 h-5" />
+                  </motion.button>
+                </div>
               </div>
             ))}
+          </div>
+
+          {/* Persistent storage indicator badge */}
+          <div className="pt-2 border-t border-[#F5EFEB] flex items-center justify-between text-[11px] text-[#8C7B75]">
+            <span className="flex items-center gap-1.5">
+              <Database className="w-3.5 h-3.5 text-[#2ECC71]" />
+              <span>Đã lưu tự động vào bộ nhớ máy</span>
+            </span>
+            <span className="text-[10px] bg-[#E8F8F0] text-[#2ECC71] font-bold px-2 py-0.5 rounded-full">
+              Bền vững
+            </span>
           </div>
         </div>
 

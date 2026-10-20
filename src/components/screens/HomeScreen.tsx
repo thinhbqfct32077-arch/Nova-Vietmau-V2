@@ -1,7 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { ASSETS } from '../../data/mockData';
-import { UserProfile } from '../../types';
+import { UserProfile, DailyWaterRecord, HealthReminder } from '../../types';
+import { storageService } from '../../services/storageService';
+import {
+  getPregnancySummary,
+  formatDateVietnamese,
+} from '../../services/pregnancyCalculator';
+import { getWeekMilestone } from '../../data/pregnancyMilestones';
 import {
   Bell,
   Mic,
@@ -13,6 +19,8 @@ import {
   Crown,
   Zap,
   ShieldAlert,
+  Info,
+  CheckCircle2,
 } from 'lucide-react';
 
 interface HomeScreenProps {
@@ -38,7 +46,30 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 }) => {
   const [selectedMood, setSelectedMood] = useState<'happy' | 'calm' | 'tired' | 'excited'>('happy');
   const [showMoodPicker, setShowMoodPicker] = useState(false);
-  const [showLemonInfo, setShowLemonInfo] = useState(false);
+  const [showMilestoneDetail, setShowMilestoneDetail] = useState(false);
+
+  // Dynamic clinical gestational age & milestone
+  const pregnancySummary = getPregnancySummary(user || {});
+  const weekMilestone = getWeekMilestone(pregnancySummary.weeks);
+
+  // Live water and reminder from storage
+  const [todayWater, setTodayWater] = useState<DailyWaterRecord>(() =>
+    storageService.getWaterRecord()
+  );
+  const [activeReminders, setActiveReminders] = useState<HealthReminder[]>(() =>
+    storageService.loadHealthReminders().filter((r) => r.isEnabled)
+  );
+
+  useEffect(() => {
+    const handleStorage = () => {
+      setTodayWater(storageService.getWaterRecord());
+      setActiveReminders(storageService.loadHealthReminders().filter((r) => r.isEnabled));
+    };
+    window.addEventListener('nova_storage_update', handleStorage);
+    return () => window.removeEventListener('nova_storage_update', handleStorage);
+  }, []);
+
+  const nextReminder = activeReminders[0];
 
   const moodLabels = {
     happy: { text: 'Rất vui vẻ', emoji: '😊', color: '#F39C12' },
@@ -162,7 +193,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         animate="show"
         className="flex flex-col gap-3.5"
       >
-        {/* Card: HÀNH TRÌNH TUẦN NÀY with Apple Depth Floating (Hình 5) */}
+        {/* Card: HÀNH TRÌNH TUẦN NÀY DYNAMIC VỚI TUỔI THAI THẬT */}
         <motion.div
           variants={itemVariants}
           whileHover={{ y: -2 }}
@@ -175,110 +206,111 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           <div className="flex items-center justify-between relative z-10">
             {/* Left Texts */}
             <div className="flex-1 pr-3">
-              <span className="text-[11px] font-bold tracking-wider text-[#C84B4B] uppercase block mb-1">
-                HÀNH TRÌNH TUẦN NÀY
-              </span>
-              <h2 className="text-[26px] font-extrabold text-[#3A2E2B] tracking-tight leading-none mb-1.5">
-                Tuần 12
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-[11px] font-bold tracking-wider text-[#C84B4B] uppercase">
+                  HÀNH TRÌNH TUẦN NÀY
+                </span>
+                <span className="text-[10px] font-semibold bg-white/80 text-[#C84B4B] px-2 py-0.5 rounded-full border border-[#FADBD8]">
+                  {pregnancySummary.daysRemaining > 0
+                    ? `Còn ${pregnancySummary.daysRemaining} ngày`
+                    : 'Đã đến ngày dự sinh'}
+                </span>
+              </div>
+
+              <h2 className="text-[25px] font-extrabold text-[#3A2E2B] tracking-tight leading-none mb-1.5">
+                Tuần {pregnancySummary.weeks}
+                {pregnancySummary.days > 0 && (
+                  <span className="text-[16px] font-medium text-[#8C7B75] ml-1.5">
+                    ngày {pregnancySummary.days}
+                  </span>
+                )}
               </h2>
+
               <p className="text-[13px] font-medium text-[#8C7B75] flex items-center gap-1.5 mb-2">
-                <span>Em bé của mẹ</span>
+                <span>{user?.babyNickname ? `Bé ${user.babyNickname}` : 'Thiên thần nhỏ'}</span>
                 <span className="w-1 h-1 rounded-full bg-[#8C7B75]/50" />
-                <span className="text-[#C84B4B] font-semibold">Tam cá nguyệt 1</span>
+                <span className="text-[#C84B4B] font-semibold">
+                  Tam cá nguyệt {pregnancySummary.trimester}
+                </span>
               </p>
-              <p className="text-[11px] text-[#6E5D57] leading-relaxed">
-                Bé dài khoảng 5.4cm, các phản xạ nuốt và co duỗi ngón tay bắt đầu hoàn thiện!
+
+              <p className="text-[11.5px] text-[#5C4A42] leading-relaxed line-clamp-2">
+                {weekMilestone.babyDevelopment}
               </p>
             </div>
 
-            {/* Right Lemon Illustration Box with 3D Float Animation */}
+            {/* Right Dynamic Fruit Box with 3D Float Animation */}
             <motion.div
-              onClick={() => setShowLemonInfo(!showLemonInfo)}
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.92, rotate: -3 }}
+              onClick={() => setShowMilestoneDetail(!showMilestoneDetail)}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.92, rotate: -2 }}
               transition={{ type: 'spring', stiffness: 450, damping: 20 }}
-              className="w-24 h-24 rounded-2xl bg-[#E8F3EE] border border-[#D3E8DF] shadow-inner flex flex-col items-center justify-center relative cursor-pointer group"
-              title="Nhấn để xem chi tiết kích thước bé"
+              className="w-24 h-24 rounded-2xl bg-[#E8F3EE] border border-[#D3E8DF] shadow-inner flex flex-col items-center justify-center relative cursor-pointer group shrink-0"
+              title="Nhấn để xem chi tiết tuần thai"
             >
-              {/* Organic 3D Lemon Float & Breathing Physics */}
               <motion.div
                 animate={{
-                  y: [0, -5, 0],
-                  scale: [1, 1.06, 1],
-                  rotate: [-2, 2, -2],
+                  y: [0, -4, 0],
+                  scale: [1, 1.08, 1],
                 }}
                 transition={{
-                  duration: 3.5,
+                  duration: 3,
                   ease: 'easeInOut',
                   repeat: Infinity,
                 }}
-                className="relative flex items-center justify-center"
+                className="text-4xl leading-none drop-shadow-sm select-none"
               >
-                {/* Custom SVG Cartoon Lemon matching Hình 5 */}
-                <svg
-                  viewBox="0 0 64 64"
-                  className="w-14 h-14 drop-shadow-md"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <ellipse
-                    cx="32"
-                    cy="34"
-                    rx="22"
-                    ry="18"
-                    transform="rotate(-15 32 34)"
-                    fill="#F7D02C"
-                    stroke="#E6B800"
-                    strokeWidth="1.5"
-                  />
-                  <path d="M11 28C9 30 9 34 11 36L13 35Z" fill="#E6B800" />
-                  <path d="M53 32C55 34 55 38 53 40L51 39Z" fill="#E6B800" />
-                  <path
-                    d="M34 14C34 14 38 12 43 14C45 18 43 23 37 21C34 20 34 14 34 14Z"
-                    fill="#52B788"
-                  />
-                  <path
-                    d="M35 18C38 17 41 16 43 14"
-                    stroke="#3E8966"
-                    strokeWidth="1"
-                    strokeLinecap="round"
-                  />
-                  <circle cx="27" cy="33" r="2.2" fill="#3A2E2B" />
-                  <circle cx="37" cy="31" r="2.2" fill="#3A2E2B" />
-                  <ellipse cx="23" cy="36" rx="2.5" ry="1.5" fill="#F39C12" opacity="0.4" />
-                  <ellipse cx="40" cy="34" rx="2.5" ry="1.5" fill="#F39C12" opacity="0.4" />
-                  <path
-                    d="M30 36C31.5 38 33.5 38 35 36"
-                    stroke="#3A2E2B"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                  />
-                </svg>
+                {pregnancySummary.fruitComparison.fruitEmoji}
               </motion.div>
 
-              <span className="text-[10px] font-semibold text-[#3D6957] mt-1 bg-white/80 px-2 py-0.5 rounded-full shadow-2xs backdrop-blur-xs">
-                Quả chanh
+              <span className="text-[10px] font-bold text-[#2D6A4F] mt-1.5 bg-white/90 px-2 py-0.5 rounded-full shadow-2xs backdrop-blur-xs text-center max-w-[84px] truncate">
+                {pregnancySummary.fruitComparison.fruitName}
               </span>
             </motion.div>
           </div>
 
-          {/* Quick Expand Lemon Fact with iOS Fluid Spring */}
+          {/* Quick Expand Milestone Details */}
           <AnimatePresence>
-            {showLemonInfo && (
+            {showMilestoneDetail && (
               <motion.div
-                initial={{ opacity: 0, height: 0, filter: 'blur(4px)' }}
-                animate={{ opacity: 1, height: 'auto', filter: 'blur(0px)' }}
-                exit={{ opacity: 0, height: 0, filter: 'blur(4px)' }}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
                 transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-                className="mt-3 pt-3 border-t border-[#F2D6CF] text-xs text-[#523F3A] flex items-center justify-between"
+                className="mt-3 pt-3 border-t border-[#F2D6CF] text-xs text-[#523F3A] flex flex-col gap-2 overflow-hidden"
               >
-                <span>🍋 Cân nặng bé: ~14g | Nhịp tim: 160 lần/phút</span>
-                <button
-                  onClick={() => setShowLemonInfo(false)}
-                  className="text-[11px] font-bold text-[#C84B4B] underline cursor-pointer"
-                >
-                  Thu gọn
-                </button>
+                <div className="flex items-center justify-between font-medium">
+                  <span>
+                    📏 Kích thước: {pregnancySummary.fruitComparison.lengthDescription} · ⚖️{' '}
+                    {pregnancySummary.fruitComparison.weightDescription}
+                  </span>
+                  <button
+                    onClick={() => setShowMilestoneDetail(false)}
+                    className="text-[11px] font-bold text-[#C84B4B] underline cursor-pointer"
+                  >
+                    Thu gọn
+                  </button>
+                </div>
+
+                <div className="bg-white/70 p-2.5 rounded-xl border border-[#F2D6CF] flex flex-col gap-1.5">
+                  <p className="text-[11px] leading-relaxed">
+                    <strong className="text-[#3A2E2B]">Thay đổi ở mẹ:</strong>{' '}
+                    {weekMilestone.motherChanges}
+                  </p>
+                  <p className="text-[11px] leading-relaxed">
+                    <strong className="text-[#3A2E2B]">Dinh dưỡng vàng:</strong>{' '}
+                    {weekMilestone.nutritionAdvice}
+                  </p>
+                  {weekMilestone.checkupMilestone && (
+                    <p className="text-[11px] text-[#C84B4B] font-semibold leading-relaxed bg-[#FFF0ED] p-1.5 rounded-lg border border-[#FADBD8]">
+                      🩺 {weekMilestone.checkupMilestone}
+                    </p>
+                  )}
+                </div>
+
+                <p className="text-[9.5px] text-[#8C7B75] italic">
+                  Nguồn: {weekMilestone.medicalSource}
+                </p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -335,7 +367,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 <Calendar className="w-5 h-5 stroke-[2]" />
               </div>
               <span className="text-[10px] font-bold bg-[#FCEEEB] text-[#C84B4B] px-2 py-0.5 rounded-full">
-                Ngày mai
+                {nextReminder ? nextReminder.time : 'Chăm sóc'}
               </span>
             </div>
 
@@ -343,8 +375,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               <h3 className="text-[15px] font-bold text-[#3A2E2B] leading-tight">
                 Lịch nhắc
               </h3>
-              <p className="text-[12px] font-medium text-[#8C7B75] mt-1">
-                Khám mốc 12w
+              <p className="text-[12px] font-medium text-[#8C7B75] mt-1 line-clamp-1">
+                {nextReminder ? nextReminder.title : 'Khám mốc 12w'}
               </p>
             </div>
 
@@ -496,11 +528,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <Droplet className="w-4 h-4 fill-current" />
           </div>
           <div className="flex-1">
-            <p className="text-xs font-semibold text-[#3A2E2B]">
-              Mục tiêu hôm nay: Uống đủ 2.5L nước
-            </p>
+            <div className="flex items-center gap-2">
+              <p className="text-xs font-semibold text-[#3A2E2B]">
+                Lượng nước hôm nay: {todayWater.currentMl} / {todayWater.targetMl} ml
+              </p>
+              {todayWater.isCompleted && (
+                <span className="text-[9.5px] font-bold bg-[#2ECC71] text-white px-1.5 py-0.2 rounded-md">
+                  Đạt
+                </span>
+              )}
+            </div>
             <p className="text-[11px] text-[#8C7B75]">
-              Nước ối tuần 12 đang tăng trưởng nhanh, hãy bù nước đều đặn.
+              {todayWater.isCompleted
+                ? 'Mẹ đã hoàn thành chỉ tiêu nước hôm nay! Chạm để xem chi tiết.'
+                : 'Chạm để ghi nhận nhanh các cữ uống nước và xem lịch sử.'}
             </p>
           </div>
           <ChevronRight className="w-4 h-4 text-[#8C7B75]" />

@@ -3,9 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, Variants } from 'framer-motion';
-import { ScreenType, ProductItem, CartItem, UserProfile, EmergencyContact } from './types';
+import { ScreenType, ProductItem, CartItem, UserProfile, EmergencyContact, OrderInfo } from './types';
 import { PhoneFrame } from './components/PhoneFrame';
 import { BottomNavBar } from './components/BottomNavBar';
 import { OnboardingScreen } from './components/screens/OnboardingScreen';
@@ -26,31 +26,49 @@ import { ProductDetailModal } from './components/ProductDetailModal';
 import { NotificationModal } from './components/NotificationModal';
 import { VipSubscriptionModal } from './components/VipSubscriptionModal';
 import { PRODUCTS_DATA, INITIAL_USER_PROFILE } from './data/mockData';
+import { storageService } from './services/storageService';
 import confetti from 'canvas-confetti';
+import { Mic } from 'lucide-react';
 
 export default function App() {
-  const [activeScreen, setActiveScreen] = useState<ScreenType>('home');
+  const [activeScreen, setActiveScreen] = useState<ScreenType>(() => {
+    return storageService.hasCompletedOnboarding() ? 'home' : 'onboarding';
+  });
   const [previousScreen, setPreviousScreen] = useState<ScreenType>('home');
   const [isVoiceListening, setIsVoiceListening] = useState(false);
 
-  // User Profile state
-  const [user, setUser] = useState<UserProfile>(INITIAL_USER_PROFILE);
+  // User Profile state (loaded from persistent storage)
+  const [user, setUser] = useState<UserProfile>(() => storageService.loadUserProfile());
+  const [orders, setOrders] = useState<OrderInfo[]>(() => storageService.loadOrders());
   const [isAvatarModalOpen, setIsAvatarModalOpen] = useState(false);
 
+  const handleOnboardingComplete = (updatedProfile: UserProfile) => {
+    setUser(updatedProfile);
+    setIsVip(updatedProfile.isVip ?? false);
+    navigateTo('home');
+  };
+
+  const handleExploreGuest = () => {
+    navigateTo('home');
+  };
+
   // VIP Subscription state
-  const [isVip, setIsVip] = useState(INITIAL_USER_PROFILE.isVip);
+  const [isVip, setIsVip] = useState(() => storageService.loadUserProfile().isVip);
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
   const [paymentPlan, setPaymentPlan] = useState<'yearly' | 'monthly' | 'lifetime'>('yearly');
 
-  // Cart State
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    { product: PRODUCTS_DATA[0], quantity: 1 },
-  ]);
+  // Cart State (loaded from persistent storage)
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => storageService.loadCart());
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
   const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
+
+  // Auto-sync cart to persistent storage
+  useEffect(() => {
+    storageService.saveCart(cartItems);
+  }, [cartItems]);
 
   // Navigation handler: fast, responsive and seamless
   const navigateTo = (newScreen: ScreenType) => {
@@ -95,21 +113,45 @@ export default function App() {
   };
 
   const handleSelectAvatar = (newAvatarUrl: string) => {
-    setUser((prev) => ({ ...prev, avatar: newAvatarUrl }));
+    setUser((prev) => {
+      const updated = { ...prev, avatar: newAvatarUrl };
+      storageService.saveUserProfile(updated);
+      return updated;
+    });
   };
 
   const handleUpdateUser = (updatedInfo: Partial<UserProfile>) => {
-    setUser((prev) => ({ ...prev, ...updatedInfo }));
+    setUser((prev) => {
+      const updated = { ...prev, ...updatedInfo };
+      storageService.saveUserProfile(updated);
+      return updated;
+    });
   };
 
   const handleAddEmergencyContact = (contact: EmergencyContact) => {
-    setUser((prev) => ({
-      ...prev,
-      emergencyContacts: [contact, ...prev.emergencyContacts],
-    }));
+    setUser((prev) => {
+      const updated = {
+        ...prev,
+        emergencyContacts: [contact, ...prev.emergencyContacts],
+      };
+      storageService.saveUserProfile(updated);
+      return updated;
+    });
+  };
+
+  const handleDeleteEmergencyContact = (id: string) => {
+    setUser((prev) => {
+      const updated = {
+        ...prev,
+        emergencyContacts: prev.emergencyContacts.filter((c) => c.id !== id),
+      };
+      storageService.saveUserProfile(updated);
+      return updated;
+    });
   };
 
   const handleLoginSuccess = (loggedInUser: UserProfile) => {
+    storageService.saveUserProfile(loggedInUser);
     setUser(loggedInUser);
     setIsVip(loggedInUser.isVip);
     navigateTo('home');
@@ -121,9 +163,36 @@ export default function App() {
 
   const handlePaymentSuccess = () => {
     setIsVip(true);
-    setUser((prev) => ({ ...prev, isVip: true }));
+    setUser((prev) => {
+      const updated = { ...prev, isVip: true };
+      storageService.saveUserProfile(updated);
+      return updated;
+    });
     setCartItems([]);
+    storageService.saveCart([]);
     navigateTo('home');
+  };
+
+  const handleOrderSuccess = (newOrder: OrderInfo) => {
+    const updatedOrders = storageService.saveOrder(newOrder);
+    setOrders(updatedOrders);
+    setCartItems([]);
+    storageService.saveCart([]);
+  };
+
+  const handleResetData = () => {
+    const fresh = storageService.resetAllUserData();
+    setUser(fresh);
+    setIsVip(fresh.isVip);
+    setOrders(storageService.loadOrders());
+    setCartItems(storageService.loadCart());
+  };
+
+  const handleImportData = (importedUser: UserProfile) => {
+    setUser(importedUser);
+    setIsVip(importedUser.isVip);
+    setOrders(storageService.loadOrders());
+    setCartItems(storageService.loadCart());
   };
 
   // Instant, rock-solid iOS view transitions (Zero blur lag, zero delay)
@@ -175,7 +244,11 @@ export default function App() {
               exit="exit"
               className="absolute inset-0 flex flex-col w-full h-full"
             >
-              <OnboardingScreen onStart={() => navigateTo('home')} />
+              <OnboardingScreen
+                onComplete={handleOnboardingComplete}
+                onExploreGuest={handleExploreGuest}
+                onOpenLogin={() => navigateTo('login')}
+              />
             </motion.div>
           )}
 
@@ -271,6 +344,7 @@ export default function App() {
               className="absolute inset-0 flex flex-col w-full h-full"
             >
               <VoiceChatScreen
+                user={user}
                 onBack={() => navigateTo(previousScreen === 'chat' ? 'home' : previousScreen)}
                 isListening={isVoiceListening}
                 setIsListening={setIsVoiceListening}
@@ -292,12 +366,16 @@ export default function App() {
             >
               <ProfileScreen
                 user={user}
+                orders={orders}
                 onUpdateUser={handleUpdateUser}
                 onBack={() => navigateTo(previousScreen === 'profile' ? 'home' : previousScreen)}
                 onOpenAvatarModal={() => setIsAvatarModalOpen(true)}
                 onNavigateToEmergency={() => navigateTo('emergency')}
                 onNavigateToPayment={() => navigateTo('payment')}
                 onNavigateToOrderInfo={() => navigateTo('order_info')}
+                onResetData={handleResetData}
+                onImportData={handleImportData}
+                onReopenOnboarding={() => navigateTo('onboarding')}
                 onLogout={handleLogout}
               />
             </motion.div>
@@ -352,6 +430,7 @@ export default function App() {
               <EmergencyScreen
                 contacts={user.emergencyContacts}
                 onAddContact={handleAddEmergencyContact}
+                onDeleteContact={handleDeleteEmergencyContact}
                 onBack={() => navigateTo(previousScreen === 'emergency' ? 'home' : previousScreen)}
               />
             </motion.div>
@@ -374,11 +453,13 @@ export default function App() {
                 onNavigateToPayment={(_order) => {
                   navigateTo('payment');
                 }}
-                onOrderSuccess={(_order) => {
-                  setCartItems([]);
-                }}
+                onOrderSuccess={(order) => handleOrderSuccess(order)}
                 onUpdateUserAddresses={(addresses) => {
-                  setUser((prev) => ({ ...prev, shippingAddresses: addresses }));
+                  setUser((prev) => {
+                    const updated = { ...prev, shippingAddresses: addresses };
+                    storageService.saveUserProfile(updated);
+                    return updated;
+                  });
                 }}
                 onUpdateCart={(items) => setCartItems(items)}
               />
@@ -386,6 +467,25 @@ export default function App() {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Floating Nova AI Quick Assistant Pill */}
+      {showBottomNav && (
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.92 }}
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          onClick={() => navigateTo('chat')}
+          className="absolute bottom-16 right-4 z-40 bg-gradient-to-tr from-[#B53E3E] via-[#C84B4B] to-[#E0564A] text-white px-3.5 py-2 rounded-full shadow-lg shadow-[#C84B4B]/35 flex items-center gap-2 border border-white/30 cursor-pointer active:scale-95 group backdrop-blur-xs"
+          title="Trò chuyện với Trợ lý Nova AI"
+        >
+          <div className="relative">
+            <Mic className="w-4 h-4 stroke-[2.5]" />
+            <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 bg-[#2ECC71] rounded-full ring-1 ring-white" />
+          </div>
+          <span className="text-[11.5px] font-bold tracking-tight">Hỏi Nova AI</span>
+        </motion.button>
+      )}
 
       {/* Shared Bottom Navigation Bar */}
       {showBottomNav && (

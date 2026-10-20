@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { ShippingAddress, CartItem, UserProfile, OrderInfo } from '../../types';
 import { VIETNAM_PROVINCES, PRODUCTS_DATA } from '../../data/mockData';
+import { BANK_TRANSFER_CONFIG } from '../../data/bankTransferConfig';
 import confetti from 'canvas-confetti';
 
 interface OrderInfoScreenProps {
@@ -506,6 +507,94 @@ export const OrderInfoScreen: React.FC<OrderInfoScreenProps> = ({
               </span>
             </div>
           </div>
+
+          {/* VietQR Agribank transfer instructions if VietQR selected */}
+          {completedOrder.paymentMethod === 'vietqr' && (
+            <div className="p-4 bg-white rounded-3xl border border-[#E8DFD5] shadow-xs space-y-3.5">
+              <div className="flex items-center justify-between border-b border-[#F5EFEB] pb-2">
+                <div className="flex items-center gap-2">
+                  <QrCode className="w-4 h-4 text-[#C84B4B]" />
+                  <span className="text-[13px] font-bold text-[#3A2E2B]">Mã VietQR thanh toán</span>
+                </div>
+                <span className="text-[11px] font-bold text-[#2ECC71] bg-[#E8F8F0] px-2 py-0.5 rounded-full">
+                  Napas 247
+                </span>
+              </div>
+
+              <div className="flex flex-col items-center">
+                <div className="p-2 bg-white border border-[#EAE3DC] rounded-2xl shadow-xs max-w-[240px]">
+                  <img
+                    src={BANK_TRANSFER_CONFIG.qrImageUrl}
+                    alt="Mã VietQR Agribank Bùi Quốc Thịnh"
+                    className="w-52 h-auto object-contain rounded-xl"
+                  />
+                </div>
+                <span className="text-[11px] text-[#8C7B75] mt-1.5 font-medium text-center">
+                  {BANK_TRANSFER_CONFIG.supportApps}
+                </span>
+              </div>
+
+              <div className="space-y-2 bg-[#FBF8F5] p-3 rounded-2xl text-[12px] border border-[#F0EAE5]">
+                <div className="flex items-center justify-between">
+                  <span className="text-[#8C7B75]">Ngân hàng:</span>
+                  <span className="font-extrabold text-[#3A2E2B] text-right">
+                    {BANK_TRANSFER_CONFIG.bankShortName} ({BANK_TRANSFER_CONFIG.branch})
+                  </span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-[#8C7B75]">Chủ tài khoản:</span>
+                  <span className="font-extrabold text-[#3A2E2B]">{BANK_TRANSFER_CONFIG.accountHolder}</span>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-[#8C7B75]">Số tài khoản:</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-mono font-black text-[#C84B4B] text-[14px]">
+                      {BANK_TRANSFER_CONFIG.accountNumber}
+                    </span>
+                    <button
+                      onClick={() => {
+                        try {
+                          navigator.clipboard.writeText(BANK_TRANSFER_CONFIG.accountNumber);
+                          showToast('Đã sao chép số tài khoản!');
+                        } catch {
+                          showToast('Đã sao chép số tài khoản!');
+                        }
+                      }}
+                      className="p-1 hover:bg-white rounded-md text-[#5E4E49] transition-colors cursor-pointer"
+                      title="Sao chép STK"
+                    >
+                      <Copy className="w-3.5 h-3.5 text-[#C84B4B]" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <span className="text-[#8C7B75]">Nội dung CK:</span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="font-mono font-black text-[#3A2E2B]">
+                      {completedOrder.orderId}
+                    </span>
+                    <button
+                      onClick={() => {
+                        try {
+                          navigator.clipboard.writeText(completedOrder.orderId);
+                          showToast('Đã sao chép nội dung chuyển khoản!');
+                        } catch {
+                          showToast('Đã sao chép nội dung chuyển khoản!');
+                        }
+                      }}
+                      className="p-1 hover:bg-white rounded-md text-[#5E4E49] transition-colors cursor-pointer"
+                      title="Sao chép nội dung"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Action Buttons */}
           <div className="space-y-2 pt-2">

@@ -17,6 +17,7 @@ import {
   Lock,
 } from 'lucide-react';
 import { CartItem } from '../../types';
+import { BANK_TRANSFER_CONFIG } from '../../data/bankTransferConfig';
 import confetti from 'canvas-confetti';
 
 interface PaymentScreenProps {
@@ -414,98 +415,49 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
               </div>
             </div>
 
-            {/* QR Mock Image */}
+            {/* VietQR Agribank Image */}
             <div className="flex flex-col items-center">
-              <div className="p-3 bg-white border-2 border-[#EAE3DC] rounded-2xl shadow-xs">
-                <svg
-                  className="w-40 h-40"
-                  viewBox="0 0 100 100"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  {/* Outer Frame */}
-                  <rect width="100" height="100" fill="white" />
-                  {/* Position detection corners */}
-                  <rect x="5" y="5" width="26" height="26" fill="#1A1817" rx="3" />
-                  <rect x="9" y="9" width="18" height="18" fill="white" rx="2" />
-                  <rect x="13" y="13" width="10" height="10" fill="#C84B4B" rx="1" />
-
-                  <rect x="69" y="5" width="26" height="26" fill="#1A1817" rx="3" />
-                  <rect x="73" y="9" width="18" height="18" fill="white" rx="2" />
-                  <rect x="77" y="13" width="10" height="10" fill="#C84B4B" rx="1" />
-
-                  <rect x="5" y="69" width="26" height="26" fill="#1A1817" rx="3" />
-                  <rect x="9" y="73" width="18" height="18" fill="white" rx="2" />
-                  <rect x="13" y="77" width="10" height="10" fill="#C84B4B" rx="1" />
-
-                  {/* QR Data modules pattern */}
-                  <rect x="36" y="8" width="6" height="6" fill="#1A1817" />
-                  <rect x="46" y="8" width="6" height="6" fill="#1A1817" />
-                  <rect x="56" y="8" width="6" height="6" fill="#1A1817" />
-
-                  <rect x="36" y="18" width="8" height="6" fill="#1A1817" />
-                  <rect x="48" y="18" width="6" height="6" fill="#1A1817" />
-                  <rect x="58" y="18" width="6" height="6" fill="#1A1817" />
-
-                  <rect x="8" y="36" width="6" height="6" fill="#1A1817" />
-                  <rect x="18" y="36" width="6" height="6" fill="#1A1817" />
-                  <rect x="28" y="36" width="6" height="6" fill="#1A1817" />
-
-                  <rect x="8" y="46" width="8" height="6" fill="#1A1817" />
-                  <rect x="20" y="46" width="6" height="6" fill="#1A1817" />
-
-                  {/* Center Brand Icon */}
-                  <circle cx="50" cy="50" r="13" fill="#C84B4B" />
-                  <path d="M46 47C46 45 48 43 50 43C52 43 54 45 54 47C54 50 50 53 50 53C50 53 46 50 46 47Z" fill="white" />
-                  <circle cx="50" cy="56" r="1.5" fill="white" />
-
-                  {/* Lower data pixels */}
-                  <rect x="36" y="68" width="6" height="6" fill="#1A1817" />
-                  <rect x="46" y="68" width="8" height="6" fill="#1A1817" />
-                  <rect x="58" y="68" width="6" height="6" fill="#1A1817" />
-
-                  <rect x="36" y="78" width="6" height="6" fill="#1A1817" />
-                  <rect x="46" y="78" width="6" height="6" fill="#1A1817" />
-                  <rect x="56" y="78" width="6" height="6" fill="#1A1817" />
-                  <rect x="68" y="78" width="6" height="6" fill="#1A1817" />
-
-                  <rect x="68" y="36" width="8" height="6" fill="#1A1817" />
-                  <rect x="80" y="36" width="6" height="6" fill="#1A1817" />
-                  <rect x="68" y="46" width="6" height="6" fill="#1A1817" />
-                  <rect x="78" y="46" width="8" height="6" fill="#1A1817" />
-                  <rect x="68" y="58" width="6" height="6" fill="#1A1817" />
-                  <rect x="78" y="58" width="6" height="6" fill="#1A1817" />
-                </svg>
+              <div className="p-2.5 bg-white border-2 border-[#EAE3DC] rounded-2xl shadow-sm flex flex-col items-center max-w-[270px]">
+                <img
+                  src={BANK_TRANSFER_CONFIG.qrImageUrl}
+                  alt="Mã VietQR Agribank Bùi Quốc Thịnh"
+                  className="w-60 h-auto object-contain rounded-xl"
+                  loading="eager"
+                />
               </div>
-              <span className="text-[11px] text-[#8C7B75] mt-1.5 font-medium">
-                Quét bằng app MBBank, Vietcombank, Techcombank, MoMo
+              <span className="text-[11.5px] text-[#8C7B75] mt-2 font-medium text-center">
+                {BANK_TRANSFER_CONFIG.supportApps}
               </span>
             </div>
 
             {/* Bank details table */}
-            <div className="space-y-2 bg-[#FBF8F5] p-3 rounded-2xl text-[12px]">
+            <div className="space-y-2 bg-[#FBF8F5] p-3.5 rounded-2xl text-[12px] border border-[#F0EAE5]">
               <div className="flex items-center justify-between">
                 <span className="text-[#8C7B75]">Ngân hàng:</span>
-                <span className="font-extrabold text-[#3A2E2B]">MBBank (Quân Đội)</span>
+                <span className="font-extrabold text-[#3A2E2B] text-right">
+                  {BANK_TRANSFER_CONFIG.bankShortName} ({BANK_TRANSFER_CONFIG.branch})
+                </span>
               </div>
 
               <div className="flex items-center justify-between">
                 <span className="text-[#8C7B75]">Chủ tài khoản:</span>
-                <span className="font-extrabold text-[#3A2E2B]">CONG TY CP Y TE NOVA CARE</span>
+                <span className="font-extrabold text-[#3A2E2B] tracking-wide">
+                  {BANK_TRANSFER_CONFIG.accountHolder}
+                </span>
               </div>
 
               <div className="flex items-center justify-between">
                 <span className="text-[#8C7B75]">Số tài khoản:</span>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-mono font-black text-[#C84B4B] text-[13px]">
-                    0388 999 8888
+                  <span className="font-mono font-black text-[#C84B4B] text-[15px] tracking-wider">
+                    {BANK_TRANSFER_CONFIG.accountNumber}
                   </span>
                   <button
-                    onClick={() => handleCopy('03889998888', 'Số tài khoản')}
-                    className="p-1 hover:bg-white rounded-md text-[#5E4E49] transition-colors cursor-pointer"
+                    onClick={() => handleCopy(BANK_TRANSFER_CONFIG.accountNumber, 'Số tài khoản')}
+                    className="p-1.5 hover:bg-white rounded-lg text-[#5E4E49] border border-[#E8DFD5] transition-colors cursor-pointer shadow-xs"
                     title="Sao chép STK"
                   >
-                    <Copy className="w-3.5 h-3.5" />
+                    <Copy className="w-3.5 h-3.5 text-[#C84B4B]" />
                   </button>
                 </div>
               </div>
@@ -514,11 +466,11 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
                 <span className="text-[#8C7B75]">Nội dung CK:</span>
                 <div className="flex items-center gap-1.5">
                   <span className="font-mono font-black text-[#3A2E2B]">
-                    NOVA 8899 KHANHBANG
+                    {isCartCheckout ? 'NOVA DH8899' : 'NOVA VIP 8899'}
                   </span>
                   <button
-                    onClick={() => handleCopy('NOVA 8899 KHANHBANG', 'Nội dung chuyển khoản')}
-                    className="p-1 hover:bg-white rounded-md text-[#5E4E49] transition-colors cursor-pointer"
+                    onClick={() => handleCopy(isCartCheckout ? 'NOVA DH8899' : 'NOVA VIP 8899', 'Nội dung chuyển khoản')}
+                    className="p-1.5 hover:bg-white rounded-lg text-[#5E4E49] border border-[#E8DFD5] transition-colors cursor-pointer shadow-xs"
                     title="Sao chép nội dung"
                   >
                     <Copy className="w-3.5 h-3.5" />
@@ -526,15 +478,15 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
                 </div>
               </div>
 
-              <div className="flex items-center justify-between border-t border-[#EFEAE5] pt-1.5">
-                <span className="text-[#8C7B75]">Số tiền chính xác:</span>
+              <div className="flex items-center justify-between border-t border-[#EFEAE5] pt-2">
+                <span className="text-[#8C7B75]">Số tiền thanh toán:</span>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-black text-[#C84B4B] text-[14px]">
+                  <span className="font-black text-[#C84B4B] text-[15px]">
                     {formatCurrency(totalAmount)}
                   </span>
                   <button
                     onClick={() => handleCopy(totalAmount.toString(), 'Số tiền')}
-                    className="p-1 hover:bg-white rounded-md text-[#5E4E49] transition-colors cursor-pointer"
+                    className="p-1.5 hover:bg-white rounded-lg text-[#5E4E49] border border-[#E8DFD5] transition-colors cursor-pointer shadow-xs"
                     title="Sao chép số tiền"
                   >
                     <Copy className="w-3.5 h-3.5" />

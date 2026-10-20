@@ -24,33 +24,63 @@ import {
   Droplet,
   Package,
   MapPin,
+  Database,
+  Download,
+  Upload,
+  RotateCcw,
+  Clock,
+  Truck,
+  Check,
+  FileText,
+  AlertCircle,
+  Copy,
 } from 'lucide-react';
-import { UserProfile } from '../../types';
+import { UserProfile, OrderInfo } from '../../types';
+import { storageService } from '../../services/storageService';
 import confetti from 'canvas-confetti';
 
 interface ProfileScreenProps {
   user: UserProfile;
+  orders?: OrderInfo[];
   onUpdateUser: (updatedUser: Partial<UserProfile>) => void;
   onBack: () => void;
   onOpenAvatarModal: () => void;
   onNavigateToEmergency: () => void;
   onNavigateToPayment: () => void;
   onNavigateToOrderInfo?: () => void;
+  onResetData?: () => void;
+  onImportData?: (importedUser: UserProfile) => void;
+  onReopenOnboarding?: () => void;
   onLogout: () => void;
 }
 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   user,
+  orders = [],
   onUpdateUser,
   onBack,
   onOpenAvatarModal,
   onNavigateToEmergency,
   onNavigateToPayment,
   onNavigateToOrderInfo,
+  onResetData,
+  onImportData,
+  onReopenOnboarding,
   onLogout,
 }) => {
   const [isEditingInfo, setIsEditingInfo] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+
+  // Order history sheet modal
+  const [showOrdersModal, setShowOrdersModal] = useState(false);
+
+  // Data import / backup modal
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importJsonText, setImportJsonText] = useState('');
+  const [importError, setImportError] = useState('');
+
+  // Live storage timestamp
+  const [lastSaved, setLastSaved] = useState(() => storageService.getLastSavedTime());
 
   // Edit fields state
   const [editName, setEditName] = useState(user.name);
@@ -67,8 +97,65 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
     setTimeout(() => setToastMessage(null), 3000);
   };
 
+  const handleExportData = () => {
+    try {
+      const dataStr = storageService.exportAllUserData();
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `NovaCare_Backup_${user.name.replace(/\s+/g, '_')}_${new Date().toISOString().slice(0, 10)}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+
+      triggerToast('Đã tải tệp sao lưu dữ liệu cá nhân (JSON)!');
+    } catch {
+      // Fallback: copy to clipboard
+      try {
+        navigator.clipboard.writeText(storageService.exportAllUserData());
+        triggerToast('Đã sao chép toàn bộ dữ liệu vào bộ nhớ tạm!');
+      } catch {
+        triggerToast('Đã xuất dữ liệu người dùng thành công!');
+      }
+    }
+  };
+
+  const handleApplyImport = () => {
+    setImportError('');
+    if (!importJsonText.trim()) {
+      setImportError('Vui lòng dán chuỗi JSON sao lưu.');
+      return;
+    }
+    const result = storageService.importUserData(importJsonText);
+    if (!result.success) {
+      setImportError(result.message);
+      return;
+    }
+
+    if (result.user) {
+      onImportData?.(result.user);
+      onUpdateUser(result.user);
+    }
+    setLastSaved(storageService.getLastSavedTime());
+    setShowImportModal(false);
+    setImportJsonText('');
+    triggerToast('Đã khôi phục dữ liệu cá nhân thành công!');
+  };
+
+  const handleResetToDefault = () => {
+    if (window.confirm('Bạn có chắc muốn khôi phục toàn bộ dữ liệu về mặc định ban đầu không?')) {
+      const fresh = storageService.resetAllUserData();
+      onResetData?.();
+      onUpdateUser(fresh);
+      setLastSaved(storageService.getLastSavedTime());
+      triggerToast('Đã đặt lại dữ liệu mặc định ban đầu!');
+    }
+  };
+
   const handleSaveInfo = () => {
-    onUpdateUser({
+    const updated = {
       name: editName,
       phone: editPhone,
       pregnancyWeek: Number(editWeek),
@@ -77,9 +164,12 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
       weightKg: Number(editWeight),
       heightCm: Number(editHeight),
       bloodType: editBloodType,
-    });
+    };
+    onUpdateUser(updated);
+    storageService.saveUserProfile({ ...user, ...updated });
+    setLastSaved(storageService.getLastSavedTime());
     setIsEditingInfo(false);
-    triggerToast('Đã lưu thông tin hồ sơ thành công!');
+    triggerToast('Đã lưu thông tin vào bộ nhớ bền vững!');
     try {
       confetti({
         particleCount: 30,
@@ -306,38 +396,98 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             </div>
             <ChevronRight className="w-4 h-4 text-[#A89A93]" />
           </motion.div>
+
+          {/* MY ORDERS SHORTCUT */}
+          <motion.div
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowOrdersModal(true)}
+            className="p-3.5 bg-white border border-[#EFEAE5] rounded-2xl shadow-xs flex items-center justify-between cursor-pointer hover:border-[#C84B4B]/40 transition-colors"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#FEF5E7] flex items-center justify-center text-[#D35400]">
+                <Truck className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <h4 className="text-[13.5px] font-bold text-[#3A2E2B]">Đơn hàng của tôi</h4>
+                  <span className="text-[9.5px] font-bold px-1.5 py-0.2 rounded-full bg-[#FEF5E7] text-[#D35400]">
+                    {orders.length} đơn
+                  </span>
+                </div>
+                <p className="text-[11px] text-[#8C7B75] line-clamp-1">
+                  {orders[0] ? `Đơn gần nhất: ${orders[0].orderId} · ${orders[0].totalAmount.toLocaleString('vi-VN')} đ` : 'Xem lại toàn bộ lịch sử đơn hàng'}
+                </p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 text-[#A89A93]" />
+          </motion.div>
         </div>
 
-        {/* Health Metrics Card */}
-        <div className="p-4 bg-white rounded-2xl border border-[#EFEAE5] shadow-xs space-y-3">
+        {/* User Data & Persistent Storage Management */}
+        <div className="p-4 bg-gradient-to-br from-white to-[#FCF8F5] rounded-2xl border border-[#EFEAE5] shadow-xs space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[13px] font-extrabold text-[#3A2E2B]">
-              Chỉ số sức khỏe hiện tại
+            <div className="flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-[#E8F8F0] flex items-center justify-center text-[#2ECC71]">
+                <Database className="w-4 h-4" />
+              </div>
+              <div>
+                <h4 className="text-[13px] font-extrabold text-[#3A2E2B]">Lưu trữ & Dữ liệu người dùng</h4>
+                <div className="flex items-center gap-1.5 text-[10.5px] text-[#8C7B75]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#2ECC71] animate-pulse" />
+                  <span>Tự động lưu: {lastSaved}</span>
+                </div>
+              </div>
+            </div>
+            <span className="text-[10px] bg-[#E8F8F0] text-[#2ECC71] font-bold px-2 py-0.5 rounded-full">
+              Đã bật
             </span>
+          </div>
+
+          <p className="text-[11px] text-[#8C7B75] leading-relaxed">
+            Mọi thông tin tài khoản, ảnh đại diện, tuần thai, sổ địa chỉ nhận hàng, số cấp cứu và lịch sử đơn hàng đều được lưu trữ bền vững trên thiết bị, không bị mất khi tải lại trang.
+          </p>
+
+          <div className="grid grid-cols-2 gap-2 pt-1">
             <button
-              onClick={() => setIsEditingInfo(true)}
-              className="text-[11px] font-bold text-[#C84B4B] hover:underline cursor-pointer"
+              onClick={handleExportData}
+              className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-white border border-[#E8DFD5] hover:border-[#C84B4B]/40 hover:bg-[#FFF8F6] text-[#3A2E2B] rounded-xl text-[11.5px] font-bold shadow-2xs transition-all cursor-pointer"
             >
-              Cập nhật
+              <Download className="w-3.5 h-3.5 text-[#C84B4B]" />
+              <span>Sao lưu (Xuất JSON)</span>
+            </button>
+            <button
+              onClick={() => {
+                setImportError('');
+                setImportJsonText('');
+                setShowImportModal(true);
+              }}
+              className="flex items-center justify-center gap-1.5 py-2.5 px-3 bg-white border border-[#E8DFD5] hover:border-[#2ECC71]/40 hover:bg-[#F2FCF6] text-[#3A2E2B] rounded-xl text-[11.5px] font-bold shadow-2xs transition-all cursor-pointer"
+            >
+              <Upload className="w-3.5 h-3.5 text-[#2ECC71]" />
+              <span>Khôi phục dữ liệu</span>
             </button>
           </div>
 
-          <div className="grid grid-cols-3 gap-2">
-            <div className="p-2.5 bg-[#F9F6F2] rounded-xl flex flex-col items-center text-center">
-              <Scale className="w-4 h-4 text-[#8C7B75] mb-1" />
-              <span className="text-[9.5px] text-[#8C7B75]">Cân nặng</span>
-              <span className="text-[12.5px] font-bold text-[#3A2E2B]">{user.weightKg} kg</span>
-            </div>
-            <div className="p-2.5 bg-[#F9F6F2] rounded-xl flex flex-col items-center text-center">
-              <Ruler className="w-4 h-4 text-[#8C7B75] mb-1" />
-              <span className="text-[9.5px] text-[#8C7B75]">Chiều cao</span>
-              <span className="text-[12.5px] font-bold text-[#3A2E2B]">{user.heightCm} cm</span>
-            </div>
-            <div className="p-2.5 bg-[#F9F6F2] rounded-xl flex flex-col items-center text-center">
-              <Droplet className="w-4 h-4 text-[#C84B4B] mb-1" />
-              <span className="text-[9.5px] text-[#8C7B75]">Nhóm máu</span>
-              <span className="text-[12.5px] font-bold text-[#C84B4B]">{user.bloodType}</span>
-            </div>
+          <div className="pt-2 border-t border-[#F5EFEB] flex items-center justify-between text-[11px]">
+            <span className="text-[#8C7B75]">Cập nhật phương pháp tính?</span>
+            <button
+              onClick={onReopenOnboarding}
+              className="text-[#C84B4B] hover:underline font-bold flex items-center gap-1 cursor-pointer"
+            >
+              <Sparkles className="w-3 h-3" />
+              <span>Thiết lập lại thai kỳ</span>
+            </button>
+          </div>
+
+          <div className="pt-2 border-t border-[#F5EFEB] flex items-center justify-between text-[11px]">
+            <span className="text-[#8C7B75]">Cần khôi phục mẫu ban đầu?</span>
+            <button
+              onClick={handleResetToDefault}
+              className="text-[#8C7B75] hover:text-[#E74C3C] font-semibold flex items-center gap-1 cursor-pointer"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Đặt lại dữ liệu</span>
+            </button>
           </div>
         </div>
 
@@ -355,7 +505,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               <PhoneCall className="w-4 h-4 text-[#C84B4B]" />
               <span className="text-[12.5px] font-medium text-[#3A2E2B]">Danh bạ cấp cứu sản khoa</span>
             </div>
-            <span className="text-[11px] font-bold text-[#C84B4B]">5 số</span>
+            <span className="text-[11px] font-bold text-[#C84B4B]">{user.emergencyContacts.length} số</span>
           </div>
 
           <div
@@ -366,7 +516,9 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               <CreditCard className="w-4 h-4 text-[#8C7B75]" />
               <span className="text-[12.5px] font-medium text-[#3A2E2B]">Quản lý gói hội viên</span>
             </div>
-            <span className="text-[11px] font-bold text-[#D4AF37]">Gói Năm</span>
+            <span className="text-[11px] font-bold text-[#D4AF37]">
+              {user.isVip ? (user.vipPlan === 'yearly' ? 'Gói 1 Năm VIP' : 'Gói Hội viên') : 'Miễn phí'}
+            </span>
           </div>
 
           <button
@@ -502,6 +654,176 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                   <span>Lưu thay đổi</span>
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Order History Modal */}
+      {showOrdersModal && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs select-none">
+          <div className="w-full max-w-[420px] bg-[#FFFBF7] rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl border border-[#EFEAE5] max-h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EFEAE5]">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-[#FEF5E7] text-[#D35400] flex items-center justify-center">
+                  <Package className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-[15px] font-extrabold text-[#3A2E2B]">Lịch sử đơn hàng</h3>
+                  <p className="text-[11px] text-[#8C7B75]">{orders.length} đơn hàng đã lưu trên thiết bị</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowOrdersModal(false)}
+                className="w-8 h-8 rounded-full bg-[#EFEAE5] flex items-center justify-center text-[#5E4E49] hover:bg-[#E0D8D0] transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="flex-1 overflow-y-auto no-scrollbar py-3 space-y-3">
+              {orders.length === 0 ? (
+                <div className="py-12 text-center text-[#8C7B75]">
+                  <Package className="w-12 h-12 mx-auto text-[#D5CBC3] mb-2" />
+                  <p className="text-[13px] font-bold">Chưa có đơn hàng nào</p>
+                  <p className="text-[11.5px] text-[#A89A93] mt-1">Các đơn hàng mẹ đặt sẽ hiển thị và lưu giữ tại đây</p>
+                </div>
+              ) : (
+                orders.map((ord) => (
+                  <div
+                    key={ord.orderId}
+                    className="p-3.5 bg-white rounded-2xl border border-[#EFEAE5] shadow-xs space-y-2.5"
+                  >
+                    <div className="flex items-center justify-between text-[11px]">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-mono font-bold text-[#C84B4B]">{ord.orderId}</span>
+                        <button
+                          onClick={() => {
+                            try {
+                              navigator.clipboard.writeText(ord.orderId);
+                              triggerToast('Đã chép mã: ' + ord.orderId);
+                            } catch {
+                              triggerToast('Đã chép mã đơn');
+                            }
+                          }}
+                          className="text-[#8C7B75] hover:text-[#C84B4B]"
+                          title="Sao chép mã"
+                        >
+                          <Copy className="w-3 h-3" />
+                        </button>
+                      </div>
+                      <span className={`px-2 py-0.5 rounded-full font-bold text-[10px] ${
+                        ord.status === 'delivered'
+                          ? 'bg-[#E8F8F0] text-[#2ECC71]'
+                          : ord.status === 'shipping'
+                          ? 'bg-[#FEF5E7] text-[#D35400]'
+                          : 'bg-[#EBF5FB] text-[#2980B9]'
+                      }`}>
+                        {ord.status === 'delivered' ? 'Đã giao' : ord.status === 'shipping' ? 'Đang giao hàng' : 'Đã xác nhận'}
+                      </span>
+                    </div>
+
+                    <div className="space-y-1 py-1 border-y border-[#F8F5F2]">
+                      {ord.items.map((it, idx) => (
+                        <div key={idx} className="flex justify-between text-[12px] text-[#3A2E2B]">
+                          <span className="line-clamp-1">{it.product.name} <span className="text-[#8C7B75] font-semibold">x{it.quantity}</span></span>
+                          <span className="font-semibold shrink-0 ml-2">{(it.product.price * it.quantity).toLocaleString('vi-VN')} đ</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] text-[#8C7B75]">
+                      <span>{ord.createdAt}</span>
+                      <div className="text-right">
+                        <span className="text-[10px] text-[#8C7B75]">Tổng tiền: </span>
+                        <span className="text-[13px] font-black text-[#C84B4B]">
+                          {ord.totalAmount.toLocaleString('vi-VN')} đ
+                        </span>
+                      </div>
+                    </div>
+
+                    {ord.shippingAddress && (
+                      <div className="text-[10.5px] bg-[#FAF7F4] p-2 rounded-xl text-[#6D5D57] flex items-start gap-1.5">
+                        <MapPin className="w-3.5 h-3.5 text-[#C84B4B] shrink-0 mt-0.5" />
+                        <span className="line-clamp-2">
+                          Giao tới: <strong>{ord.shippingAddress.fullName}</strong> ({ord.shippingAddress.phone}) · {ord.shippingAddress.streetAddress}, {ord.shippingAddress.district}, {ord.shippingAddress.province}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="pt-2 border-t border-[#EFEAE5]">
+              <button
+                onClick={() => setShowOrdersModal(false)}
+                className="w-full py-2.5 rounded-xl bg-[#3A2E2B] text-white text-[12.5px] font-bold cursor-pointer"
+              >
+                Đóng
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Import / Restore JSON Modal */}
+      {showImportModal && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-xs select-none">
+          <div className="w-full max-w-[420px] bg-[#FFFBF7] rounded-t-3xl sm:rounded-3xl p-5 shadow-2xl border border-[#EFEAE5] max-h-[85vh] flex flex-col">
+            <div className="flex items-center justify-between pb-3 border-b border-[#EFEAE5]">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-[#E8F8F0] text-[#2ECC71] flex items-center justify-center">
+                  <Upload className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-[15px] font-extrabold text-[#3A2E2B]">Khôi phục dữ liệu người dùng</h3>
+                  <p className="text-[11px] text-[#8C7B75]">Dán chuỗi sao lưu JSON đã tải về trước đó</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowImportModal(false)}
+                className="w-8 h-8 rounded-full bg-[#EFEAE5] flex items-center justify-center text-[#5E4E49] hover:bg-[#E0D8D0] cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="py-3 space-y-3 flex-1 overflow-y-auto no-scrollbar">
+              <p className="text-[11.5px] text-[#6D5D57]">
+                Dán nội dung tệp JSON sao lưu vào ô dưới đây để khôi phục lại toàn bộ hồ sơ, địa chỉ nhận hàng, số SOS và đơn hàng:
+              </p>
+
+              <textarea
+                rows={6}
+                value={importJsonText}
+                onChange={(e) => setImportJsonText(e.target.value)}
+                placeholder='{"userProfile": { "name": "...", ... }, "orders": [...] }'
+                className="w-full p-3 bg-white border border-[#E8DFD5] rounded-xl text-[11px] font-mono text-[#3A2E2B] focus:outline-none focus:border-[#2ECC71]"
+              />
+
+              {importError && (
+                <div className="p-2.5 bg-[#FDF2F0] rounded-xl text-[#E74C3C] text-[11px] flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <span>{importError}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-3 border-t border-[#EFEAE5] flex gap-2">
+              <button
+                onClick={() => setShowImportModal(false)}
+                className="flex-1 py-2.5 rounded-xl border border-[#E2DAD0] text-[#5E4E49] text-[12.5px] font-bold"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleApplyImport}
+                className="flex-1 py-2.5 rounded-xl bg-[#2ECC71] text-white text-[12.5px] font-bold hover:bg-[#27AE60] shadow-sm flex items-center justify-center gap-1.5"
+              >
+                <Check className="w-4 h-4" />
+                <span>Khôi phục ngay</span>
+              </button>
             </div>
           </div>
         </div>

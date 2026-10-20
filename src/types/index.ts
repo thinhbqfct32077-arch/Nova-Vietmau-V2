@@ -51,13 +51,42 @@ export interface OrderInfo {
   estimatedDeliveryDate: string;
 }
 
+export type PregnancyStatus = 'pregnant' | 'planning' | 'learning';
+export type PregnancyCalculationMethod = 'lmp' | 'edd' | 'ultrasound' | 'manual';
+
+export interface PregnancyCalculationResult {
+  weeks: number;
+  days: number;
+  totalDays: number;
+  dueDate: string;
+  daysRemaining: number;
+  progressPercent: number;
+  trimester: 1 | 2 | 3;
+  fruitComparison: {
+    fruitName: string;
+    fruitEmoji: string;
+    sizeDescription: string;
+    weightDescription: string;
+    lengthDescription: string;
+  };
+  isValid: boolean;
+  warningMessage?: string;
+}
+
 export interface UserProfile {
   id: string;
   name: string;
   email: string;
   phone: string;
   avatar: string;
+  pregnancyStatus?: PregnancyStatus;
+  calculationMethod?: PregnancyCalculationMethod;
+  lmpDate?: string;
+  ultrasoundDate?: string;
+  ultrasoundWeeks?: number;
+  ultrasoundDays?: number;
   pregnancyWeek: number;
+  pregnancyDay?: number;
   dueDate: string;
   babyNickname?: string;
   babyGender?: 'boy' | 'girl' | 'surprise';
@@ -70,8 +99,12 @@ export interface UserProfile {
   streakDays: number;
   completedExercises: number;
   novaPoints: number;
+  hasCompletedOnboarding?: boolean;
+  drinkReminderTime?: string;
+  timezone?: string;
   emergencyContacts: EmergencyContact[];
   shippingAddresses?: ShippingAddress[];
+  orders?: OrderInfo[];
 }
 
 export interface PaymentItem {
@@ -112,15 +145,61 @@ export interface NovaVideoItem {
   comments: VideoComment[];
 }
 
+export type ActivityCategory =
+  | 'water'
+  | 'yoga'
+  | 'music'
+  | 'checkup'
+  | 'walk'
+  | 'pill'
+  | 'custom';
+
 export interface ActivityItem {
   id: string;
   title: string;
   subtitle: string;
-  category: 'water' | 'yoga' | 'music' | 'checkup';
+  category: ActivityCategory;
   completed: boolean;
   timeTarget: string;
   iconBg: string;
   iconColor: string;
+  isFavorite?: boolean;
+  notes?: string;
+  reminderTime?: string;
+  reminderEnabled?: boolean;
+  lastCompletedAt?: string;
+}
+
+export interface WaterLogEntry {
+  id: string;
+  timestamp: string; // e.g. "09:30"
+  amountMl: number;
+  note?: string;
+}
+
+export interface DailyWaterRecord {
+  date: string; // YYYY-MM-DD
+  targetMl: number;
+  currentMl: number;
+  logs: WaterLogEntry[];
+  isCompleted: boolean;
+}
+
+export type ReminderFrequency = 'once' | 'daily' | 'custom_days';
+
+export interface HealthReminder {
+  id: string;
+  title: string;
+  category: ActivityCategory;
+  activityId?: string;
+  time: string; // "HH:mm"
+  date?: string; // "YYYY-MM-DD" for 'once'
+  frequency: ReminderFrequency;
+  daysOfWeek?: number[]; // [1, 2, 3, 4, 5, 6, 0] (0 = Chủ nhật, 1 = Thứ 2)
+  isEnabled: boolean;
+  notes?: string;
+  createdAt: string;
+  lastTriggeredAt?: string;
 }
 
 export interface DayProgress {
@@ -128,6 +207,9 @@ export interface DayProgress {
   shortDay: string;
   percent: number;
   isPeak?: boolean;
+  dateStr?: string;
+  completedCount?: number;
+  totalCount?: number;
 }
 
 export interface ProductItem {
@@ -167,4 +249,12 @@ export interface CommunityPost {
   comments: number;
   timeAgo: string;
   isLiked?: boolean;
+}
+
+export interface UserAIContext {
+  name: string;
+  pregnancyWeek: number;
+  babyNickname?: string;
+  babyGender?: 'boy' | 'girl' | 'surprise';
+  dueDate?: string;
 }
