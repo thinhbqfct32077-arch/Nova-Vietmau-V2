@@ -476,7 +476,7 @@ export default function App() {
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           onClick={() => navigateTo('chat')}
-          className="absolute bottom-16 right-4 z-40 bg-gradient-to-tr from-[#B53E3E] via-[#C84B4B] to-[#E0564A] text-white px-3.5 py-2 rounded-full shadow-lg shadow-[#C84B4B]/35 flex items-center gap-2 border border-white/30 cursor-pointer active:scale-95 group backdrop-blur-xs"
+          className="absolute bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] right-4 z-40 bg-gradient-to-tr from-[#B53E3E] via-[#C84B4B] to-[#E0564A] text-white px-3.5 py-2 rounded-full shadow-lg shadow-[#C84B4B]/35 flex items-center gap-2 border border-white/30 cursor-pointer active:scale-95 group backdrop-blur-xs"
           title="Trò chuyện với Trợ lý Nova AI"
         >
           <div className="relative">

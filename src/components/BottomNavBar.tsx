@@ -53,7 +53,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   return (
     <nav
       aria-label="Điều hướng chính"
-      className={`shrink-0 w-full px-1.5 py-1 z-40 select-none transition-colors duration-200 relative ${
+      className={`shrink-0 w-full px-1.5 pt-1.5 pb-[calc(0.375rem+env(safe-area-inset-bottom,0px))] z-40 select-none transition-colors duration-200 relative ${
         isVideoScreen
           ? 'bg-black/90 backdrop-blur-xl border-t border-white/10 shadow-2xl text-white'
           : 'bg-white/95 backdrop-blur-xl border-t border-[#EFEAE5] ios-nav-shadow text-[#3A2E2B]'

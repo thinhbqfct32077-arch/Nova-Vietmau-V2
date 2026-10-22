@@ -503,7 +503,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
                       value={lmpDate}
                       max={toISODateString(new Date())}
                       onChange={(e) => setLmpDate(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[14px] font-medium focus:outline-hidden focus:ring-2 focus:ring-[#C84B4B]/30"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[16px] sm:text-[14px] font-medium focus:outline-hidden focus:ring-2 focus:ring-[#C84B4B]/30"
                     />
                   </div>
                   <p className="text-[11px] text-[#8C7B75] leading-relaxed">
@@ -515,7 +515,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
 
               {/* Method 2: EDD (Ngày dự sinh do bác sĩ xác định) */}
               {calcMethod === 'edd' && (
-                <div className="p-3.5 bg-white rounded-2xl border border-[#E8E1DC] shadow-xs flex flex-col gap-2.5">
+                <div className="p-3.5 bg-white rounded-2xl border border-[#E8EDC] shadow-xs flex flex-col gap-2.5">
                   <label htmlFor={eddInputId} className="text-[13px] font-semibold text-[#3A2E2B]">
                     Ngày dự sinh do bác sĩ xác định:
                   </label>
@@ -525,7 +525,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
                       type="date"
                       value={eddDate}
                       onChange={(e) => setEddDate(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[14px] font-medium focus:outline-hidden focus:ring-2 focus:ring-[#C84B4B]/30"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[16px] sm:text-[14px] font-medium focus:outline-hidden focus:ring-2 focus:ring-[#C84B4B]/30"
                     />
                   </div>
                   <p className="text-[11px] text-[#8C7B75] leading-relaxed">
@@ -548,7 +548,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
                       value={scanDate}
                       max={toISODateString(new Date())}
                       onChange={(e) => setScanDate(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[13px] font-medium"
+                      className="w-full px-3 py-2 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[16px] sm:text-[14px] font-medium"
                     />
                   </div>
 
@@ -564,7 +564,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
                         max={42}
                         value={scanWeeks}
                         onChange={(e) => setScanWeeks(Number(e.target.value))}
-                        className="w-full px-3 py-2 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[13px] font-medium"
+                        className="w-full px-3 py-2 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[16px] sm:text-[14px] font-medium"
                       />
                     </div>
                     <div>
@@ -578,7 +578,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
                         max={6}
                         value={scanDays}
                         onChange={(e) => setScanDays(Number(e.target.value))}
-                        className="w-full px-3 py-2 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[13px] font-medium"
+                        className="w-full px-3 py-2 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[16px] sm:text-[14px] font-medium"
                       />
                     </div>
                   </div>
@@ -655,7 +655,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
                     value={momName}
                     onChange={(e) => setMomName(e.target.value)}
                     placeholder="Ví dụ: Khánh Băng, Mẹ Thảo..."
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[14px] font-medium focus:ring-2 focus:ring-[#C84B4B]/30"
+                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[16px] sm:text-[14px] font-medium focus:ring-2 focus:ring-[#C84B4B]/30"
                   />
                 </div>
 
@@ -671,7 +671,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
                       value={babyNickname}
                       onChange={(e) => setBabyNickname(e.target.value)}
                       placeholder="Ví dụ: Bé Bơ, Bé Dâu, Cún Yêu..."
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[14px] font-medium focus:ring-2 focus:ring-[#C84B4B]/30"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[16px] sm:text-[14px] font-medium focus:ring-2 focus:ring-[#C84B4B]/30"
                     />
                   </div>
                 )}
