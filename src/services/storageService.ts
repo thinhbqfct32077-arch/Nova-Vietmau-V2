@@ -9,6 +9,13 @@ import {
   DailyWaterRecord,
   HealthReminder,
   DayProgress,
+  HealthDiaryEntry,
+  PrenatalAppointment,
+  DoctorQuestion,
+  SymptomLog,
+  WeightLog,
+  AppNotification,
+  MoodType,
 } from '../types';
 import {
   INITIAL_USER_PROFILE,
@@ -30,6 +37,10 @@ const STORAGE_KEYS = {
   WATER_RECORDS: 'nova_mom_water_records_v3',
   HEALTH_REMINDERS: 'nova_mom_health_reminders_v3',
   DAILY_ACTIVITIES: 'nova_mom_daily_activities_v3',
+  HEALTH_DIARY: 'nova_mom_health_diary_v3',
+  PRENATAL_APPOINTMENTS: 'nova_mom_prenatal_appointments_v3',
+  NOTIFICATIONS: 'nova_mom_notifications_v3',
+  WEIGHT_LOGS: 'nova_mom_weight_logs_v3',
 };
 
 // Safe JSON parser helper
@@ -623,6 +634,466 @@ export const storageService = {
   },
 
   // -------------------------------------------------------------
+  // HEALTH DIARY (Nhật ký triệu chứng, tâm trạng & cân nặng)
+  // -------------------------------------------------------------
+  loadHealthDiary(): Record<string, HealthDiaryEntry> {
+    const raw = safeParse<Record<string, HealthDiaryEntry>>(STORAGE_KEYS.HEALTH_DIARY, {});
+    // Seed today entry if missing
+    const today = getTodayDateString();
+    if (!raw[today]) {
+      raw[today] = {
+        id: `diary-${today}`,
+        date: today,
+        mood: 'calm',
+        moodNote: 'Mẹ cảm thấy dễ chịu, bé cử động nhẹ nhàng sau bữa ăn.',
+        symptoms: [
+          { id: 'sym-1', name: 'Đau mỏi thắt lưng', severity: 'mild', notes: 'Mỏi khi ngồi làm việc lâu' },
+          { id: 'sym-2', name: 'Ợ nóng nhẹ sau ăn', severity: 'mild', notes: 'Uống nước ấm chia nhỏ' },
+        ],
+        weightKg: 54.5,
+        doctorAdviceNotes: 'Duy trì uống đủ 2 lít nước ấm, đi bộ nhẹ nhàng 20 phút mỗi ngày.',
+        fetalKickCount: 12,
+        updatedAt: new Date().toISOString(),
+      };
+      safeSet(STORAGE_KEYS.HEALTH_DIARY, raw);
+    }
+    return raw;
+  },
+
+  getHealthDiaryEntry(dateStr = getTodayDateString()): HealthDiaryEntry {
+    const all = this.loadHealthDiary();
+    if (all[dateStr]) return all[dateStr];
+    const newEntry: HealthDiaryEntry = {
+      id: `diary-${dateStr}`,
+      date: dateStr,
+      symptoms: [],
+      updatedAt: new Date().toISOString(),
+    };
+    all[dateStr] = newEntry;
+    safeSet(STORAGE_KEYS.HEALTH_DIARY, all);
+    return newEntry;
+  },
+
+  saveHealthDiaryEntry(entry: HealthDiaryEntry): HealthDiaryEntry {
+    const all = this.loadHealthDiary();
+    all[entry.date] = { ...entry, updatedAt: new Date().toISOString() };
+    safeSet(STORAGE_KEYS.HEALTH_DIARY, all);
+    return entry;
+  },
+
+  addSymptomToDiary(
+    dateStr: string,
+    symptom: Omit<SymptomLog, 'id'>
+  ): HealthDiaryEntry {
+    const entry = this.getHealthDiaryEntry(dateStr);
+    const newSymptom: SymptomLog = {
+      ...symptom,
+      id: `sym-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+    };
+    const updated: HealthDiaryEntry = {
+      ...entry,
+      symptoms: [newSymptom, ...entry.symptoms],
+      updatedAt: new Date().toISOString(),
+    };
+    return this.saveHealthDiaryEntry(updated);
+  },
+
+  removeSymptomFromDiary(dateStr: string, symptomId: string): HealthDiaryEntry {
+    const entry = this.getHealthDiaryEntry(dateStr);
+    const updated: HealthDiaryEntry = {
+      ...entry,
+      symptoms: entry.symptoms.filter((s) => s.id !== symptomId),
+      updatedAt: new Date().toISOString(),
+    };
+    return this.saveHealthDiaryEntry(updated);
+  },
+
+  updateMoodInDiary(
+    dateStr: string,
+    mood: MoodType,
+    moodNote?: string
+  ): HealthDiaryEntry {
+    const entry = this.getHealthDiaryEntry(dateStr);
+    const updated: HealthDiaryEntry = {
+      ...entry,
+      mood,
+      moodNote: moodNote !== undefined ? moodNote : entry.moodNote,
+      updatedAt: new Date().toISOString(),
+    };
+    return this.saveHealthDiaryEntry(updated);
+  },
+
+  updateWeightInDiary(dateStr: string, weightKg: number): HealthDiaryEntry {
+    const entry = this.getHealthDiaryEntry(dateStr);
+    const updated: HealthDiaryEntry = {
+      ...entry,
+      weightKg,
+      updatedAt: new Date().toISOString(),
+    };
+    this.saveHealthDiaryEntry(updated);
+
+    // Also sync with global user weight logs
+    this.addWeightLog({
+      date: dateStr,
+      weightKg,
+      notes: `Ghi nhận từ nhật ký ngày ${dateStr}`,
+    });
+
+    return updated;
+  },
+
+  loadWeightLogs(): WeightLog[] {
+    const defaultLogs: WeightLog[] = [
+      { id: 'w-1', date: '2026-08-10', weightKg: 50.0, week: 8, notes: 'Khám thai đầu quý 1' },
+      { id: 'w-2', date: '2026-09-08', weightKg: 51.5, week: 12, notes: 'Mốc đo độ mờ da gáy' },
+      { id: 'w-3', date: '2026-10-06', weightKg: 53.0, week: 16, notes: 'Mốc khám tam cá nguyệt 2' },
+      { id: 'w-4', date: '2026-10-20', weightKg: 54.5, week: 20, notes: 'Chuẩn bị siêu âm 4D' },
+    ];
+    return safeParse<WeightLog[]>(STORAGE_KEYS.WEIGHT_LOGS, defaultLogs);
+  },
+
+  saveWeightLogs(logs: WeightLog[]): void {
+    safeSet(STORAGE_KEYS.WEIGHT_LOGS, logs);
+  },
+
+  addWeightLog(log: Omit<WeightLog, 'id'>): WeightLog {
+    const current = this.loadWeightLogs();
+    const newLog: WeightLog = {
+      ...log,
+      id: `w-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+    };
+    const updated = [newLog, ...current];
+    this.saveWeightLogs(updated);
+
+    // Sync latest weight to UserProfile
+    const profile = this.loadUserProfile();
+    this.saveUserProfile({ ...profile, weightKg: log.weightKg });
+
+    return newLog;
+  },
+
+  deleteWeightLog(id: string): WeightLog[] {
+    const current = this.loadWeightLogs();
+    const updated = current.filter((w) => w.id !== id);
+    this.saveWeightLogs(updated);
+    return updated;
+  },
+
+  // -------------------------------------------------------------
+  // PRENATAL APPOINTMENTS (Lịch khám thai & Câu hỏi bác sĩ)
+  // -------------------------------------------------------------
+  loadPrenatalAppointments(): PrenatalAppointment[] {
+    const defaultAppointments: PrenatalAppointment[] = [
+      {
+        id: 'apt-1',
+        title: 'Mốc 11-13w6d: Siêu âm đo độ mờ da gáy & Double Test',
+        weekRecommended: 12,
+        date: '2026-10-25',
+        time: '09:00',
+        hospitalOrClinic: 'Bệnh viện Phụ Sản Từ Dũ (Khu Dịch Vụ)',
+        doctorName: 'BS. CKII Nguyễn Thị Kim Ánh',
+        status: 'upcoming',
+        notes: 'Uống nước vừa phải trước khi siêu âm. Nhịn ăn sáng nếu có chỉ định làm xét nghiệm sinh hóa máu song hành.',
+        reminderEnabled: true,
+        createdAt: '2026-10-15T08:00:00.000Z',
+        questions: [
+          { id: 'q-1', question: 'Chỉ số đo độ mờ da gáy (NT) của bé bao nhiêu là an toàn?', isAnswered: true, answerNotes: 'Dưới 2.5mm là trong giới hạn bình thường an toàn.' },
+          { id: 'q-2', question: 'Mẹ bị ốm nghén nôn nao nhiều có cần uống men vi sinh hoặc thuốc chống nôn không?', isAnswered: false },
+          { id: 'q-3', question: 'Vị trí nhau bám hiện tại của bé ở mặt trước hay mặt sau tử cung?', isAnswered: false },
+        ],
+      },
+      {
+        id: 'apt-2',
+        title: 'Mốc 16-18w: Xét nghiệm Triple Test & Theo dõi phát triển',
+        weekRecommended: 16,
+        date: '2026-11-22',
+        time: '14:30',
+        hospitalOrClinic: 'Phòng khám Sản Phụ khoa Quốc tế',
+        doctorName: 'ThS. BS Trần Minh Tâm',
+        status: 'upcoming',
+        notes: 'Kiểm tra cân nặng mẹ, huyết áp, bề cao tử cung và nghe nhịp tim thai bằng máy Doppler cầm tay.',
+        reminderEnabled: true,
+        createdAt: '2026-10-15T08:00:00.000Z',
+        questions: [
+          { id: 'q-4', question: 'Mẹ bắt đầu cảm nhận thấy thai máy như thế nào là đúng chuẩn?', isAnswered: false },
+          { id: 'q-5', question: 'Có cần bổ sung thêm canxi hữu cơ và DHA từ tuần thai này chưa?', isAnswered: false },
+        ],
+      },
+      {
+        id: 'apt-3',
+        title: 'Mốc 20-22w: Siêu âm 4D hình thái học toàn diện cơ quan',
+        weekRecommended: 22,
+        date: '2026-12-28',
+        time: '10:00',
+        hospitalOrClinic: 'Bệnh viện Phụ Sản Trung Ương',
+        doctorName: 'PGS. TS Lê Hoài Nam',
+        status: 'upcoming',
+        notes: 'Mốc quan trọng nhất để khảo sát toàn diện hình thái cơ quan: não bộ, 4 buồng tim, cột sống, thành bụng, bàn tay bàn chân, sứt môi chẻ vòm.',
+        reminderEnabled: true,
+        createdAt: '2026-10-15T08:00:00.000Z',
+        questions: [
+          { id: 'q-6', question: 'Các buồng tim và cấu trúc van tim của bé có phát triển bình thường không?', isAnswered: false },
+          { id: 'q-7', question: 'Chiều dài xương đùi và chu vi đầu bé tương đương chuẩn bao nhiêu?', isAnswered: false },
+        ],
+      },
+      {
+        id: 'apt-4',
+        title: 'Mốc 24-28w: Nghiệm pháp đường (OGTT) & Tiêm uốn ván mũi 1',
+        weekRecommended: 26,
+        date: '2027-01-25',
+        time: '07:30',
+        hospitalOrClinic: 'Khoa Sản Bệnh viện Đa khoa',
+        doctorName: 'BS. CKI Vũ Lan Phương',
+        status: 'upcoming',
+        notes: 'Bắt buộc nhịn ăn từ 22h tối hôm trước. Chuẩn bị lấy 3 mẫu máu: lúc đói, sau uống nước đường 1h và 2h.',
+        reminderEnabled: true,
+        createdAt: '2026-10-15T08:00:00.000Z',
+        questions: [
+          { id: 'q-8', question: 'Chỉ số đường huyết của mẹ có nguy cơ tiểu đường thai kỳ không?', isAnswered: false },
+          { id: 'q-9', question: 'Sau tiêm uốn ván mũi 1 có bị sốt hoặc sưng đau bắp tay nhiều không?', isAnswered: false },
+        ],
+      },
+    ];
+    return safeParse<PrenatalAppointment[]>(STORAGE_KEYS.PRENATAL_APPOINTMENTS, defaultAppointments);
+  },
+
+  savePrenatalAppointments(appointments: PrenatalAppointment[]): void {
+    safeSet(STORAGE_KEYS.PRENATAL_APPOINTMENTS, appointments);
+  },
+
+  addPrenatalAppointment(
+    apt: Omit<PrenatalAppointment, 'id' | 'createdAt'>
+  ): PrenatalAppointment {
+    const current = this.loadPrenatalAppointments();
+    const newApt: PrenatalAppointment = {
+      ...apt,
+      id: `apt-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      createdAt: new Date().toISOString(),
+    };
+    const updated = [newApt, ...current];
+    this.savePrenatalAppointments(updated);
+
+    // Auto-create notification for new appointment
+    this.addNotification({
+      title: `Đã tạo lịch khám: ${newApt.title}`,
+      description: `Hẹn lúc ${newApt.time} ngày ${newApt.date} tại ${newApt.hospitalOrClinic}`,
+      category: 'appointment',
+      isRead: false,
+      actionScreen: 'care',
+    });
+
+    return newApt;
+  },
+
+  updatePrenatalAppointment(
+    id: string,
+    partial: Partial<PrenatalAppointment>
+  ): PrenatalAppointment[] {
+    const current = this.loadPrenatalAppointments();
+    const updated = current.map((a) => (a.id === id ? { ...a, ...partial } : a));
+    this.savePrenatalAppointments(updated);
+    return updated;
+  },
+
+  deletePrenatalAppointment(id: string): PrenatalAppointment[] {
+    const current = this.loadPrenatalAppointments();
+    const updated = current.filter((a) => a.id !== id);
+    this.savePrenatalAppointments(updated);
+    return updated;
+  },
+
+  toggleQuestionAnswered(
+    appointmentId: string,
+    questionId: string,
+    answerNotes?: string
+  ): PrenatalAppointment[] {
+    const current = this.loadPrenatalAppointments();
+    const updated = current.map((a) => {
+      if (a.id === appointmentId) {
+        return {
+          ...a,
+          questions: a.questions.map((q) =>
+            q.id === questionId
+              ? {
+                  ...q,
+                  isAnswered: !q.isAnswered,
+                  answerNotes: answerNotes !== undefined ? answerNotes : q.answerNotes,
+                }
+              : q
+          ),
+        };
+      }
+      return a;
+    });
+    this.savePrenatalAppointments(updated);
+    return updated;
+  },
+
+  addQuestionToAppointment(
+    appointmentId: string,
+    questionText: string
+  ): PrenatalAppointment[] {
+    const current = this.loadPrenatalAppointments();
+    const updated = current.map((a) => {
+      if (a.id === appointmentId) {
+        const newQ: DoctorQuestion = {
+          id: `q-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+          question: questionText,
+          isAnswered: false,
+        };
+        return {
+          ...a,
+          questions: [...a.questions, newQ],
+        };
+      }
+      return a;
+    });
+    this.savePrenatalAppointments(updated);
+    return updated;
+  },
+
+  // -------------------------------------------------------------
+  // CENTRALIZED NOTIFICATIONS (Trung tâm thông báo toàn diện)
+  // -------------------------------------------------------------
+  loadNotifications(): AppNotification[] {
+    const defaultNotifs: AppNotification[] = [
+      {
+        id: 'notif-1',
+        title: 'Lịch khám thai mốc 12 tuần sắp tới',
+        description: 'Siêu âm đo độ mờ da gáy tại BV Phụ Sản. Nhớ kiểm tra checklist câu hỏi cho bác sĩ nhé!',
+        category: 'appointment',
+        timestamp: 'Hôm nay, 08:30',
+        isRead: false,
+        actionScreen: 'care',
+      },
+      {
+        id: 'notif-2',
+        title: 'Mục tiêu nước ấm buổi sáng',
+        description: 'Bổ sung ngay 250ml nước ấm giúp thanh lọc cơ thể và điều hòa lượng dịch ối cho bé.',
+        category: 'water',
+        timestamp: 'Hôm nay, 07:30',
+        isRead: false,
+        actionScreen: 'care',
+      },
+      {
+        id: 'notif-3',
+        title: 'Cột mốc thai kỳ tuần mới',
+        description: 'Bé con tuần này đã có thể cử động các ngón tay và mút ngón tay cái rồi mẹ nhé!',
+        category: 'milestone',
+        timestamp: 'Hôm qua',
+        isRead: true,
+        actionScreen: 'home',
+      },
+      {
+        id: 'notif-4',
+        title: 'Lưu ý an toàn: Dấu hiệu cần gọi cấp cứu',
+        description: 'Mẹ hãy lưu lại số 115 và danh sách các bệnh viện sản khoa gần nhất trong mục Khẩn cấp.',
+        category: 'health',
+        timestamp: '2 ngày trước',
+        isRead: true,
+        actionScreen: 'emergency',
+      },
+    ];
+    return safeParse<AppNotification[]>(STORAGE_KEYS.NOTIFICATIONS, defaultNotifs);
+  },
+
+  saveNotifications(notifs: AppNotification[]): void {
+    safeSet(STORAGE_KEYS.NOTIFICATIONS, notifs);
+  },
+
+  addNotification(notif: Omit<AppNotification, 'id' | 'timestamp'>): AppNotification {
+    const current = this.loadNotifications();
+    const now = new Date();
+    const timeStr = `${now.getHours().toString().padStart(2, '0')}:${now
+      .getMinutes()
+      .toString()
+      .padStart(2, '0')} - Hôm nay`;
+
+    const newNotif: AppNotification = {
+      ...notif,
+      id: `notif-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
+      timestamp: timeStr,
+    };
+    const updated = [newNotif, ...current];
+    this.saveNotifications(updated);
+    return newNotif;
+  },
+
+  markNotificationAsRead(id: string): AppNotification[] {
+    const current = this.loadNotifications();
+    const updated = current.map((n) => (n.id === id ? { ...n, isRead: true } : n));
+    this.saveNotifications(updated);
+    return updated;
+  },
+
+  markAllNotificationsAsRead(): AppNotification[] {
+    const current = this.loadNotifications();
+    const updated = current.map((n) => ({ ...n, isRead: true }));
+    this.saveNotifications(updated);
+    return updated;
+  },
+
+  deleteNotification(id: string): AppNotification[] {
+    const current = this.loadNotifications();
+    const updated = current.filter((n) => n.id !== id);
+    this.saveNotifications(updated);
+    return updated;
+  },
+
+  clearAllNotifications(): AppNotification[] {
+    const updated: AppNotification[] = [];
+    this.saveNotifications(updated);
+    return updated;
+  },
+
+  // -------------------------------------------------------------
+  // GUEST DATA MIGRATION & ACCOUNT DELETION
+  // -------------------------------------------------------------
+  migrateGuestDataToAccount(accountProfile: UserProfile): UserProfile {
+    const currentGuestProfile = this.loadUserProfile();
+    // Preserve local gestational info, water logs, reminders, diary, appointments
+    const mergedProfile: UserProfile = {
+      ...currentGuestProfile,
+      ...accountProfile,
+      // If the guest configured a gestational week or LMP, keep it unless account has explicit one
+      pregnancyWeek: accountProfile.pregnancyWeek || currentGuestProfile.pregnancyWeek,
+      babyNickname: accountProfile.babyNickname || currentGuestProfile.babyNickname,
+      dueDate: accountProfile.dueDate || currentGuestProfile.dueDate,
+      hasCompletedOnboarding: true,
+    };
+
+    this.saveUserProfile(mergedProfile);
+    this.addNotification({
+      title: 'Đồng bộ tài khoản thành công',
+      description: `Chào mừng ${mergedProfile.name}! Toàn bộ dữ liệu theo dõi thai kỳ của mẹ đã được gắn kết an toàn.`,
+      category: 'system',
+      isRead: false,
+    });
+
+    return mergedProfile;
+  },
+
+  deleteUserAccountAndData(): void {
+    // Thoroughly remove all user data keys
+    localStorage.removeItem(STORAGE_KEYS.USER_PROFILE);
+    localStorage.removeItem(STORAGE_KEYS.ORDERS);
+    localStorage.removeItem(STORAGE_KEYS.CART);
+    localStorage.removeItem(STORAGE_KEYS.CARE_ACTIVITIES);
+    localStorage.removeItem(STORAGE_KEYS.CHAT_HISTORY);
+    localStorage.removeItem(STORAGE_KEYS.WATER_RECORDS);
+    localStorage.removeItem(STORAGE_KEYS.HEALTH_REMINDERS);
+    localStorage.removeItem(STORAGE_KEYS.DAILY_ACTIVITIES);
+    localStorage.removeItem(STORAGE_KEYS.HEALTH_DIARY);
+    localStorage.removeItem(STORAGE_KEYS.PRENATAL_APPOINTMENTS);
+    localStorage.removeItem(STORAGE_KEYS.NOTIFICATIONS);
+    localStorage.removeItem(STORAGE_KEYS.WEIGHT_LOGS);
+    localStorage.removeItem('nova_mom_onboarded_v3');
+    localStorage.setItem(STORAGE_KEYS.LAST_SAVED, new Date().toISOString());
+
+    window.dispatchEvent(new CustomEvent('nova_storage_update', { detail: { action: 'deleted' } }));
+  },
+
+  // -------------------------------------------------------------
   // SYSTEM & BACKUP
   // -------------------------------------------------------------
   getLastSavedTime(): string {
@@ -641,7 +1112,7 @@ export const storageService = {
 
   exportAllUserData(): string {
     const bundle = {
-      version: '3.0.0',
+      version: '3.1.0',
       exportedAt: new Date().toISOString(),
       userProfile: this.loadUserProfile(),
       orders: this.loadOrders(),
@@ -650,6 +1121,10 @@ export const storageService = {
       waterRecords: this.loadWaterRecords(),
       healthReminders: this.loadHealthReminders(),
       dailyActivities: safeParse(STORAGE_KEYS.DAILY_ACTIVITIES, {}),
+      healthDiary: this.loadHealthDiary(),
+      prenatalAppointments: this.loadPrenatalAppointments(),
+      weightLogs: this.loadWeightLogs(),
+      notifications: this.loadNotifications(),
       chatHistory: this.loadChatMessages(),
     };
     return JSON.stringify(bundle, null, 2);
@@ -671,6 +1146,10 @@ export const storageService = {
       if (bundle.waterRecords) safeSet(STORAGE_KEYS.WATER_RECORDS, bundle.waterRecords);
       if (Array.isArray(bundle.healthReminders)) safeSet(STORAGE_KEYS.HEALTH_REMINDERS, bundle.healthReminders);
       if (bundle.dailyActivities) safeSet(STORAGE_KEYS.DAILY_ACTIVITIES, bundle.dailyActivities);
+      if (bundle.healthDiary) safeSet(STORAGE_KEYS.HEALTH_DIARY, bundle.healthDiary);
+      if (Array.isArray(bundle.prenatalAppointments)) safeSet(STORAGE_KEYS.PRENATAL_APPOINTMENTS, bundle.prenatalAppointments);
+      if (Array.isArray(bundle.weightLogs)) safeSet(STORAGE_KEYS.WEIGHT_LOGS, bundle.weightLogs);
+      if (Array.isArray(bundle.notifications)) safeSet(STORAGE_KEYS.NOTIFICATIONS, bundle.notifications);
       if (Array.isArray(bundle.chatHistory)) safeSet(STORAGE_KEYS.CHAT_HISTORY, bundle.chatHistory);
 
       return {
@@ -687,16 +1166,7 @@ export const storageService = {
   },
 
   resetAllUserData(): UserProfile {
-    localStorage.removeItem(STORAGE_KEYS.USER_PROFILE);
-    localStorage.removeItem(STORAGE_KEYS.ORDERS);
-    localStorage.removeItem(STORAGE_KEYS.CART);
-    localStorage.removeItem(STORAGE_KEYS.CARE_ACTIVITIES);
-    localStorage.removeItem(STORAGE_KEYS.CHAT_HISTORY);
-    localStorage.removeItem(STORAGE_KEYS.WATER_RECORDS);
-    localStorage.removeItem(STORAGE_KEYS.HEALTH_REMINDERS);
-    localStorage.removeItem(STORAGE_KEYS.DAILY_ACTIVITIES);
-    localStorage.setItem(STORAGE_KEYS.LAST_SAVED, new Date().toISOString());
-
+    this.deleteUserAccountAndData();
     const fresh = { ...INITIAL_USER_PROFILE };
     this.saveUserProfile(fresh);
     return fresh;

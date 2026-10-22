@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { UserProfile } from '../../types';
 import { INITIAL_USER_PROFILE } from '../../data/mockData';
+import { storageService } from '../../services/storageService';
 import confetti from 'canvas-confetti';
 
 interface LoginScreenProps {
@@ -66,7 +67,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess
       // ignore
     }
 
-    // Return logged-in user profile
+    // Return logged-in user profile, migrating any guest pregnancy records safely
     const user: UserProfile = {
       ...INITIAL_USER_PROFILE,
       name: mode === 'register' ? fullName : (INITIAL_USER_PROFILE.name || 'Khánh Băng'),
@@ -76,7 +77,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess
       babyNickname: mode === 'register' ? babyNickname : INITIAL_USER_PROFILE.babyNickname,
     };
 
-    onLoginSuccess(user);
+    const finalUser = storageService.migrateGuestDataToAccount(user);
+    onLoginSuccess(finalUser);
   };
 
   // Quick preset login handler
@@ -118,7 +120,8 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onBack, onLoginSuccess
     } catch {
       // ignore
     }
-    onLoginSuccess(user);
+    const finalUser = storageService.migrateGuestDataToAccount(user);
+    onLoginSuccess(finalUser);
   };
 
   return (

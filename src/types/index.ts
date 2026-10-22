@@ -258,3 +258,67 @@ export interface UserAIContext {
   babyGender?: 'boy' | 'girl' | 'surprise';
   dueDate?: string;
 }
+
+export type SymptomSeverity = 'mild' | 'moderate' | 'severe';
+
+export interface SymptomLog {
+  id: string;
+  name: string;
+  severity: SymptomSeverity;
+  notes?: string;
+}
+
+export type MoodType = 'happy' | 'calm' | 'tired' | 'excited' | 'anxious' | 'nauseous';
+
+export interface WeightLog {
+  id: string;
+  date: string;
+  weightKg: number;
+  week?: number;
+  notes?: string;
+}
+
+export interface HealthDiaryEntry {
+  id: string;
+  date: string; // YYYY-MM-DD
+  mood?: MoodType;
+  moodNote?: string;
+  symptoms: SymptomLog[];
+  weightKg?: number;
+  fetalKickCount?: number;
+  doctorAdviceNotes?: string;
+  updatedAt: string;
+}
+
+export interface DoctorQuestion {
+  id: string;
+  question: string;
+  isAnswered: boolean;
+  answerNotes?: string;
+}
+
+export interface PrenatalAppointment {
+  id: string;
+  title: string;
+  weekRecommended?: number;
+  date: string; // YYYY-MM-DD
+  time: string; // HH:mm
+  hospitalOrClinic: string;
+  doctorName?: string;
+  status: 'upcoming' | 'completed' | 'missed';
+  notes?: string;
+  resultsSummary?: string;
+  questions: DoctorQuestion[];
+  reminderEnabled: boolean;
+  createdAt: string;
+}
+
+export interface AppNotification {
+  id: string;
+  title: string;
+  description: string;
+  category: 'water' | 'appointment' | 'milestone' | 'health' | 'system';
+  timestamp: string;
+  isRead: boolean;
+  actionScreen?: ScreenType;
+}

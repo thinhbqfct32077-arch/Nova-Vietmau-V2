@@ -20,6 +20,8 @@ import {
   Footprints,
   Pill,
   Filter,
+  BookOpen,
+  ListTodo,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import {
@@ -34,6 +36,8 @@ import { WaterTrackerModal } from '../care/WaterTrackerModal';
 import { ReminderManagerModal } from '../care/ReminderManagerModal';
 import { ActivityDetailModal } from '../care/ActivityDetailModal';
 import { AddActivityModal } from '../care/AddActivityModal';
+import { HealthDiaryView } from '../care/HealthDiaryView';
+import { PrenatalAppointmentsView } from '../care/PrenatalAppointmentsView';
 
 export const CarePlanScreen: React.FC = () => {
   const todayStr = getTodayDateString();
@@ -55,6 +59,9 @@ export const CarePlanScreen: React.FC = () => {
 
   // Active filter tab: 'all' | 'favorite' | 'pending' | 'completed'
   const [filterTab, setFilterTab] = useState<'all' | 'favorite' | 'pending' | 'completed'>('all');
+
+  // Main view tab: 'activities' | 'diary' | 'appointments'
+  const [mainTab, setMainTab] = useState<'activities' | 'diary' | 'appointments'>('activities');
 
   // Modals state
   const [isWaterModalOpen, setIsWaterModalOpen] = useState(false);
@@ -340,8 +347,51 @@ export const CarePlanScreen: React.FC = () => {
         </div>
       </header>
 
-      {/* Thẻ "Tiến độ tuần này" với Biểu đồ cột Spring Animation (Tính toán số liệu thật) */}
-      <div className="bg-white rounded-[24px] p-5 ios-card-shadow border border-[#F2ECE7] mb-4">
+      {/* 3 Main View Tabs */}
+      <div className="flex items-center gap-1.5 p-1 bg-[#F5F0EB] rounded-2xl mb-4 shrink-0">
+        <button
+          onClick={() => setMainTab('activities')}
+          className={`flex-1 py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            mainTab === 'activities'
+              ? 'bg-white text-[#3A2E2B] shadow-xs'
+              : 'text-[#8C7B75] hover:text-[#3A2E2B]'
+          }`}
+        >
+          <ListTodo className="w-3.5 h-3.5" />
+          <span>Hôm nay</span>
+        </button>
+        <button
+          onClick={() => setMainTab('diary')}
+          className={`flex-1 py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            mainTab === 'diary'
+              ? 'bg-white text-[#3A2E2B] shadow-xs'
+              : 'text-[#8C7B75] hover:text-[#3A2E2B]'
+          }`}
+        >
+          <BookOpen className="w-3.5 h-3.5" />
+          <span>Nhật ký thai kỳ</span>
+        </button>
+        <button
+          onClick={() => setMainTab('appointments')}
+          className={`flex-1 py-2 px-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+            mainTab === 'appointments'
+              ? 'bg-white text-[#3A2E2B] shadow-xs'
+              : 'text-[#8C7B75] hover:text-[#3A2E2B]'
+          }`}
+        >
+          <Stethoscope className="w-3.5 h-3.5" />
+          <span>Lịch khám thai</span>
+        </button>
+      </div>
+
+      {mainTab === 'diary' && <HealthDiaryView selectedDate={selectedDateStr} />}
+
+      {mainTab === 'appointments' && <PrenatalAppointmentsView />}
+
+      {mainTab === 'activities' && (
+        <>
+          {/* Thẻ "Tiến độ tuần này" với Biểu đồ cột Spring Animation (Tính toán số liệu thật) */}
+          <div className="bg-white rounded-[24px] p-5 ios-card-shadow border border-[#F2ECE7] mb-4">
         {/* Top of Card */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -612,6 +662,8 @@ export const CarePlanScreen: React.FC = () => {
           )}
         </div>
       </div>
+      </>
+      )}
 
       {/* --- MODALS --- */}
       {/* 1. Water Tracker Modal */}

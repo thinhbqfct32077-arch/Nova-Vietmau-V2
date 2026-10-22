@@ -231,6 +231,11 @@ export default function App() {
       onResetOnboarding={() => navigateTo('onboarding')}
       onOpenVoiceChat={() => navigateTo('chat')}
       onNavigateToScreen={(screen) => navigateTo(screen)}
+      user={user}
+      isVip={isVip}
+      cartCount={cartCount}
+      onOpenEmergency={() => navigateTo('emergency')}
+      onOpenVipModal={() => setIsVipModalOpen(true)}
     >
       {/* Dynamic Screen Viewport with Reliable Apple Transitions */}
       <div className="flex-1 relative flex flex-col overflow-hidden w-full h-full bg-[#FFFBF7]">
@@ -523,6 +528,7 @@ export default function App() {
       <NotificationModal
         isOpen={isNotificationOpen}
         onClose={() => setIsNotificationOpen(false)}
+        onNavigateScreen={(screen) => navigateTo(screen)}
       />
 
       <VipSubscriptionModal
