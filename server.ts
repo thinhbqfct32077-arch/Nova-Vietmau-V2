@@ -31,7 +31,7 @@ async function startServer() {
   // POST /api/nova-chat: Server-side Gemini AI endpoint
   app.post('/api/nova-chat', async (req, res) => {
     try {
-      const { prompt, userContext, history } = req.body;
+      const { prompt, userContext, history, knowledgeContext, memoriesContext } = req.body;
       if (!prompt || typeof prompt !== 'string') {
         return res.status(400).json({ error: 'Nội dung câu hỏi không hợp lệ.' });
       }
@@ -52,7 +52,7 @@ async function startServer() {
       const currentSymptoms = Array.isArray(userContext?.currentSymptoms) ? userContext.currentSymptoms : [];
       const upcomingAppointment = userContext?.upcomingAppointment;
 
-      const systemInstruction = `# SYSTEM PROMPT — NOVA AI, TRỢ LÝ ĐỒNG HÀNH CÙNG MẸ BẦU
+      let systemInstruction = `# SYSTEM PROMPT — NOVA AI, TRỢ LÝ ĐỒNG HÀNH CÙNG MẸ BẦU
 
 ## 1. VAI TRÒ VÀ DANH TÍNH
 Bạn là Nova AI, trợ lý AI đồng hành cùng phụ nữ đang mang thai trong ứng dụng Nova Việt Mẫu.
@@ -81,7 +81,7 @@ B. Dinh dưỡng và sinh hoạt: Nguyên tắc ăn uống cân bằng, an toàn
 C. Triệu chứng thường gặp: Giải thích nguyên nhân có thể gặp của các triệu chứng phổ biến, KHÔNG kết luận người dùng mắc bệnh gì chỉ từ mô tả. Phân biệt: (1) thông tin chung tham khảo, (2) dấu hiệu cần nhân viên y tế đánh giá, (3) tình huống cần tìm trợ giúp y tế ngay.
 D. Chuẩn bị đi khám: Giúp người dùng tổng hợp triệu chứng, tạo danh sách câu hỏi cần hỏi bác sĩ, nhắc tuân thủ lịch khám và hướng dẫn y tế.
 E. Sức khỏe tinh thần: Lắng nghe, đồng cảm, hỗ trợ các phương pháp thư giãn lành mạnh, khuyến khích tìm sự hỗ trợ chuyên môn khi cảm xúc tiêu cực kéo dài.
-F. Sử dụng ứng dụng Nova Việt Mẫu: Giải thích cách dùng các chức năng theo dõi thai kỳ, ghi lượng nước, nhật ký và lịch khám. Không tuyên bố đã lưu dữ liệu nếu không có công cụ thực tế thực hiện.
+F. Sử dụng ứng dụng Nova Việt Mẫu: Giải thích cách dùng các chức năng theo dõi thai kỳ, ghi lượng nước, nhật ký và lịch khám.
 
 ## 4. NGUYÊN TẮC AN TOÀN Y TẾ (BẮT BUỘC & ƯU TIÊN TUYỆT ĐỐI)
 - Không chẩn đoán bệnh hoặc xác nhận thai nhi khỏe mạnh chỉ dựa trên trò chuyện.
@@ -100,6 +100,14 @@ F. Sử dụng ứng dụng Nova Việt Mẫu: Giải thích cách dùng các ch
 - Không lặp đi lặp lại câu cảnh báo chung trong mọi câu trả lời.
 - Không phán xét, hù dọa hoặc khiến mẹ bầu cảm thấy có lỗi.
 - Luôn thể hiện Nova AI: tận tâm, rõ ràng, đáng tin cậy, an toàn và đồng hành.`;
+
+      if (knowledgeContext && typeof knowledgeContext === 'string') {
+        systemInstruction += `\n\n## 6. TÀI LIỆU Y KHOA ĐÃ ĐỐI CHIẾU (Trích xuất từ Bộ Y tế & WHO):\n${knowledgeContext}\n(Hãy dựa trên tài liệu trên để trả lời chuẩn xác và trích dẫn trung thực nguồn tài liệu này khi đưa ra hướng dẫn).`;
+      }
+
+      if (memoriesContext && typeof memoriesContext === 'string') {
+        systemInstruction += `\n\n## 7. GHI NHỚ RIÊNG TƯ MẸ ĐÃ CHO PHÉP NOVA LƯU:\n${memoriesContext}`;
+      }
 
       const contents: any[] = [];
       if (Array.isArray(history) && history.length > 0) {

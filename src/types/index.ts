@@ -230,12 +230,47 @@ export interface CartItem {
   quantity: number;
 }
 
+export interface ChatSourceReference {
+  id: string;
+  title: string;
+  source: string;
+  updatedDate: string;
+  lastUpdated?: string;
+  excerpt?: string;
+}
+
+export type ToolActionType = 'log_water' | 'create_appointment' | 'add_symptom' | 'create_reminder';
+
+export interface ChatToolAction {
+  id: string;
+  tool: ToolActionType;
+  title: string;
+  description: string;
+  data: Record<string, any>;
+  status: 'pending_confirmation' | 'executed' | 'cancelled' | 'failed';
+  resultMessage?: string;
+}
+
+export interface AIMemoryItem {
+  id: string;
+  key: string;
+  category: 'preference' | 'health_note' | 'family' | 'custom';
+  content: string;
+  createdAt: string;
+  lastUpdatedAt: string;
+}
+
 export interface ChatMessage {
   id: string;
   sender: 'nova' | 'user';
   text: string;
   timestamp: string;
   audioDuration?: string;
+  sources?: ChatSourceReference[];
+  toolAction?: ChatToolAction;
+  isEmergencyAlert?: boolean;
+  status?: 'sending' | 'sent' | 'error';
+  errorMessage?: string;
 }
 
 export interface CommunityPost {

@@ -1,5 +1,16 @@
-import { UserAIContext } from '../types';
+import { UserAIContext, ChatSourceReference, ChatToolAction } from '../types';
 import { storageService } from './storageService';
+import { searchClinicalKnowledge } from './knowledgeBaseService';
+import { detectToolIntent } from './aiToolService';
+import { aiMemoryService } from './aiMemoryService';
+
+export interface NovaAIResult {
+  text: string;
+  sources?: ChatSourceReference[];
+  toolAction?: ChatToolAction;
+  isEmergencyAlert?: boolean;
+  emergencyReason?: string;
+}
 
 // Specialized Clinical Knowledge Base & Contextual Decision Engine
 interface ClinicalTopic {
@@ -71,56 +82,22 @@ const CLINICAL_KNOWLEDGE_TOPICS: ClinicalTopic[] = [
     generateResponse: (name, _week, _babyName) =>
       `🚨 CẢNH BÁO Y TẾ KHẨN CẤP DÀNH CHO MẸ ${name.toUpperCase()}!\n\nCác triệu chứng mẹ vừa nhắc đến là DẤU HIỆU CẦN ĐƯỢC XỬ TRÍ Y TẾ NGAY LẬP TỨC:\n1. Ra máu âm đạo bất thường (đỏ tươi hoặc vón cục).\n2. Rỉ dịch ối hoặc vỡ ối đột ngột.\n3. Cơn co thắt tử cung dữ dội, gò cứng bụng liên tục trên 3 cơn / 10 phút.\n\nHÀNH ĐỘNG NGAY:\n• Mẹ hãy nằm nghỉ ngơi tại chỗ, không tự ý dùng bất kỳ loại thuốc nào.\n• Bấm nút GỌI 115 CẤP CỨU hoặc liên hệ ngay hotline cấp cứu BV Từ Dũ / Phụ sản TW trong mục "Số khẩn cấp SOS" của ứng dụng.\n• Báo ngay cho người thân đưa mẹ đến cơ sở y tế có khoa sản gần nhất!`,
   },
-  {
-    category: 'supplements',
-    keywords: ['thuốc bổ', 'viên sắt', 'sắt', 'canxi', 'dha', 'vitamin', 'axit folic', 'folic', 'magie', 'kẽm', 'uống lúc nào'],
-    generateResponse: (name, week, _babyName) =>
-      `Chào mẹ ${name}! Ở tuần thai thứ ${week}, việc uống vi chất đúng cách sẽ giúp cơ thể mẹ hấp thu tối đa và tránh táo bón, nóng trong:\n\n• Viên Sắt & Axit Folic: Uống vào buổi sáng khi bụng đói hoặc sau ăn sáng 1-2 tiếng với nước cam hoặc nước lọc giàu Vitamin C. Tuyệt đối không uống chung với sữa, trà hay cà phê vì Canxi cản trở hấp thu Sắt.\n• Canxi hữu cơ (1.000 - 1.200mg/ngày): Uống sau bữa ăn sáng hoặc trưa 1 tiếng với nhiều nước. Không uống Canxi sau 15h chiều để tránh lắng cặn thận.\n• DHA / Omega-3: Uống ngay sau bữa ăn có chất béo (bữa trưa hoặc tối) để hấp thu tối ưu cho não bộ và võng mạc mắt của bé.\n• Khoảng cách an toàn: Mẹ nhớ uống Sắt và Canxi cách nhau ít nhất 2 tiếng nhé!`,
-  },
-  {
-    category: 'weight_gain',
-    keywords: ['tăng cân', 'cân nặng', 'bao nhiêu kg', 'béo', 'gầy', 'bmi', 'chuẩn cân nặng'],
-    generateResponse: (name, week, _babyName) =>
-      `Mẹ ${name} thân mến! Tăng cân thai kỳ lý tưởng phụ thuộc vào chỉ số BMI trước mang thai của mẹ:\n\n• Mẹ có thể trạng bình thường (BMI 18.5 - 24.9): Cả thai kỳ nên tăng 10 - 12 kg. Trong tam cá nguyệt 2 và 3, mức tăng chuẩn là khoảng 0.4 - 0.5 kg/tuần.\n• Mẹ gầy (BMI < 18.5): Nên tăng 12 - 18 kg.\n• Mẹ thừa cân (BMI ≥ 25): Nên kiểm soát tăng khoảng 7 - 11 kg.\n\n*Ở tuần ${week}, nếu mẹ tăng cân đều đặn, không bị sưng phù đột ngột và bé phát triển đúng chuẩn bách phân vị trên siêu âm là mẹ hoàn toàn yên tâm nhé!*`,
-  },
-  {
-    category: 'exercise_yoga',
-    keywords: ['thể dục', 'tập thể dục', 'yoga', 'đi bộ', 'bơi', 'vận động', 'squat', 'kegel'],
-    generateResponse: (name, week, babyName) =>
-      `Vận động nhẹ nhàng là liều thuốc vàng giúp mẹ ${name} và ${babyName} khỏe khoắn ở tuần ${week}!\n\nCác bài tập an toàn khuyến cáo:\n• Đi bộ thư giãn: 20-30 phút mỗi ngày vào sáng sớm hoặc chiều mát giúp tăng cường dung tích phổi và điều hòa huyết áp.\n• Yoga bầu & Giãn cơ: Tập trung mở khớp háng, bài tập Cat-Cow (con mèo - con bò) giảm đau lưng và bài tập Kegel tăng sức bền cơ sàn chậu cho lúc vượt cạn.\n• Bơi lội: Nước nâng đỡ bụng bầu, giải phóng áp lực hoàn toàn lên cột sống thắt lưng.\n\n*Lưu ý: Luôn uống nước trước và sau khi tập, dừng ngay nếu thấy chóng mặt, hụt hơi hoặc gò bụng mẹ nhé.*`,
-  },
-  {
-    category: 'labor_signs',
-    keywords: ['chuyển dạ', 'sinh', 'đẻ', 'cơn gò', 'chuyển dạ thật', 'braxton hicks', 'bung nút nhầy', 'dấu hiệu sinh'],
-    generateResponse: (name, week, babyName) =>
-      `Mẹ ${name} ơi! Chuẩn bị đón ${babyName} là khoảnh khắc thiêng liêng nhất. Ở mốc tuần ${week}, mẹ hãy phân biệt cơn gò sinh lý và chuyển dạ thật nhé:\n\n1. Cơn gò sinh lý (Braxton Hicks): Xuất hiện thưa thớt, không đều đặn, cảm giác căng cứng bụng nhưng không đau quặn, biến mất khi mẹ đổi tư thế nằm nghỉ.\n2. Cơn gò chuyển dạ thật sự: Xuất hiện đều đặn theo chu kỳ (cứ 5-10 phút có 1 cơn kéo dài 30-60 giây), cường độ ngày càng đau dồn dập, không thuyên giảm khi nghỉ ngơi.\n3. Các dấu hiệu đi viện ngay:\n• Ra nhớt hồng hoặc bong nút nhầy âm đạo.\n• Rỉ ối hoặc vỡ ối (chảy nước trong/hơi tanh không tự chủ).\n• Cơn gò đau quặn bụng 3 cơn trong 10 phút.`,
-  },
-  {
-    category: 'prenatal_education',
-    keywords: ['thai giáo', 'nói chuyện với con', 'nghe nhạc', 'ánh sáng', 'xúc giác', 'dạy con từ trong bụng'],
-    generateResponse: (name, week, babyName) =>
-      `Thai giáo là ngôn ngữ yêu thương tuyệt vời mà mẹ ${name} dành cho ${babyName} ở tuần thứ ${week}!\n\nPhương pháp thai giáo gợi ý hôm nay:\n• Thai giáo âm thanh: Cả mẹ và bố hãy trò chuyện với con mỗi tối. Giọng nói trầm ấm của bố và ân cần của mẹ giúp các nơron thính giác của bé liên kết vượt trội.\n• Thai giáo xúc giác: Xoa bụng thật nhẹ nhàng theo chiều kim đồng hồ hoặc vỗ nhẹ đáp lại mỗi khi con vừa đạp máy.\n• Âm nhạc êm dịu: Nghe nhạc giao hưởng Mozart, Chopin hoặc các bản nhạc thiền tần số 432Hz với âm lượng vừa phải (dưới 60dB) để thư giãn cả hai mẹ con.`,
-  },
-  {
-    category: 'cold_flu',
-    keywords: ['cảm cúm', 'sốt', 'ho', 'sổ mũi', 'ngạt mũi', 'viêm họng', 'đau đầu', 'uống thuốc'],
-    generateResponse: (name, week, _babyName) =>
-      `Nova rất lo lắng khi nghe mẹ ${name} mệt mỏi vì ốm sốt ở tuần ${week}!\n\nNguyên tắc an toàn y khoa tuyệt đối:\n• Tuyệt đối KHÔNG tự ý mua kháng sinh, thuốc giảm đau Aspirin hay Ibuprofen vì có thể ảnh hưởng đến tim thai và lưu lượng ối.\n• Giảm sốt an toàn: Nếu sốt dưới 38.5°C, mẹ chườm ấm trán, nách, bẹn và uống nhiều nước ấm. Nếu sốt trên 38.5°C, chỉ được dùng Paracetamol liều đơn 500mg dưới hướng dẫn của nhân viên y tế.\n• Trị ho & sổ mũi tự nhiên: Súc họng bằng nước muối sinh lý 0.9% ngày 3 lần, xịt mũi bằng nước muối biển, uống nước ấm pha mật ong gừng chanh đào hoặc húng chanh hấp đường phèn.\n\n*Nếu mẹ sốt cao liên tục không hạ hoặc khó thở, hãy đến viện kiểm tra ngay để loại trừ cúm A/B và sốt xuất huyết nhé!*`,
-  },
 ];
 
 /**
- * Ask Nova AI with server-side proxy route `/api/nova-chat`
- * with automatic fallback to local clinical knowledge engine.
+ * Ask Nova AI with server-side proxy route `/api/nova-chat`,
+ * enriched with clinical knowledge retrieval, safety triage, tool parsing, and memory controls.
  */
 export async function askNovaAI(
   userQuestion: string,
   userContext?: UserAIContext,
   history?: { sender: 'user' | 'nova'; text: string }[]
-): Promise<string> {
+): Promise<NovaAIResult> {
   const query = userQuestion.trim();
   if (!query) {
-    return 'Mẹ ơi, Nova luôn ở đây sẵn sàng lắng nghe mẹ. Mẹ hãy hỏi Nova bất kỳ điều gì mẹ đang băn khoăn nhé!';
+    return {
+      text: 'Mẹ ơi, Nova luôn ở đây sẵn sàng lắng nghe mẹ. Mẹ hãy hỏi Nova bất kỳ điều gì mẹ đang băn khoăn nhé!',
+    };
   }
 
   const profile = storageService.loadUserProfile();
@@ -136,7 +113,23 @@ export async function askNovaAI(
   const upcomingApt = storageService.loadPrenatalAppointments().find((a) => a.status === 'upcoming');
   const upcomingAppointmentStr = upcomingApt ? `${upcomingApt.title} ngày ${upcomingApt.date} lúc ${upcomingApt.time}` : undefined;
 
-  // 1. Attempt to call server-side Gemini API proxy route
+  // 1. Clinical Evidence Retrieval & Safety Triage
+  const knowledge = searchClinicalKnowledge(query, pregnancyWeek);
+  const toolAction = detectToolIntent(query) || undefined;
+
+  // Emergency safety triage intercept
+  if (knowledge.isEmergencyAlert) {
+    const alertText = `🚨 CẢNH BÁO Y TẾ KHẨN CẤP DÀNH CHO MẸ ${motherName.toUpperCase()}!\n\nTriệu chứng mẹ vừa nhắc đến là DẤU HIỆU NGUY HIỂM CẦN ĐƯỢC XỬ TRÍ Y TẾ NGAY:\n${knowledge.emergencyReason ? `• ${knowledge.emergencyReason}\n` : ''}• Tuyệt đối KHÔNG tự ý uống thuốc hoặc trì hoãn.\n• Hãy nằm nghỉ ngơi và liên hệ ngay tổng đài 115 Cấp cứu hoặc đến Bệnh viện Phụ Sản gần nhất.\n• Mẹ có thể bấm nút gọi cấp cứu 115 hiển thị ngay bên dưới để kết nối nhanh.`;
+
+    return {
+      text: alertText,
+      sources: knowledge.sources,
+      isEmergencyAlert: true,
+      emergencyReason: knowledge.emergencyReason,
+    };
+  }
+
+  // 2. Attempt to call server-side Gemini API proxy route
   try {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 18000); // 18s timeout
@@ -157,7 +150,9 @@ export async function askNovaAI(
           currentSymptoms,
           upcomingAppointment: upcomingAppointmentStr,
         },
-        history: history?.slice(-4),
+        knowledgeContext: knowledge.summaryContext,
+        memoriesContext: aiMemoryService.getFormattedMemoriesForPrompt(),
+        history: history?.slice(-6).map((m) => ({ sender: m.sender, text: m.text })),
       }),
       signal: controller.signal,
     });
@@ -167,22 +162,52 @@ export async function askNovaAI(
     if (response.ok) {
       const data = await response.json();
       if (data && data.text) {
-        return data.text;
+        let returnText = data.text;
+        if (toolAction) {
+          returnText += `\n\nNova đã chuẩn bị thao tác **${toolAction.title}** cho mẹ. Mẹ hãy kiểm tra và bấm "Xác nhận thực hiện" ở thẻ bên dưới để lưu ngay nhé!`;
+        }
+
+        return {
+          text: returnText,
+          sources: knowledge.sources.length > 0 ? knowledge.sources : undefined,
+          toolAction,
+          isEmergencyAlert: false,
+        };
       }
     }
   } catch (err) {
     console.info('Server-side Gemini proxy not reachable, falling back to instant clinical engine:', err);
   }
 
-  // 2. Intelligent Clinical Domain Matching Engine
+  // 3. Fallback: Intelligent Clinical Domain Matching Engine
   const lowerQuery = query.toLowerCase();
 
   for (const topic of CLINICAL_KNOWLEDGE_TOPICS) {
     if (topic.keywords.some((kw) => lowerQuery.includes(kw))) {
-      return topic.generateResponse(motherName, pregnancyWeek, babyName);
+      let topicText = topic.generateResponse(motherName, pregnancyWeek, babyName);
+      if (toolAction) {
+        topicText += `\n\nNova đã chuẩn bị thao tác **${toolAction.title}** cho mẹ. Mẹ hãy bấm "Xác nhận thực hiện" ở thẻ bên dưới nhé!`;
+      }
+      return {
+        text: topicText,
+        sources: knowledge.sources.length > 0 ? knowledge.sources : undefined,
+        toolAction,
+        isEmergencyAlert: false,
+      };
     }
   }
 
-  // 3. Empathetic, personalized comprehensive maternal advice
-  return `Nova AI đã lắng nghe mẹ ${motherName}. Ở tuần thứ ${pregnancyWeek} của thai kỳ, cơ thể mẹ đang cùng ${babyName} trải qua những cột mốc phát triển vô cùng kỳ diệu.\n\nLời khuyên đồng hành từ Nova AI:\n• Chú ý nhịp sinh hoạt: Lắng nghe cơ thể mẹ, chia nhỏ các khoảng nghỉ ngơi trong ngày và không mang vác đồ nặng.\n• Dinh dưỡng đủ chất: Tiếp tục uống bổ sung Sắt, Canxi và DHA sau bữa ăn sáng và trưa 1 tiếng, kết hợp uống đủ 2 lít nước ấm mỗi ngày.\n• Vận động điều độ: Đi bộ nhẹ nhàng 20 phút hoặc tập hít thở giãn cơ để các khớp xương chậu linh hoạt.\n• Đếm cử động thai: Theo dõi đều đặn những cú đạp của con sau các bữa ăn chính.\n\n*Lưu ý: Nova AI là trợ lý đồng hành cung cấp thông tin tham khảo, không thay thế chẩn đoán y khoa từ bác sĩ sản khoa trực tiếp thăm khám của mẹ nhé.*`;
+  // 4. Default Empathetic personalized maternal guidance
+  let defaultText = `Nova AI đã lắng nghe mẹ ${motherName}. Ở tuần thứ ${pregnancyWeek} của thai kỳ, cơ thể mẹ đang cùng ${babyName} trải qua những cột mốc phát triển vô cùng kỳ diệu.\n\nLời khuyên đồng hành từ Nova AI:\n• Chú ý nhịp sinh hoạt: Lắng nghe cơ thể mẹ, chia nhỏ các khoảng nghỉ ngơi trong ngày và không mang vác đồ nặng.\n• Dinh dưỡng đủ chất: Tiếp tục uống bổ sung Sắt, Canxi và DHA sau bữa ăn sáng và trưa 1 tiếng, kết hợp uống đủ 2 lít nước ấm mỗi ngày.\n• Vận động điều độ: Đi bộ nhẹ nhàng 20 phút hoặc tập hít thở giãn cơ để các khớp xương chậu linh hoạt.\n• Đếm cử động thai: Theo dõi đều đặn những cú đạp của con sau các bữa ăn chính.\n\n*Lưu ý: Nova AI là trợ lý đồng hành cung cấp thông tin tham khảo, không thay thế chẩn đoán y khoa từ bác sĩ sản khoa trực tiếp thăm khám của mẹ nhé.*`;
+
+  if (toolAction) {
+    defaultText += `\n\nNova đã chuẩn bị sẵn thao tác **${toolAction.title}** cho mẹ. Mẹ hãy bấm "Xác nhận thực hiện" ở thẻ bên dưới để lưu vào hệ thống nhé!`;
+  }
+
+  return {
+    text: defaultText,
+    sources: knowledge.sources.length > 0 ? knowledge.sources : undefined,
+    toolAction,
+    isEmergencyAlert: false,
+  };
 }

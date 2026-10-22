@@ -60,7 +60,9 @@ function safeSet<T>(key: string, value: T): boolean {
   try {
     localStorage.setItem(key, JSON.stringify(value));
     localStorage.setItem(STORAGE_KEYS.LAST_SAVED, new Date().toISOString());
-    window.dispatchEvent(new CustomEvent('nova_storage_update', { detail: { key, value } }));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('nova_storage_update', { detail: { key, value } }));
+    }
     return true;
   } catch (error) {
     console.error(`[storageService] Failed to set key ${key} in localStorage`, error);

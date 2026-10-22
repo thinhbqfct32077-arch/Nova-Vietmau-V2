@@ -9,12 +9,12 @@ import {
   ShippingAddress,
 } from '../types';
 
-import onboardingArt from '../assets/images/onboarding_art_1790926203382.jpg';
-import motherAvatar from '../assets/images/mother_avatar_1790926298307.jpg';
-import journalImg from '../assets/images/journal_book_1790926220651.jpg';
-import braceletImg from '../assets/images/quartz_bracelet_1790926260400.jpg';
-import oilImg from '../assets/images/stretch_oil_1790926274279.jpg';
-import pillowImg from '../assets/images/u_pillow_1790926286791.jpg';
+const onboardingArt = '/src/assets/images/onboarding_art_1790926203382.jpg';
+const motherAvatar = '/src/assets/images/mother_avatar_1790926298307.jpg';
+const journalImg = '/src/assets/images/journal_book_1790926220651.jpg';
+const braceletImg = '/src/assets/images/quartz_bracelet_1790926260400.jpg';
+const oilImg = '/src/assets/images/stretch_oil_1790926274279.jpg';
+const pillowImg = '/src/assets/images/u_pillow_1790926286791.jpg';
 
 export const ASSETS = {
   onboardingArt,

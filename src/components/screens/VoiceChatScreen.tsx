@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChatMessage, UserProfile } from '../../types';
+import { ChatMessage, UserProfile, ChatToolAction, AIMemoryItem } from '../../types';
 import { askNovaAI } from '../../services/aiService';
 import { storageService } from '../../services/storageService';
+import { executeToolAction } from '../../services/aiToolService';
+import { aiMemoryService } from '../../services/aiMemoryService';
 import {
   ChevronLeft,
   Info,
@@ -15,8 +17,19 @@ import {
   Crown,
   RotateCcw,
   CheckCircle2,
-  AlertCircle,
-  HelpCircle,
+  AlertTriangle,
+  PhoneCall,
+  Droplets,
+  Calendar,
+  Bell,
+  FileText,
+  Brain,
+  Trash2,
+  Plus,
+  BookOpen,
+  Check,
+  X,
+  RefreshCw,
 } from 'lucide-react';
 
 interface VoiceChatScreenProps {
@@ -43,8 +56,15 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
   const [isNovaThinking, setIsNovaThinking] = useState(false);
   const [isNovaSpeaking, setIsNovaSpeaking] = useState(false);
   const [showInfoModal, setShowInfoModal] = useState(false);
+  const [showMemoryModal, setShowMemoryModal] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [voiceToast, setVoiceToast] = useState<string | null>(null);
+
+  // Memory modal state
+  const [memories, setMemories] = useState<AIMemoryItem[]>(() => aiMemoryService.loadAIMemories());
+  const [newMemoryKey, setNewMemoryKey] = useState('');
+  const [newMemoryContent, setNewMemoryContent] = useState('');
+  const [isAddingMemory, setIsAddingMemory] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
@@ -70,6 +90,13 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
   useEffect(() => {
     storageService.saveChatMessages(messages);
   }, [messages]);
+
+  // Refresh memories list when modal opens
+  useEffect(() => {
+    if (showMemoryModal) {
+      setMemories(aiMemoryService.loadAIMemories());
+    }
+  }, [showMemoryModal]);
 
   // Preload speech synthesis voices
   useEffect(() => {
@@ -150,6 +177,7 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
       sender: 'user',
       text: query,
       timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+      status: 'sent',
     };
 
     setMessages((prev) => [...prev, userMsg]);
@@ -157,12 +185,12 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
     setIsNovaThinking(true);
 
     try {
-      const historyPayload = messages.slice(-4).map((m) => ({
+      const historyPayload = messages.slice(-6).map((m) => ({
         sender: m.sender,
         text: m.text,
       }));
 
-      const aiReply = await askNovaAI(
+      const aiResult = await askNovaAI(
         query,
         {
           name: motherName,
@@ -175,18 +203,80 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
       const novaReply: ChatMessage = {
         id: `nova-${Date.now()}`,
         sender: 'nova',
-        text: aiReply,
+        text: aiResult.text,
         timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+        sources: aiResult.sources,
+        toolAction: aiResult.toolAction,
+        isEmergencyAlert: aiResult.isEmergencyAlert,
+        status: 'sent',
       };
 
       setMessages((prev) => [...prev, novaReply]);
       setIsNovaThinking(false);
-      speakText(aiReply);
+      speakText(aiResult.text);
     } catch (err) {
       console.error('Nova AI Error:', err);
       setIsNovaThinking(false);
-      triggerToast('Đã chuyển sang chế độ phân tích lâm sàng tích hợp.');
+
+      const fallbackReply: ChatMessage = {
+        id: `nova-err-${Date.now()}`,
+        sender: 'nova',
+        text: `Chào mẹ ${motherName}! Hiện đường truyền mạng đang bận, Nova xin tóm lược lưu ý quan trọng: Ở tuần thai ${pregnancyWeek}, mẹ hãy nghỉ ngơi thoải mái, uống đủ nước và theo dõi sát cử động thai nhé. Mẹ có thể bấm "Thử lại" bên dưới để kết nối lại.`,
+        timestamp: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' }),
+        status: 'error',
+      };
+
+      setMessages((prev) => [...prev, fallbackReply]);
+      triggerToast('Đã chuyển sang chế độ hỗ trợ ngoại tuyến.');
     }
+  };
+
+  // Handle Retry for a failed query
+  const handleRetry = (msgText: string) => {
+    handleSend(msgText);
+  };
+
+  // Handle Tool Confirmation Execution
+  const handleConfirmTool = (msgId: string, action: ChatToolAction) => {
+    const res = executeToolAction(action);
+    if (res.success) {
+      triggerToast(res.message);
+      setMessages((prev) =>
+        prev.map((m) => {
+          if (m.id === msgId && m.toolAction) {
+            return {
+              ...m,
+              toolAction: {
+                ...m.toolAction,
+                status: 'executed',
+              },
+            };
+          }
+          return m;
+        })
+      );
+    } else {
+      triggerToast(`Thất bại: ${res.message}`);
+    }
+  };
+
+  // Handle Cancel Tool Action
+  const handleCancelTool = (msgId: string) => {
+    setMessages((prev) =>
+      prev.map((m) => {
+        if (m.id === msgId && m.toolAction) {
+          return {
+            ...m,
+            toolAction: {
+              ...m.toolAction,
+              status: 'cancelled',
+            },
+          };
+        }
+        return m;
+      })
+    );
+    triggerToast('Đã hủy thao tác.');
   };
 
   // Real Speech Recognition toggle
@@ -213,7 +303,6 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
       (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
 
     if (!SpeechRecognition) {
-      // Fallback: prompt user to type or use sample query
       triggerToast('Trình duyệt chưa hỗ trợ ghi âm tiếng Việt, mẹ có thể nhập bằng phím nhé!');
       setIsTypingMode(true);
       return;
@@ -269,6 +358,36 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
     }
   };
 
+  // Memory management handlers
+  const handleDeleteMemory = (id: string) => {
+    const updated = aiMemoryService.deleteAIMemory(id);
+    setMemories(updated);
+    triggerToast('Đã xóa thông tin khỏi bộ nhớ Nova AI.');
+  };
+
+  const handleClearAllMemories = () => {
+    if (window.confirm('Mẹ có chắc chắn muốn xóa toàn bộ bộ nhớ riêng tư của Nova AI không?')) {
+      aiMemoryService.clearAllAIMemories();
+      setMemories([]);
+      triggerToast('Đã xóa sạch bộ nhớ của Nova AI.');
+    }
+  };
+
+  const handleAddNewMemory = () => {
+    if (!newMemoryContent.trim()) return;
+    const key = newMemoryKey.trim() || `custom_${Date.now()}`;
+    aiMemoryService.addAIMemory({
+      key,
+      category: 'custom',
+      content: newMemoryContent.trim(),
+    });
+    setMemories(aiMemoryService.loadAIMemories());
+    setNewMemoryKey('');
+    setNewMemoryContent('');
+    setIsAddingMemory(false);
+    triggerToast('Đã lưu thông tin mới vào bộ nhớ Nova AI.');
+  };
+
   // Categorized suggestions for maternal care & counseling
   const [selectedCategory, setSelectedCategory] = useState<
     'all' | 'symptoms' | 'nutrition' | 'psychology' | 'baby' | 'emergency'
@@ -279,22 +398,22 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
       `Mẹ mỏi lưng tuần ${pregnancyWeek} phải làm sao?`,
       `Thực đơn dinh dưỡng tuần ${pregnancyWeek} cho ${babyNickname}?`,
       `Cách đếm cử động thai máy chuẩn y khoa?`,
-      `Tư thế ngủ nghiêng trái dễ chịu?`,
-      `Mẹ thấy lo âu và căng thẳng trong thai kỳ`,
       `Uống sắt và canxi lúc nào chuẩn nhất?`,
+      `Ghi nhận 250ml nước vào sổ theo dõi`,
+      `Nhắc lịch khám thai định kỳ tuần tới`,
     ],
     symptoms: [
       `Mẹ bị đau lưng và mỏi hông thì nằm thế nào?`,
       `Bị chuột rút ban đêm bắp chân xử lý sao?`,
       `Mẹ bị phù nề chân tuần ${pregnancyWeek} có sao không?`,
       `Bị ốm nghén, nôn nao dạ dày làm sao dịu?`,
-      `Bị cảm cúm, sốt nhẹ có được uống thuốc không?`,
+      `Lưu triệu chứng buồn nôn vào nhật ký hôm nay`,
     ],
     nutrition: [
       `Thực đơn bổ sung sắt, canxi, DHA cho ${babyNickname}?`,
       `Những thực phẩm mẹ bầu nên kiêng kỵ?`,
       `Cách uống sắt và canxi không bị táo bón?`,
-      `Bao nhiêu ml nước mỗi ngày là đủ ở tuần ${pregnancyWeek}?`,
+      `Ghi nhận 300ml nước vừa uống`,
       `Tăng cân thế nào là chuẩn bách phân vị?`,
     ],
     psychology: [
@@ -307,12 +426,13 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
       `Bé ${babyNickname} tuần ${pregnancyWeek} phát triển ra sao?`,
       `Hướng dẫn đếm cử động thai máy trong 2 giờ`,
       `Bé đạp ít vào ban ngày có nguy hiểm không?`,
-      `Lịch siêu âm 4D và xét nghiệm cần làm tuần ${pregnancyWeek}`,
+      `Tạo lịch khám thai siêu âm hình thái học`,
     ],
     emergency: [
-      `Khi nào cơn đau bụng là dấu hiệu chuyển dạ thật?`,
-      `Ra huyết âm đạo hoặc rỉ ối cần làm gì ngay?`,
-      `Số điện thoại cấp cứu sản khoa 115`,
+      `Dấu hiệu ra huyết hoặc rỉ ối khẩn cấp`,
+      `Khi nào cơn đau bụng là dấu hiệu nguy hiểm?`,
+      `Dấu hiệu tiền sản giật: hoa mắt, nhức đầu, phù mặt`,
+      `Bé không cử động suốt nửa ngày có sao không?`,
     ],
   };
 
@@ -347,6 +467,22 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
     { min: 8, max: 32, dur: 0.64 },
     { min: 6, max: 20, dur: 0.88 },
   ];
+
+  // Helper to render tool icon
+  const renderToolIcon = (tool: string) => {
+    switch (tool) {
+      case 'log_water':
+        return <Droplets className="w-4 h-4 text-sky-500" />;
+      case 'create_appointment':
+        return <Calendar className="w-4 h-4 text-amber-500" />;
+      case 'add_symptom':
+        return <FileText className="w-4 h-4 text-purple-500" />;
+      case 'create_reminder':
+        return <Bell className="w-4 h-4 text-rose-500" />;
+      default:
+        return <Sparkles className="w-4 h-4 text-[#C84B4B]" />;
+    }
+  };
 
   return (
     <div className="flex-1 flex flex-col justify-between h-full bg-[#FFFBF7] select-none overflow-hidden relative">
@@ -388,6 +524,20 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
         </div>
 
         <div className="flex items-center gap-1">
+          {/* Memory Controls Button */}
+          <button
+            onClick={() => setShowMemoryModal(true)}
+            className="w-8 h-8 rounded-full bg-[#F7F4F1] hover:bg-[#EFEAE5] text-[#8C7B75] hover:text-[#C84B4B] flex items-center justify-center cursor-pointer transition-colors relative"
+            title="Bộ nhớ riêng tư của Nova AI"
+          >
+            <Brain className="w-4 h-4" />
+            {memories.length > 0 && (
+              <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#C84B4B] text-[8px] font-bold text-white flex items-center justify-center">
+                {memories.length}
+              </span>
+            )}
+          </button>
+
           <button
             onClick={handleResetChat}
             className="w-8 h-8 rounded-full bg-[#F7F4F1] hover:bg-[#EFEAE5] text-[#8C7B75] hover:text-[#C84B4B] flex items-center justify-center cursor-pointer transition-colors"
@@ -421,7 +571,7 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
               </span>
               <button
                 onClick={() => setShowInfoModal(false)}
-                className="text-xs text-[#8C7B75] hover:text-[#3A2E2B]"
+                className="text-xs text-[#8C7B75] hover:text-[#3A2E2B] cursor-pointer"
               >
                 ✕ Đóng
               </button>
@@ -433,9 +583,158 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
               <strong>Lưu ý an toàn:</strong> Nova AI không phải bác sĩ, không chẩn đoán bệnh và không thay thế thăm khám chuyên khoa sản. Khi có dấu hiệu khẩn cấp, vui lòng liên hệ ngay 115 hoặc cơ sở y tế gần nhất.
             </div>
             <div className="mt-3 pt-2.5 border-t border-[#F0ECE9] flex items-center justify-between text-[11px] text-[#8C7B75]">
-              <span>Mô hình: Gemini 3.8 Flash</span>
+              <span>Mô hình: Gemini 3.8 Flash (Server proxy)</span>
               <span className="text-[#2ECC71] font-bold">● Đang hoạt động</span>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* AI Memory Management Modal */}
+      <AnimatePresence>
+        {showMemoryModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4"
+          >
+            <motion.div
+              initial={{ scale: 0.95, y: 15 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.95, y: 15 }}
+              className="bg-white rounded-3xl max-w-md w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-[#EDE7E2]"
+            >
+              {/* Modal Header */}
+              <div className="p-4 border-b border-[#F0ECE9] flex items-center justify-between bg-[#FAF6F3]">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-full bg-[#FCEEEB] flex items-center justify-center text-[#C84B4B]">
+                    <Brain className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-[#3A2E2B]">Bộ nhớ riêng tư của Nova AI</h3>
+                    <p className="text-[10px] text-[#8C7B75]">
+                      Lưu trên máy mẹ · Mẹ có toàn quyền xem & xóa
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowMemoryModal(false)}
+                  className="w-7 h-7 rounded-full bg-white hover:bg-[#F2ECE7] flex items-center justify-center text-[#8C7B75] text-xs font-bold cursor-pointer"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Explanatory note */}
+              <div className="px-4 py-2.5 bg-[#FFF9F6] border-b border-[#F7EBE4] text-[11px] text-[#8C6D62] leading-relaxed">
+                Nova AI ghi nhớ các chi tiết này để giải đáp phù hợp hơn với mẹ. Dữ liệu hoàn toàn bảo mật và không gửi cho bên thứ ba.
+              </div>
+
+              {/* Memories List */}
+              <div className="flex-1 overflow-y-auto p-4 space-y-2.5 no-scrollbar">
+                {memories.length === 0 ? (
+                  <div className="text-center py-8 text-[#A0938E] text-xs">
+                    Bộ nhớ hiện đang trống. Mẹ có thể thêm ghi nhớ mới hoặc trò chuyện để Nova tự lưu thói quen của mẹ.
+                  </div>
+                ) : (
+                  memories.map((mem) => (
+                    <div
+                      key={mem.id}
+                      className="p-3 bg-[#FAF8F5] border border-[#EFE9E4] rounded-2xl flex items-start justify-between gap-3"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-1.5 mb-1">
+                          <span className="text-[9.5px] font-bold uppercase tracking-wider text-[#C84B4B] bg-[#FCEEEB] px-1.5 py-0.2 rounded-md">
+                            {mem.category === 'preference'
+                              ? 'Sở thích'
+                              : mem.category === 'health_note'
+                              ? 'Sức khỏe'
+                              : 'Ghi chú'}
+                          </span>
+                          <span className="text-[9.5px] text-[#A0938E]">
+                            {new Date(mem.createdAt).toLocaleDateString('vi-VN')}
+                          </span>
+                        </div>
+                        <p className="text-xs text-[#3A2E2B] leading-relaxed">{mem.content}</p>
+                      </div>
+
+                      <button
+                        onClick={() => handleDeleteMemory(mem.id)}
+                        className="p-1.5 rounded-lg text-[#A0938E] hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer shrink-0"
+                        title="Xóa ghi nhớ này"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  ))
+                )}
+
+                {/* Add new memory inline form */}
+                {isAddingMemory ? (
+                  <div className="p-3 bg-[#FFFBF7] border border-[#F2D7CE] rounded-2xl space-y-2 mt-2">
+                    <input
+                      type="text"
+                      placeholder="Chủ đề (ví dụ: món ăn yêu thích, thói quen ngủ...)"
+                      value={newMemoryKey}
+                      onChange={(e) => setNewMemoryKey(e.target.value)}
+                      className="w-full text-xs px-2.5 py-1.5 bg-white border border-[#EAE3DC] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#C84B4B]"
+                    />
+                    <textarea
+                      placeholder="Nội dung mẹ muốn Nova AI ghi nhớ..."
+                      rows={2}
+                      value={newMemoryContent}
+                      onChange={(e) => setNewMemoryContent(e.target.value)}
+                      className="w-full text-xs px-2.5 py-1.5 bg-white border border-[#EAE3DC] rounded-xl focus:outline-none focus:ring-1 focus:ring-[#C84B4B]"
+                    />
+                    <div className="flex items-center justify-end gap-2 pt-1">
+                      <button
+                        onClick={() => setIsAddingMemory(false)}
+                        className="text-xs text-[#8C7B75] px-2.5 py-1 rounded-lg hover:bg-gray-100 cursor-pointer"
+                      >
+                        Hủy
+                      </button>
+                      <button
+                        onClick={handleAddNewMemory}
+                        disabled={!newMemoryContent.trim()}
+                        className="text-xs bg-[#C84B4B] disabled:opacity-40 text-white font-semibold px-3 py-1 rounded-lg hover:bg-[#B53E3E] cursor-pointer"
+                      >
+                        Lưu vào bộ nhớ
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setIsAddingMemory(true)}
+                    className="w-full py-2 border border-dashed border-[#D9CFC9] rounded-2xl text-xs font-semibold text-[#8C7B75] hover:text-[#C84B4B] hover:border-[#C84B4B] flex items-center justify-center gap-1.5 transition-colors cursor-pointer mt-2"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Thêm ghi nhớ cho Nova</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Modal Footer */}
+              <div className="p-3 bg-[#FAF6F3] border-t border-[#F0ECE9] flex items-center justify-between">
+                {memories.length > 0 ? (
+                  <button
+                    onClick={handleClearAllMemories}
+                    className="text-[11px] text-red-600 hover:text-red-700 font-semibold flex items-center gap-1 cursor-pointer"
+                  >
+                    <Trash2 className="w-3 h-3" />
+                    <span>Xóa toàn bộ bộ nhớ</span>
+                  </button>
+                ) : (
+                  <div />
+                )}
+                <button
+                  onClick={() => setShowMemoryModal(false)}
+                  className="px-4 py-1.5 bg-[#3A2E2B] text-white text-xs font-semibold rounded-xl hover:bg-black cursor-pointer"
+                >
+                  Xong
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -464,27 +763,139 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
               <div
                 className={`max-w-[85%] rounded-2xl px-4 py-3 text-[13px] leading-relaxed shadow-2xs ${
                   isNova
-                    ? 'bg-white text-[#3A2E2B] border border-[#F2ECE7] rounded-tl-sm'
+                    ? msg.isEmergencyAlert
+                      ? 'bg-white text-[#3A2E2B] border-2 border-red-500 rounded-tl-sm'
+                      : 'bg-white text-[#3A2E2B] border border-[#F2ECE7] rounded-tl-sm'
                     : 'bg-[#C84B4B] text-white rounded-tr-sm'
                 }`}
               >
+                {/* Emergency Red Flag Alert Banner */}
+                {isNova && msg.isEmergencyAlert && (
+                  <div className="mb-3 p-3 bg-red-50 border border-red-400 rounded-xl text-red-900 shadow-xs">
+                    <div className="flex items-center gap-2 font-bold text-red-700 text-xs mb-1">
+                      <AlertTriangle className="w-4 h-4 text-red-600 shrink-0" />
+                      <span>CẢNH BÁO Y TẾ KHẨN CẤP</span>
+                    </div>
+                    <p className="text-[11.5px] text-red-800 leading-relaxed font-medium mb-2">
+                      Triệu chứng này có thể là dấu hiệu chuyển dạ sớm, dọa sảy thai hoặc biến chứng sản khoa. Mẹ cần đến ngay cơ sở y tế chuyên khoa sản gần nhất!
+                    </p>
+                    <a
+                      href="tel:115"
+                      className="inline-flex items-center justify-center gap-2 w-full py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-xs rounded-lg transition-colors shadow-xs"
+                    >
+                      <PhoneCall className="w-3.5 h-3.5" />
+                      <span>GỌI CẤP CỨU 115 NGAY LẬP TỨC</span>
+                    </a>
+                  </div>
+                )}
+
+                {/* Message Text Content */}
                 <div className="whitespace-pre-line leading-relaxed">{msg.text}</div>
+
+                {/* Tool Action Confirmation Card */}
+                {isNova && msg.toolAction && (
+                  <div className="mt-3 p-3 bg-[#FFFBF7] border border-[#F0D0C6] rounded-xl text-[#3A2E2B] shadow-2xs">
+                    <div className="flex items-center gap-2 mb-1.5">
+                      <div className="w-6 h-6 rounded-lg bg-white border border-[#EAE3DC] flex items-center justify-center shadow-2xs">
+                        {renderToolIcon(msg.toolAction.tool)}
+                      </div>
+                      <span className="text-xs font-bold text-[#C84B4B]">
+                        {msg.toolAction.title}
+                      </span>
+                    </div>
+
+                    <p className="text-[11.5px] text-[#6B5A54] leading-relaxed mb-2.5">
+                      {msg.toolAction.description}
+                    </p>
+
+                    {msg.toolAction.status === 'pending_confirmation' && (
+                      <div className="flex items-center gap-2 pt-1 border-t border-[#F2ECE7]">
+                        <button
+                          onClick={() => handleConfirmTool(msg.id, msg.toolAction!)}
+                          className="flex-1 py-1.5 bg-[#C84B4B] hover:bg-[#B53E3E] text-white text-xs font-semibold rounded-lg flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                          <span>Xác nhận thực hiện</span>
+                        </button>
+                        <button
+                          onClick={() => handleCancelTool(msg.id)}
+                          className="px-3 py-1.5 bg-[#F2ECE7] hover:bg-[#E8E0DA] text-[#6B5A54] text-xs font-semibold rounded-lg flex items-center justify-center gap-1 transition-colors cursor-pointer"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                          <span>Bỏ qua</span>
+                        </button>
+                      </div>
+                    )}
+
+                    {msg.toolAction.status === 'executed' && (
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 pt-1 border-t border-[#F2ECE7]">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Đã thực hiện và lưu vào hệ thống</span>
+                      </div>
+                    )}
+
+                    {msg.toolAction.status === 'cancelled' && (
+                      <div className="text-[11px] text-[#8C7B75] pt-1 border-t border-[#F2ECE7]">
+                        Thao tác đã hủy bỏ.
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Medical Evidence Sources References */}
+                {isNova && msg.sources && msg.sources.length > 0 && (
+                  <div className="mt-2.5 pt-2 border-t border-[#F2ECE7]">
+                    <div className="flex items-center gap-1 text-[10.5px] font-semibold text-[#8C7B75] mb-1">
+                      <BookOpen className="w-3 h-3 text-[#C84B4B]" />
+                      <span>Nguồn tài liệu y khoa ({msg.sources.length}):</span>
+                    </div>
+                    <div className="space-y-1">
+                      {msg.sources.map((src) => (
+                        <div
+                          key={src.id}
+                          className="text-[10px] text-[#6B5A54] bg-[#FAF8F5] px-2 py-1 rounded-md border border-[#EDE7E2] leading-tight flex items-baseline justify-between gap-1"
+                        >
+                          <span className="font-medium truncate">
+                            <span className="text-[#C84B4B] font-bold">[{src.source}]</span> {src.title}
+                          </span>
+                          <span className="text-[9px] text-[#A0938E] shrink-0">({src.lastUpdated})</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Footer timestamp and actions */}
                 <div
                   className={`text-[9.5px] mt-2 flex items-center justify-between pt-1 border-t ${
                     isNova ? 'border-[#F8F5F2] text-[#A0938E]' : 'border-white/20 text-white/70'
                   }`}
                 >
                   <span>{msg.timestamp}</span>
-                  {isNova && (
-                    <button
-                      onClick={() => speakText(msg.text)}
-                      className="ml-2 hover:text-[#C84B4B] text-[10px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
-                      title="Nghe lại giọng đọc"
-                    >
-                      <Volume2 className="w-3.5 h-3.5" />
-                      <span>Nghe lại</span>
-                    </button>
-                  )}
+
+                  <div className="flex items-center gap-2">
+                    {msg.status === 'error' && (
+                      <button
+                        onClick={() => handleRetry(msg.text)}
+                        className="text-red-500 hover:text-red-600 font-semibold flex items-center gap-1 cursor-pointer"
+                        title="Thử lại"
+                      >
+                        <RefreshCw className="w-3 h-3" />
+                        <span>Thử lại</span>
+                      </button>
+                    )}
+
+                    {isNova && (
+                      <button
+                        onClick={() => speakText(msg.text)}
+                        className="hover:text-[#C84B4B] text-[10px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                        title="Nghe lại giọng đọc"
+                      >
+                        <Volume2 className="w-3.5 h-3.5" />
+                        <span>Nghe lại</span>
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -507,7 +918,7 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
             <div className="w-6 h-6 rounded-full bg-[#FCEEEB] flex items-center justify-center">
               <Sparkles className="w-3.5 h-3.5 text-[#C84B4B] animate-spin" />
             </div>
-            <span>Nova đang tổng hợp lời khuyên y khoa cho mẹ...</span>
+            <span>Nova đang tra cứu hướng dẫn Bộ Y tế & tổng hợp lời khuyên cho mẹ...</span>
           </motion.div>
         )}
 
