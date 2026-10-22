@@ -1,4 +1,5 @@
 import { UserAIContext } from '../types';
+import { storageService } from './storageService';
 
 // Specialized Clinical Knowledge Base & Contextual Decision Engine
 interface ClinicalTopic {
@@ -122,9 +123,18 @@ export async function askNovaAI(
     return 'Mẹ ơi, Nova luôn ở đây sẵn sàng lắng nghe mẹ. Mẹ hãy hỏi Nova bất kỳ điều gì mẹ đang băn khoăn nhé!';
   }
 
-  const motherName = userContext?.name || 'Khánh Băng';
-  const pregnancyWeek = userContext?.pregnancyWeek || 24;
-  const babyName = userContext?.babyNickname || 'Bé Bơ';
+  const profile = storageService.loadUserProfile();
+  const motherName = userContext?.name || profile.name || 'Khánh Băng';
+  const pregnancyWeek = typeof userContext?.pregnancyWeek === 'number' ? userContext.pregnancyWeek : profile.pregnancyWeek || 24;
+  const pregnancyDay = profile.pregnancyDay;
+  const dueDate = profile.dueDate;
+  const babyName = userContext?.babyNickname || profile.babyNickname || 'Bé Bơ';
+
+  // Retrieve today's recorded symptoms and upcoming appointments if available
+  const todayDiary = storageService.getHealthDiaryEntry();
+  const currentSymptoms = todayDiary.symptoms.map((s) => `${s.name} (${s.severity === 'mild' ? 'Nhẹ' : s.severity === 'moderate' ? 'Vừa' : 'Nặng'})`);
+  const upcomingApt = storageService.loadPrenatalAppointments().find((a) => a.status === 'upcoming');
+  const upcomingAppointmentStr = upcomingApt ? `${upcomingApt.title} ngày ${upcomingApt.date} lúc ${upcomingApt.time}` : undefined;
 
   // 1. Attempt to call server-side Gemini API proxy route
   try {
@@ -141,7 +151,11 @@ export async function askNovaAI(
         userContext: {
           name: motherName,
           pregnancyWeek,
+          pregnancyDay,
+          dueDate,
           babyNickname: babyName,
+          currentSymptoms,
+          upcomingAppointment: upcomingAppointmentStr,
         },
         history: history?.slice(-4),
       }),
@@ -170,5 +184,5 @@ export async function askNovaAI(
   }
 
   // 3. Empathetic, personalized comprehensive maternal advice
-  return `Nova đã lắng nghe mẹ ${motherName}. Ở tuần thứ ${pregnancyWeek} của thai kỳ, cơ thể mẹ đang cùng ${babyName} trải qua những cột mốc phát triển vô cùng kỳ diệu.\n\nLời dặn dò từ bác sĩ sản khoa Nova:\n• Chú ý nhịp sinh hoạt: Lắng nghe cơ thể mẹ, chia nhỏ các khoảng nghỉ ngơi trong ngày và không mang vác đồ nặng.\n• Dinh dưỡng đủ chất: Tiếp tục uống bổ sung Sắt, Canxi và DHA sau bữa ăn sáng và trưa 1 tiếng, kết hợp uống đủ 2 lít nước ấm mỗi ngày.\n• Vận động điều độ: Đi bộ nhẹ nhàng 20 phút hoặc tập hít thở giãn cơ để các khớp xương chậu linh hoạt.\n• Đếm cử động thai: Theo dõi đều đặn những cú đạp của con sau các bữa ăn chính.\n\nNếu mẹ có thêm bất kỳ cảm giác khó chịu nào, mẹ cứ nói cho Nova biết ngay nhé!`;
+  return `Nova AI đã lắng nghe mẹ ${motherName}. Ở tuần thứ ${pregnancyWeek} của thai kỳ, cơ thể mẹ đang cùng ${babyName} trải qua những cột mốc phát triển vô cùng kỳ diệu.\n\nLời khuyên đồng hành từ Nova AI:\n• Chú ý nhịp sinh hoạt: Lắng nghe cơ thể mẹ, chia nhỏ các khoảng nghỉ ngơi trong ngày và không mang vác đồ nặng.\n• Dinh dưỡng đủ chất: Tiếp tục uống bổ sung Sắt, Canxi và DHA sau bữa ăn sáng và trưa 1 tiếng, kết hợp uống đủ 2 lít nước ấm mỗi ngày.\n• Vận động điều độ: Đi bộ nhẹ nhàng 20 phút hoặc tập hít thở giãn cơ để các khớp xương chậu linh hoạt.\n• Đếm cử động thai: Theo dõi đều đặn những cú đạp của con sau các bữa ăn chính.\n\n*Lưu ý: Nova AI là trợ lý đồng hành cung cấp thông tin tham khảo, không thay thế chẩn đoán y khoa từ bác sĩ sản khoa trực tiếp thăm khám của mẹ nhé.*`;
 }

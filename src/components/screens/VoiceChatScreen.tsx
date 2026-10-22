@@ -376,7 +376,7 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
 
           <div className="flex items-center gap-1 mt-0.5">
             <span className="text-[10px] font-semibold text-[#C84B4B] bg-[#FCEEEB] px-2 py-0.2 rounded-full">
-              Bác sĩ Sản khoa AI · Tuần {pregnancyWeek}
+              Trợ lý Thai kỳ AI · Tuần {pregnancyWeek}
             </span>
             {isVip && (
               <span className="text-[9px] font-black bg-[#D4AF37] text-[#2A2321] px-1.5 py-0.2 rounded-full flex items-center gap-0.5">
@@ -427,8 +427,11 @@ export const VoiceChatScreen: React.FC<VoiceChatScreenProps> = ({
               </button>
             </div>
             <p className="text-xs text-[#63534D] leading-relaxed">
-              Nova là cố vấn y tế và tâm lý thai kỳ thông minh, được tối ưu hóa dựa trên phác đồ sản phụ khoa tiêu chuẩn của Bộ Y tế và WHO. Mọi câu trả lời mang tính tham vấn y khoa và xoa dịu cảm xúc cho mẹ bầu.
+              Nova AI là trợ lý AI đồng hành thông minh cùng mẹ bầu trong ứng dụng Nova Việt Mẫu, cung cấp thông tin thai kỳ dễ hiểu, hỗ trợ theo dõi sức khỏe, giải đáp thắc mắc và giúp mẹ chuẩn bị tốt cho các buổi khám thai dựa trên hướng dẫn y tế của Bộ Y tế và WHO.
             </p>
+            <div className="mt-2.5 p-2 bg-[#FCEEEB] rounded-xl text-[11px] text-[#C84B4B] font-medium leading-relaxed">
+              <strong>Lưu ý an toàn:</strong> Nova AI không phải bác sĩ, không chẩn đoán bệnh và không thay thế thăm khám chuyên khoa sản. Khi có dấu hiệu khẩn cấp, vui lòng liên hệ ngay 115 hoặc cơ sở y tế gần nhất.
+            </div>
             <div className="mt-3 pt-2.5 border-t border-[#F0ECE9] flex items-center justify-between text-[11px] text-[#8C7B75]">
               <span>Mô hình: Gemini 3.8 Flash</span>
               <span className="text-[#2ECC71] font-bold">● Đang hoạt động</span>
