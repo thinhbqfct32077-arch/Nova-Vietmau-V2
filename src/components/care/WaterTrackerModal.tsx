@@ -8,12 +8,10 @@ import {
   Target,
   Clock,
   Trash2,
-  CheckCircle2,
   Sparkles,
   Info,
-  Calendar,
 } from 'lucide-react';
-import { DailyWaterRecord, WaterLogEntry } from '../../types';
+import { DailyWaterRecord } from '../../types';
 import confetti from 'canvas-confetti';
 
 interface WaterTrackerModalProps {
@@ -61,7 +59,7 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
           particleCount: 45,
           spread: 60,
           origin: { y: 0.6 },
-          colors: ['#6D8572', '#4F6B56', '#C4A46B', '#F6EFE2'],
+          colors: ['#51483F', '#A3A795', '#B8AA98', '#EDE7DE'],
         });
       } catch {}
     }
@@ -83,7 +81,7 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
           particleCount: 50,
           spread: 65,
           origin: { y: 0.6 },
-          colors: ['#6D8572', '#4F6B56', '#C4A46B', '#F6EFE2'],
+          colors: ['#51483F', '#A3A795', '#B8AA98', '#EDE7DE'],
         });
       } catch {}
     }
@@ -99,32 +97,32 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-[#322622]/45 backdrop-blur-xs p-0 md:p-4">
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-[#1C1B18]/60 backdrop-blur-xs p-0 md:p-4">
       <motion.div
         initial={{ y: '100%', opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: '100%', opacity: 0 }}
         transition={{ type: 'spring', damping: 28, stiffness: 350 }}
-        className="w-full max-w-[430px] max-h-[92vh] bg-[#FAF6F0] dark:bg-[#161311] rounded-t-[28px] md:rounded-[28px] border border-[#E6DDD1] dark:border-[#362E2A] ios-float-shadow flex flex-col overflow-hidden text-[#322622] dark:text-[#F4EDE6]"
+        className="w-full max-w-[430px] max-h-[92vh] bg-nova-bg rounded-t-[28px] md:rounded-[28px] border border-nova-border ios-float-shadow flex flex-col overflow-hidden text-nova-text"
       >
         {toastMsg && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-[#263E35] text-[#FAF6F0] text-xs font-semibold px-4 py-2 rounded-full shadow-lg flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-[#D7BA86]" />
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-nova-accent text-nova-accent-contrast text-xs font-semibold px-4 py-2 rounded-full shadow-lg flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5" />
             <span>{toastMsg}</span>
           </div>
         )}
 
         {/* Header */}
-        <div className="px-5 pt-4 pb-3 border-b border-[#E6DDD1] dark:border-[#362E2A] bg-[#FFFFFF] dark:bg-[#1E1A17] flex items-center justify-between shrink-0">
+        <div className="px-5 pt-4 pb-3 border-b border-nova-border bg-nova-surface flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#EBF1EC] dark:bg-[#1E2922] text-[#263E35] dark:text-[#8DA892] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-nova-sage-soft text-nova-sage-text flex items-center justify-center">
               <Droplet className="w-5 h-5 fill-current" />
             </div>
             <div>
-              <h2 className="font-editorial text-[17px] font-semibold text-[#322622] dark:text-[#F4EDE6] leading-tight">
+              <h2 className="font-editorial text-[17px] font-semibold text-nova-text leading-tight">
                 Nước ấm mỗi ngày
               </h2>
-              <p className="text-[11px] font-medium text-[#786962] dark:text-[#B5A89F] mt-0.5">
+              <p className="text-[11px] font-medium text-nova-text-muted mt-0.5">
                 Ngày {waterRecord.date} · Duy trì nước ối khỏe mạnh cho bé
               </p>
             </div>
@@ -133,7 +131,7 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-[#FAF6F0] dark:bg-[#231E1B] hover:bg-[#F2ECE3] text-[#786962] dark:text-[#B5A89F] flex items-center justify-center cursor-pointer transition-colors"
+            className="w-8 h-8 rounded-full bg-nova-bg-subtle hover:bg-nova-accent-soft text-nova-icon flex items-center justify-center cursor-pointer transition-colors"
             aria-label="Đóng"
           >
             <X className="w-4 h-4 stroke-[2.2]" />
@@ -143,7 +141,7 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
         {/* Scrollable Body */}
         <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4 no-scrollbar">
           {/* Main Visual Progress Card */}
-          <div className="p-5 bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] flex flex-col items-center relative overflow-hidden">
+          <div className="p-5 bg-nova-surface rounded-2xl border border-nova-border flex flex-col items-center relative overflow-hidden">
             <div className="relative w-36 h-36 flex items-center justify-center mb-3">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
                 <circle
@@ -151,7 +149,7 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
                   cy="50"
                   r="42"
                   fill="transparent"
-                  stroke="#EBF1EC"
+                  stroke="var(--color-nova-sage-soft)"
                   strokeWidth="8"
                 />
                 <motion.circle
@@ -168,17 +166,17 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
                 />
                 <defs>
                   <linearGradient id="waterGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                    <stop offset="0%" stopColor="#6D8572" />
-                    <stop offset="100%" stopColor="#263E35" />
+                    <stop offset="0%" stopColor="var(--color-nova-sage)" />
+                    <stop offset="100%" stopColor="var(--color-nova-sage-text)" />
                   </linearGradient>
                 </defs>
               </svg>
 
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <span className="font-editorial text-3xl font-semibold text-[#263E35] dark:text-[#A7C2AC] tracking-tight leading-none tabular-nums">
+                <span className="font-editorial text-3xl font-semibold text-nova-sage-text tracking-tight leading-none tabular-nums">
                   {percent}%
                 </span>
-                <span className="text-[10.5px] font-medium text-[#786962] dark:text-[#B5A89F] mt-1">
+                <span className="text-[10.5px] font-medium text-nova-text-muted mt-1">
                   {waterRecord.isCompleted ? 'Đủ đầy hôm nay' : 'Thong thả từng ngụm'}
                 </span>
               </div>
@@ -186,15 +184,15 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
 
             <div className="text-center">
               <div className="flex items-baseline justify-center gap-1.5 tabular-nums">
-                <span className="text-[26px] font-semibold text-[#322622] dark:text-[#F4EDE6] tracking-tight leading-none">
+                <span className="text-[26px] font-semibold text-nova-text tracking-tight leading-none">
                   {waterRecord.currentMl.toLocaleString('vi-VN')}
                 </span>
-                <span className="text-[15px] font-medium text-[#786962] dark:text-[#B5A89F]">
+                <span className="text-[15px] font-medium text-nova-text-muted">
                   / {waterRecord.targetMl.toLocaleString('vi-VN')} ml
                 </span>
               </div>
 
-              <p className="mt-2 text-xs text-[#786962] dark:text-[#B5A89F]">
+              <p className="mt-2 text-xs text-nova-text-muted">
                 {waterRecord.isCompleted
                   ? 'Mẹ đã uống đủ lượng nước gợi ý hôm nay.'
                   : `Gợi ý thêm ${(waterRecord.targetMl - waterRecord.currentMl > 0
@@ -204,8 +202,8 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
               </p>
             </div>
 
-            <div className="mt-3 pt-3 border-t border-[#E6DDD1] dark:border-[#362E2A] w-full flex items-center justify-between">
-              <span className="text-[11.5px] text-[#786962] dark:text-[#B5A89F] font-medium tabular-nums">
+            <div className="mt-3 pt-3 border-t border-nova-border w-full flex items-center justify-between">
+              <span className="text-[11.5px] text-nova-text-muted font-medium tabular-nums">
                 Mục tiêu: {waterRecord.targetMl} ml/ngày
               </span>
               <button
@@ -214,7 +212,7 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
                   setNewTargetInput(waterRecord.targetMl.toString());
                   setIsEditingTarget(!isEditingTarget);
                 }}
-                className="text-[11.5px] font-semibold text-[#263E35] dark:text-[#8DA892] hover:text-[#B55841] flex items-center gap-1 cursor-pointer transition-colors"
+                className="text-[11.5px] font-semibold text-nova-sage-text hover:text-nova-accent flex items-center gap-1 cursor-pointer transition-colors"
               >
                 <Target className="w-3.5 h-3.5" />
                 <span>{isEditingTarget ? 'Đóng' : 'Đổi mục tiêu'}</span>
@@ -227,9 +225,9 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
-                  className="w-full mt-3 pt-3 border-t border-[#E6DDD1] dark:border-[#362E2A] overflow-hidden"
+                  className="w-full mt-3 pt-3 border-t border-nova-border overflow-hidden"
                 >
-                  <label className="text-[11px] font-semibold text-[#786962] dark:text-[#B5A89F] block mb-1.5">
+                  <label className="text-[11px] font-semibold text-nova-text-muted block mb-1.5">
                     Chọn hoặc nhập mục tiêu nước mới (ml):
                   </label>
                   <div className="flex items-center gap-2 mb-2">
@@ -240,8 +238,8 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
                         onClick={() => setNewTargetInput(t.toString())}
                         className={`flex-1 py-1.5 rounded-xl text-xs font-semibold border transition-colors cursor-pointer ${
                           newTargetInput === t.toString()
-                            ? 'bg-[#263E35] text-white border-[#263E35]'
-                            : 'bg-[#FAF6F0] dark:bg-[#231E1B] text-[#786962] dark:text-[#B5A89F] border-[#E6DDD1] dark:border-[#362E2A]'
+                            ? 'bg-nova-accent text-nova-accent-contrast border-nova-accent'
+                            : 'bg-nova-bg-subtle text-nova-text-muted border-nova-border'
                         }`}
                       >
                         {t} ml
@@ -255,13 +253,13 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
                       step={50}
                       value={newTargetInput}
                       onChange={(e) => setNewTargetInput(e.target.value)}
-                      className="flex-1 px-3 py-2 bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs font-semibold text-[#322622] dark:text-[#F4EDE6]"
+                      className="flex-1 px-3 py-2 bg-nova-bg-subtle border border-nova-border rounded-xl text-xs font-semibold text-nova-text"
                       placeholder="Nhập số ml..."
                     />
                     <button
                       type="button"
                       onClick={handleSaveTarget}
-                      className="px-4 py-2 bg-[#263E35] text-white rounded-xl text-xs font-semibold hover:bg-[#1E312A] cursor-pointer"
+                      className="px-4 py-2 bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast rounded-xl text-xs font-semibold cursor-pointer"
                     >
                       Lưu
                     </button>
@@ -273,7 +271,7 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
 
           {/* Quick Add Buttons */}
           <div>
-            <h3 className="text-xs font-semibold text-[#786962] dark:text-[#B5A89F] uppercase tracking-wider mb-2.5">
+            <h3 className="text-xs font-semibold text-nova-text-muted uppercase tracking-wider mb-2.5">
               Thêm nhanh lượng nước
             </h3>
             <div className="grid grid-cols-4 gap-2">
@@ -283,15 +281,15 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
                   type="button"
                   whileTap={{ scale: 0.95 }}
                   onClick={() => handleQuickAdd(amount)}
-                  className="py-3 px-2 rounded-2xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#6D8572] flex flex-col items-center justify-center cursor-pointer transition-colors group"
+                  className="py-3 px-2 rounded-2xl bg-nova-surface border border-nova-border hover:border-nova-sage flex flex-col items-center justify-center cursor-pointer transition-colors group"
                 >
-                  <div className="w-8 h-8 rounded-full bg-[#EBF1EC] dark:bg-[#1E2922] text-[#263E35] dark:text-[#8DA892] flex items-center justify-center mb-1">
+                  <div className="w-8 h-8 rounded-full bg-nova-sage-soft text-nova-sage-text flex items-center justify-center mb-1">
                     <Plus className="w-4 h-4 stroke-[2.2]" />
                   </div>
-                  <span className="text-[13px] font-semibold text-[#322622] dark:text-[#F4EDE6] tabular-nums">
+                  <span className="text-[13px] font-semibold text-nova-text tabular-nums">
                     +{amount}
                   </span>
-                  <span className="text-[10px] font-medium text-[#786962] dark:text-[#B5A89F]">
+                  <span className="text-[10px] font-medium text-nova-text-muted">
                     ml
                   </span>
                 </motion.button>
@@ -302,10 +300,10 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
           {/* Custom Add Water Form */}
           <form
             onSubmit={handleCustomAdd}
-            className="p-3.5 bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-2.5"
+            className="p-3.5 bg-nova-surface rounded-2xl border border-nova-border space-y-2.5"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6]">
+              <span className="text-xs font-semibold text-nova-text">
                 Nhập số ml tùy chỉnh
               </span>
               {waterRecord.logs.length > 0 && (
@@ -315,7 +313,7 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
                     onUndoLastLog();
                     showToast('Đã hoàn tác lần nhập nước gần nhất!');
                   }}
-                  className="text-[11px] font-semibold text-[#B55841] dark:text-[#D47A63] flex items-center gap-1 cursor-pointer"
+                  className="text-[11px] font-semibold text-nova-accent flex items-center gap-1 cursor-pointer"
                 >
                   <RotateCcw className="w-3 h-3" />
                   <span>Hoàn tác</span>
@@ -331,20 +329,20 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
                 value={customMl}
                 onChange={(e) => setCustomMl(e.target.value)}
                 placeholder="Số ml"
-                className="w-24 px-3 py-2.5 bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs font-semibold text-[#322622] dark:text-[#F4EDE6]"
+                className="w-24 px-3 py-2.5 bg-nova-bg-subtle border border-nova-border rounded-xl text-xs font-semibold text-nova-text"
               />
               <input
                 type="text"
                 value={customNote}
                 onChange={(e) => setCustomNote(e.target.value)}
-                placeholder="Ghi chú (VD: Nước cam, canh rau...)"
-                className="flex-1 px-3 py-2.5 bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs text-[#322622] dark:text-[#F4EDE6]"
+                placeholder="Ghi chú (Ví dụ: Nước cam, canh rau...)"
+                className="flex-1 px-3 py-2.5 bg-nova-bg-subtle border border-nova-border rounded-xl text-xs text-nova-text"
               />
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 type="submit"
                 disabled={!customMl}
-                className="px-4 py-2.5 rounded-xl bg-[#263E35] disabled:opacity-40 text-white text-xs font-semibold hover:bg-[#1E312A] cursor-pointer"
+                className="px-4 py-2.5 rounded-xl bg-nova-accent hover:bg-nova-accent-hover disabled:opacity-40 text-nova-accent-contrast text-xs font-semibold cursor-pointer"
               >
                 Thêm
               </motion.button>
@@ -354,16 +352,16 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
           {/* Today Water Log History */}
           <div className="space-y-2">
             <div className="flex items-center justify-between px-1">
-              <h3 className="text-xs font-semibold text-[#786962] dark:text-[#B5A89F] uppercase tracking-wider">
+              <h3 className="text-xs font-semibold text-nova-text-muted uppercase tracking-wider">
                 Lịch sử hôm nay ({waterRecord.logs.length} lần)
               </h3>
-              <span className="text-[11px] font-semibold text-[#263E35] dark:text-[#8DA892] tabular-nums">
+              <span className="text-[11px] font-semibold text-nova-sage-text tabular-nums">
                 Tổng: {waterRecord.currentMl} ml
               </span>
             </div>
 
             {waterRecord.logs.length === 0 ? (
-              <div className="p-4 bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl border border-dashed border-[#E6DDD1] dark:border-[#362E2A] text-center text-xs text-[#786962] dark:text-[#B5A89F]">
+              <div className="p-4 bg-nova-surface rounded-2xl border border-dashed border-nova-border text-center text-xs text-nova-text-muted">
                 Hôm nay mẹ chưa ghi nhận lần uống nước nào. Hãy chạm các nút nhanh ở trên để bắt đầu nhé!
               </div>
             ) : (
@@ -371,24 +369,24 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
                 {waterRecord.logs.map((log) => (
                   <div
                     key={log.id}
-                    className="p-3 bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-between"
+                    className="p-3 bg-nova-surface rounded-xl border border-nova-border flex items-center justify-between"
                   >
                     <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-[#EBF1EC] dark:bg-[#1E2922] text-[#263E35] dark:text-[#8DA892] flex items-center justify-center font-semibold text-xs tabular-nums">
+                      <div className="w-8 h-8 rounded-lg bg-nova-sage-soft text-nova-sage-text flex items-center justify-center font-semibold text-xs tabular-nums">
                         +{log.amountMl}
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] tabular-nums">
+                          <span className="text-xs font-semibold text-nova-text tabular-nums">
                             {log.amountMl} ml
                           </span>
-                          <span className="text-[10.5px] text-[#786962] dark:text-[#B5A89F] flex items-center gap-0.5 tabular-nums">
+                          <span className="text-[10.5px] text-nova-text-muted flex items-center gap-0.5 tabular-nums">
                             <Clock className="w-2.5 h-2.5" />
                             {log.timestamp}
                           </span>
                         </div>
                         {log.note && (
-                          <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] mt-0.5">
+                          <p className="text-[11px] text-nova-text-muted mt-0.5">
                             {log.note}
                           </p>
                         )}
@@ -401,8 +399,9 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
                         onRemoveLog(log.id);
                         showToast(`Đã xóa lần uống ${log.amountMl}ml`);
                       }}
-                      className="w-7 h-7 rounded-lg text-[#786962] hover:text-[#B55841] hover:bg-[#F7EAE5] flex items-center justify-center cursor-pointer transition-colors"
+                      className="w-7 h-7 rounded-lg text-nova-icon hover:text-nova-danger hover:bg-nova-danger-soft flex items-center justify-center cursor-pointer transition-colors"
                       title="Xóa lần này"
+                      aria-label="Xóa lần này"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -412,7 +411,7 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
             )}
           </div>
 
-          <div className="p-3.5 bg-[#EBF1EC] dark:bg-[#1E2922] rounded-2xl border border-[#D4E2D7] dark:border-[#2E3F34] flex items-start gap-2.5 text-xs text-[#263E35] dark:text-[#A7C2AC]">
+          <div className="p-3.5 bg-nova-sage-soft rounded-2xl border border-nova-success-border flex items-start gap-2.5 text-xs text-nova-sage-text">
             <Info className="w-4 h-4 shrink-0 mt-0.5" />
             <p className="leading-relaxed text-[11.5px]">
               <strong>Lời khuyên sản khoa:</strong> Mẹ bầu cần khoảng 2.0 - 2.5 lít nước/ngày để duy trì thể tích máu nuôi thai, tái tạo nước ối đều đặn và giảm táo bón thai kỳ.
@@ -420,12 +419,12 @@ export const WaterTrackerModal: React.FC<WaterTrackerModalProps> = ({
           </div>
         </div>
 
-        <div className="p-4 border-t border-[#E6DDD1] dark:border-[#362E2A] bg-[#FFFFFF] dark:bg-[#1E1A17]">
+        <div className="p-4 border-t border-nova-border bg-nova-surface">
           <motion.button
             whileTap={{ scale: 0.985 }}
             type="button"
             onClick={onClose}
-            className="w-full py-3 bg-[#263E35] hover:bg-[#1E312A] text-white font-semibold rounded-2xl text-sm cursor-pointer transition-colors"
+            className="w-full py-3 bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast font-semibold rounded-2xl text-sm cursor-pointer transition-colors"
           >
             Đã xong
           </motion.button>

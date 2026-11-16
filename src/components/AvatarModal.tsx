@@ -23,7 +23,6 @@ export const AvatarModal: React.FC<AvatarModalProps> = ({
   const [uploadError, setUploadError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Sync state if modal opens
   React.useEffect(() => {
     setSelectedAvatar(currentAvatar);
     setPreviewError(false);
@@ -58,7 +57,7 @@ export const AvatarModal: React.FC<AvatarModalProps> = ({
         particleCount: 40,
         spread: 50,
         origin: { y: 0.6 },
-        colors: ['#B55841', '#C4A46B', '#6D8572', '#F2ECE3'],
+        colors: ['#51483F', '#A3A795', '#B8AA98', '#EDE7DE'],
       });
     } catch {
       // ignore
@@ -68,8 +67,7 @@ export const AvatarModal: React.FC<AvatarModalProps> = ({
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#161311]/60 backdrop-blur-sm select-none">
-        {/* Backdrop click */}
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-[#1C1B18]/60 backdrop-blur-sm select-none">
         <div className="absolute inset-0" onClick={onClose} />
 
         <motion.div
@@ -77,30 +75,31 @@ export const AvatarModal: React.FC<AvatarModalProps> = ({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: '100%', opacity: 0 }}
           transition={{ type: 'spring', damping: 28, stiffness: 350 }}
-          className="relative w-full max-w-[420px] bg-[#FAF6F0] dark:bg-[#1E1A17] rounded-t-[32px] sm:rounded-[32px] overflow-hidden shadow-2xl z-10 flex flex-col max-h-[90vh] border border-[#E6DDD1] dark:border-[#362E2A]"
+          className="relative w-full max-w-[420px] bg-nova-bg rounded-t-[32px] sm:rounded-[32px] overflow-hidden shadow-2xl z-10 flex flex-col max-h-[90vh] border border-nova-border"
         >
           {/* Grabber */}
-          <div className="w-12 h-1 bg-[#D6CCC0] dark:bg-[#4A403B] rounded-full mx-auto mt-3 mb-1" />
+          <div className="w-12 h-1 bg-nova-taupe/40 rounded-full mx-auto mt-3 mb-1" />
 
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-3 border-b border-[#E6DDD1] dark:border-[#362E2A]">
+          <div className="flex items-center justify-between px-5 py-3 border-b border-nova-border">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-2xl bg-[#F7EAE5] dark:bg-[#35231E] border border-[#EBCDC2] dark:border-[#52352D] flex items-center justify-center text-[#B55841] dark:text-[#D47A63]">
+              <div className="w-9 h-9 rounded-2xl bg-nova-accent-soft border border-nova-border flex items-center justify-center text-nova-accent">
                 <Camera className="w-4 h-4" />
               </div>
               <div>
-                <h3 className="font-editorial text-[18px] font-bold text-[#322622] dark:text-[#F4EDE6] leading-tight">
+                <h3 className="font-editorial text-[18px] font-bold text-nova-text leading-tight">
                   Đổi ảnh đại diện
                 </h3>
-                <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">
+                <p className="text-[11px] text-nova-text-muted">
                   Chọn ảnh mẫu hoặc tải ảnh từ điện thoại
                 </p>
               </div>
             </div>
             <button
+              type="button"
               onClick={onClose}
               aria-label="Đóng"
-              className="w-9 h-9 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] hover:bg-[#E6DDD1] dark:hover:bg-[#2F2824] flex items-center justify-center text-[#6B5D56] dark:text-[#C5B9B0] transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-full bg-nova-bg-subtle hover:bg-nova-accent-soft flex items-center justify-center text-nova-text-muted transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -111,29 +110,30 @@ export const AvatarModal: React.FC<AvatarModalProps> = ({
             {/* Live Preview Circle */}
             <div className="flex flex-col items-center justify-center">
               <div className="relative">
-                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white dark:border-[#231E1B] shadow-lg ring-2 ring-[#B55841]/30 bg-[#F2ECE3] dark:bg-[#231E1B]">
+                <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-nova-surface shadow-lg ring-2 ring-nova-taupe/40 bg-nova-bg-subtle">
                   <NovaImage
                     src={selectedAvatar}
-                    alt="Preview avatar"
+                    alt="Xem trước ảnh đại diện"
                     className="w-full h-full object-cover"
                     onError={() => setPreviewError(true)}
                   />
                 </div>
                 <button
+                  type="button"
                   onClick={() => fileInputRef.current?.click()}
-                  className="absolute bottom-1 right-1 w-9 h-9 rounded-full bg-[#B55841] text-white flex items-center justify-center shadow-md hover:bg-[#9E4A35] transition-colors cursor-pointer ring-2 ring-white dark:ring-[#1E1A17]"
+                  className="absolute bottom-1 right-1 w-9 h-9 rounded-full bg-nova-accent text-nova-accent-contrast flex items-center justify-center shadow-md hover:bg-nova-accent-hover transition-colors cursor-pointer ring-2 ring-nova-surface"
                   title="Tải ảnh mới"
                 >
                   <Camera className="w-4 h-4" />
                 </button>
               </div>
-              <span className="text-[12px] font-semibold text-[#786962] dark:text-[#B5A89F] mt-2">
+              <span className="text-[12px] font-semibold text-nova-text-muted mt-2">
                 {previewError ? 'Không thể xem trước ảnh này' : 'Xem trước ảnh đại diện'}
               </span>
             </div>
 
             {uploadError && (
-              <div className="px-3.5 py-2.5 rounded-2xl bg-[#F7EAE5] dark:bg-[#35231E] border border-[#EBCDC2] dark:border-[#52352D] text-[12px] font-medium text-[#B55841] dark:text-[#D47A63]">
+              <div className="px-3.5 py-2.5 rounded-2xl bg-nova-danger-soft border border-nova-danger-border text-[12px] font-medium text-nova-danger">
                 {uploadError}
               </div>
             )}
@@ -147,21 +147,22 @@ export const AvatarModal: React.FC<AvatarModalProps> = ({
               className="hidden"
             />
             <button
+              type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="w-full min-h-[44px] py-2.5 px-4 bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#B55841]/50 hover:bg-[#F7EAE5]/40 dark:hover:bg-[#35231E]/40 rounded-2xl flex items-center justify-center gap-2 text-[#322622] dark:text-[#F4EDE6] text-[13px] font-bold transition-all shadow-xs cursor-pointer group"
+              className="w-full min-h-[44px] py-2.5 px-4 bg-nova-surface border border-nova-border hover:border-nova-taupe hover:bg-nova-bg-subtle rounded-2xl flex items-center justify-center gap-2 text-nova-text text-[13px] font-bold transition-all shadow-xs cursor-pointer group"
             >
-              <Upload className="w-4 h-4 text-[#B55841] dark:text-[#D47A63] group-hover:scale-110 transition-transform" />
+              <Upload className="w-4 h-4 text-nova-accent group-hover:scale-110 transition-transform" />
               <span>Tải ảnh từ thư viện thiết bị</span>
             </button>
 
             {/* Presets List */}
             <div>
               <div className="flex items-center justify-between mb-2.5">
-                <span className="text-[13px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-[#C4A46B]" />
-                  Bộ sưu tập Avatar Mẹ & Bé
+                <span className="text-[13px] font-bold text-nova-text flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-nova-taupe" />
+                  Bộ sưu tập ảnh đại diện Mẹ & Bé
                 </span>
-                <span className="text-[11px] text-[#786962] dark:text-[#B5A89F] tabular-nums">
+                <span className="text-[11px] text-nova-text-muted tabular-nums">
                   {AVATAR_PRESETS.length} mẫu
                 </span>
               </div>
@@ -180,11 +181,11 @@ export const AvatarModal: React.FC<AvatarModalProps> = ({
                       }}
                       className={`relative flex flex-col items-center p-2 rounded-2xl border cursor-pointer transition-all ${
                         isSelected
-                          ? 'border-[#B55841] bg-[#F7EAE5] dark:bg-[#35231E] shadow-xs ring-1 ring-[#B55841]'
-                          : 'border-[#E6DDD1] dark:border-[#362E2A] bg-white dark:bg-[#231E1B] hover:border-[#C4A46B]'
+                          ? 'border-nova-accent bg-nova-accent-soft shadow-xs ring-1 ring-nova-accent'
+                          : 'border-nova-border bg-nova-surface hover:border-nova-taupe'
                       }`}
                     >
-                      <div className="relative w-14 h-14 rounded-full overflow-hidden border border-white dark:border-[#362E2A] shadow-xs mb-1.5">
+                      <div className="relative w-14 h-14 rounded-full overflow-hidden border border-nova-border shadow-xs mb-1.5">
                         <NovaImage
                           src={preset.url}
                           alt={preset.name}
@@ -192,17 +193,17 @@ export const AvatarModal: React.FC<AvatarModalProps> = ({
                           loading="lazy"
                         />
                         {isSelected && (
-                          <div className="absolute inset-0 bg-[#B55841]/30 flex items-center justify-center backdrop-blur-[1px]">
-                            <div className="w-5 h-5 rounded-full bg-[#B55841] text-white flex items-center justify-center shadow-xs">
+                          <div className="absolute inset-0 bg-[#1C1B18]/35 flex items-center justify-center backdrop-blur-[1px]">
+                            <div className="w-5 h-5 rounded-full bg-nova-accent text-nova-accent-contrast flex items-center justify-center shadow-xs">
                               <Check className="w-3 h-3 stroke-[3]" />
                             </div>
                           </div>
                         )}
                       </div>
-                      <span className="text-[11px] font-bold text-[#322622] dark:text-[#F4EDE6] text-center truncate w-full">
+                      <span className="text-[11px] font-bold text-nova-text text-center truncate w-full">
                         {preset.name}
                       </span>
-                      <span className="text-[9.5px] text-[#786962] dark:text-[#B5A89F] text-center font-medium">
+                      <span className="text-[9.5px] text-nova-text-muted text-center font-medium">
                         {preset.tag}
                       </span>
                     </motion.div>
@@ -213,16 +214,18 @@ export const AvatarModal: React.FC<AvatarModalProps> = ({
           </div>
 
           {/* Action Footer */}
-          <div className="p-4 bg-white dark:bg-[#231E1B] border-t border-[#E6DDD1] dark:border-[#362E2A] flex items-center gap-3">
+          <div className="p-4 bg-nova-surface border-t border-nova-border flex items-center gap-3">
             <button
+              type="button"
               onClick={onClose}
-              className="flex-1 min-h-[44px] py-2.5 rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] text-[#6B5D56] dark:text-[#C5B9B0] text-[14px] font-bold hover:bg-[#F2ECE3] dark:hover:bg-[#2F2824] transition-colors cursor-pointer whitespace-nowrap"
+              className="flex-1 min-h-[44px] py-2.5 rounded-2xl border border-nova-border text-nova-text-muted text-[14px] font-bold hover:bg-nova-bg-subtle transition-colors cursor-pointer whitespace-nowrap"
             >
               Hủy
             </button>
             <button
+              type="button"
               onClick={handleSave}
-              className="flex-2 min-h-[44px] py-2.5 rounded-2xl bg-[#B55841] text-white text-[14px] font-bold hover:bg-[#9E4A35] transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-98 whitespace-nowrap"
+              className="flex-2 min-h-[44px] py-2.5 rounded-2xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-[14px] font-bold transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-98 whitespace-nowrap"
             >
               <Check className="w-4 h-4 stroke-[2.5]" />
               <span>Lưu ảnh đại diện</span>
@@ -233,4 +236,3 @@ export const AvatarModal: React.FC<AvatarModalProps> = ({
     </AnimatePresence>
   );
 };
-

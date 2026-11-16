@@ -139,27 +139,27 @@ export const WeeklyScreen: React.FC<WeeklyScreenProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-[#FAF6F0] dark:bg-[#161311] overflow-y-auto no-scrollbar select-none">
+    <div className="flex-1 flex flex-col bg-nova-bg text-nova-text overflow-y-auto no-scrollbar select-none">
       {toast && (
-        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-[#322622] dark:bg-[#231E1B] text-[#FAF6F0] border border-[#E6DDD1]/20 text-xs font-semibold px-4 py-2 rounded-full shadow-lg">
+        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-nova-text text-nova-bg border border-nova-border/20 text-xs font-semibold px-4 py-2 rounded-full shadow-lg">
           {toast}
         </div>
       )}
 
-      <header className="px-4 sm:px-5 py-3 flex items-center justify-between border-b border-[#E6DDD1] dark:border-[#362E2A] sticky top-0 bg-[#FAF6F0]/95 dark:bg-[#161311]/95 backdrop-blur-md z-20">
+      <header className="px-4 sm:px-5 py-3 flex items-center justify-between border-b border-nova-border sticky top-0 bg-nova-bg/95 backdrop-blur-md z-20">
         <div className="flex items-center gap-3">
           <button
             onClick={onBack}
             aria-label="Quay lại"
-            className="w-9 h-9 rounded-full bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-[#6B5D56] dark:text-[#C5B9B0] hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B] transition-colors cursor-pointer"
+            className="w-9 h-9 rounded-full bg-nova-surface border border-nova-border flex items-center justify-center text-nova-text-muted hover:bg-nova-bg-subtle transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
-            <h1 className="font-editorial text-[18px] font-bold text-[#322622] dark:text-[#F4EDE6] leading-tight">
-              Nova Weekly
+            <h1 className="font-editorial text-[18px] font-bold text-nova-text leading-tight">
+              Thai kỳ theo tuần
             </h1>
-            <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] tabular-nums">
+            <p className="text-[11px] text-nova-text-muted tabular-nums">
               Hồ sơ của mẹ: Tuần {user.pregnancyWeek} · Đang xem Tuần {selectedWeek}
             </p>
           </div>
@@ -170,8 +170,8 @@ export const WeeklyScreen: React.FC<WeeklyScreenProps> = ({
             aria-label="Yêu thích tuần thai"
             className={`w-9 h-9 rounded-full border flex items-center justify-center cursor-pointer transition-colors ${
               isWeekFav
-                ? 'bg-[#B55841] border-[#B55841] text-white'
-                : 'bg-white dark:bg-[#1E1A17] border-[#E6DDD1] dark:border-[#362E2A] text-[#786962] dark:text-[#B5A89F]'
+                ? 'bg-nova-accent border-nova-accent text-nova-accent-contrast'
+                : 'bg-nova-surface border-nova-border text-nova-text-muted hover:bg-nova-bg-subtle'
             }`}
           >
             <Bookmark className="w-4 h-4" fill={isWeekFav ? 'currentColor' : 'none'} />
@@ -185,7 +185,7 @@ export const WeeklyScreen: React.FC<WeeklyScreenProps> = ({
           <button
             onClick={() => setSelectedWeek((w) => Math.max(1, w - 1))}
             aria-label="Tuần trước"
-            className="w-9 h-9 rounded-xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-[#6B5D56] dark:text-[#C5B9B0] shrink-0 cursor-pointer hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B]"
+            className="w-9 h-9 rounded-xl bg-nova-surface border border-nova-border flex items-center justify-center text-nova-text-muted shrink-0 cursor-pointer hover:bg-nova-bg-subtle"
           >
             <ChevronLeft className="w-4 h-4" />
           </button>
@@ -196,45 +196,45 @@ export const WeeklyScreen: React.FC<WeeklyScreenProps> = ({
                 onClick={() => setSelectedWeek(w)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 cursor-pointer tabular-nums transition-colors whitespace-nowrap ${
                   selectedWeek === w
-                    ? 'bg-[#B55841] text-white shadow-2xs'
+                    ? 'bg-nova-accent text-nova-accent-contrast shadow-2xs'
                     : w === user.pregnancyWeek
-                    ? 'bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] border border-[#EBCDC2] dark:border-[#52352D]'
-                    : 'bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-[#6B5D56] dark:text-[#C5B9B0]'
+                    ? 'bg-nova-accent-soft text-nova-accent border border-nova-border'
+                    : 'bg-nova-surface border border-nova-border text-nova-text-muted hover:bg-nova-bg-subtle'
                 }`}
               >
-                T{w}
+                Tuần {w}
               </button>
             ))}
           </div>
           <button
             onClick={() => setSelectedWeek((w) => Math.min(40, w + 1))}
             aria-label="Tuần sau"
-            className="w-9 h-9 rounded-xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-[#6B5D56] dark:text-[#C5B9B0] shrink-0 cursor-pointer hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B]"
+            className="w-9 h-9 rounded-xl bg-nova-surface border border-nova-border flex items-center justify-center text-nova-text-muted shrink-0 cursor-pointer hover:bg-nova-bg-subtle"
           >
             <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
         {/* Week Hero Card */}
-        <div className="p-5 rounded-3xl bg-[#F7EAE5] dark:bg-[#231E1B] border border-[#EBCDC2] dark:border-[#362E2A]">
+        <div className="p-5 rounded-3xl bg-nova-accent-soft border border-nova-border">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 flex-wrap mb-1.5">
-                <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#B55841] dark:text-[#D47A63] tabular-nums">
+                <span className="text-[11px] font-extrabold uppercase tracking-wider text-nova-accent tabular-nums">
                   Tuần thai thứ {selectedWeek}
                 </span>
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-[#EBF1EC] dark:bg-[#1E2922] text-[#4F6B56] dark:text-[#8DA892] border border-[#C8D9CB] dark:border-[#33483A] px-2 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-nova-sage-soft text-nova-sage-text border border-nova-border px-2 py-0.5 rounded-full">
                   <ShieldCheck className="w-3 h-3" /> Đã kiểm duyệt y khoa
                 </span>
               </div>
-              <h2 className="font-editorial text-[20px] font-bold text-[#322622] dark:text-[#F4EDE6] leading-snug">
+              <h2 className="font-editorial text-[20px] font-bold text-nova-text leading-snug">
                 {milestone.title}
               </h2>
-              <p className="text-xs text-[#6B5D56] dark:text-[#C5B9B0] mt-1 tabular-nums">
-                Kích thước: <strong className="text-[#322622] dark:text-[#F4EDE6]">{fruit.fruitName}</strong> ({fruit.lengthDescription} · {fruit.weightDescription})
+              <p className="text-xs text-nova-text-muted mt-1 tabular-nums">
+                Kích thước: <strong className="text-nova-text">{fruit.fruitName}</strong> ({fruit.lengthDescription} · {fruit.weightDescription})
               </p>
             </div>
-            <div className="w-20 h-20 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#EBCDC2] dark:border-[#362E2A] flex flex-col items-center justify-center shrink-0">
+            <div className="w-20 h-20 rounded-2xl bg-nova-surface border border-nova-border flex flex-col items-center justify-center shrink-0">
               <span className="text-4xl">{fruit.fruitEmoji}</span>
             </div>
           </div>
@@ -244,8 +244,8 @@ export const WeeklyScreen: React.FC<WeeklyScreenProps> = ({
               onClick={handleMarkWeekRead}
               className={`min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer transition-colors whitespace-nowrap ${
                 isWeekRead
-                  ? 'bg-[#4F6B56] text-white'
-                  : 'bg-[#B55841] hover:bg-[#9E4A35] text-white'
+                  ? 'bg-nova-sage text-nova-accent-contrast'
+                  : 'bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast'
               }`}
             >
               <CheckCircle2 className="w-4 h-4" />
@@ -253,90 +253,88 @@ export const WeeklyScreen: React.FC<WeeklyScreenProps> = ({
             </button>
             <button
               onClick={handleCreateWeekReminder}
-              className="min-h-[40px] px-3.5 py-2 rounded-xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-xs font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5 cursor-pointer hover:bg-[#F2ECE3] dark:hover:bg-[#2F2824] transition-colors whitespace-nowrap"
+              className="min-h-[40px] px-3.5 py-2 rounded-xl bg-nova-surface border border-nova-border text-xs font-bold text-nova-text flex items-center gap-1.5 cursor-pointer hover:bg-nova-bg-subtle transition-colors whitespace-nowrap"
             >
-              <BellPlus className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" /> Tạo nhắc nhở tuần {selectedWeek}
+              <BellPlus className="w-4 h-4 text-nova-accent" /> Tạo nhắc nhở tuần {selectedWeek}
             </button>
           </div>
         </div>
 
         {/* Baby & Mother Details */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="p-4 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] space-y-2">
-            <h3 className="font-editorial text-[15px] font-bold text-[#B55841] dark:text-[#D47A63]">
+          <div className="p-4 rounded-2xl bg-nova-surface border border-nova-border space-y-2">
+            <h3 className="font-editorial text-[15px] font-bold text-nova-accent">
               Sự phát triển của bé
             </h3>
-            <p className="text-xs text-[#6B5D56] dark:text-[#C5B9B0] leading-relaxed">
+            <p className="text-xs text-nova-text-muted leading-relaxed">
               {milestone.babyDevelopment}
             </p>
-            <p className="text-[11px] font-semibold text-[#786962] dark:text-[#B5A89F]">
+            <p className="text-[11px] font-semibold text-nova-text-muted">
               {milestone.babySizeDesc}
             </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] space-y-2">
-            <h3 className="font-editorial text-[15px] font-bold text-[#4F6B56] dark:text-[#8DA892]">
+          <div className="p-4 rounded-2xl bg-nova-surface border border-nova-border space-y-2">
+            <h3 className="font-editorial text-[15px] font-bold text-nova-sage-text">
               Thay đổi ở cơ thể mẹ
             </h3>
-            <p className="text-xs text-[#6B5D56] dark:text-[#C5B9B0] leading-relaxed">
+            <p className="text-xs text-nova-text-muted leading-relaxed">
               {milestone.motherChanges}
             </p>
-            <p className="text-xs text-[#4F6B56] dark:text-[#8DA892] font-semibold leading-relaxed">
+            <p className="text-xs text-nova-sage-text font-semibold leading-relaxed">
               Dinh dưỡng: {milestone.nutritionAdvice}
             </p>
           </div>
         </div>
 
         {/* Checkup Milestone & Doctor Questions */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] space-y-2.5">
-          <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5">
-            <Stethoscope className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" /> Gợi ý chuẩn bị khám thai
+        <div className="p-4 rounded-2xl bg-nova-surface border border-nova-border space-y-2.5">
+          <h3 className="font-editorial text-[15px] font-bold text-nova-text flex items-center gap-1.5">
+            <Stethoscope className="w-4 h-4 text-nova-accent" /> Gợi ý chuẩn bị khám thai
           </h3>
           {milestone.checkupMilestone && (
-            <div className="p-3 rounded-xl bg-[#F7EAE5] dark:bg-[#35231E] border border-[#EBCDC2] dark:border-[#52352D] text-xs font-semibold text-[#B55841] dark:text-[#D47A63]">
+            <div className="p-3 rounded-xl bg-nova-accent-soft border border-nova-border text-xs font-semibold text-nova-accent">
               {milestone.checkupMilestone}
             </div>
           )}
           <ul className="space-y-1.5">
             {milestone.doctorQuestions.map((q, i) => (
-              <li key={i} className="text-xs text-[#6B5D56] dark:text-[#C5B9B0] flex items-start gap-2">
-                <span className="font-bold text-[#B55841] dark:text-[#D47A63]">•</span>
+              <li key={i} className="text-xs text-nova-text-muted flex items-start gap-2">
+                <span className="font-bold text-nova-accent">•</span>
                 <span>{q}</span>
               </li>
             ))}
           </ul>
-          <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] pt-2 border-t border-[#E6DDD1] dark:border-[#362E2A]">
+          <p className="text-[11px] text-nova-text-muted pt-2 border-t border-nova-border">
             Nguồn tham khảo: {milestone.medicalSource} · Tài liệu phục vụ tham khảo, không thay thế khám bác sĩ.
           </p>
         </div>
 
         {/* Matched Checklist */}
         {matchedChecklists.length > 0 && (
-          <div className="p-4 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] space-y-2">
+          <div className="p-4 rounded-2xl bg-nova-surface border border-nova-border space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5">
-                <CheckSquare className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892]" /> Checklist gợi ý giai đoạn này
+              <h3 className="text-sm font-bold text-nova-text flex items-center gap-1.5">
+                <CheckSquare className="w-4 h-4 text-nova-sage-text" /> Sổ chuẩn bị gợi ý giai đoạn này
               </h3>
               <button
                 onClick={() => onNavigateScreen('checklist')}
-                className="text-xs font-bold text-[#B55841] dark:text-[#D47A63] cursor-pointer whitespace-nowrap"
+                className="text-xs font-bold text-nova-accent cursor-pointer whitespace-nowrap"
               >
-                Mở Checklist →
+                Mở sổ chuẩn bị →
               </button>
             </div>
             {matchedChecklists.slice(0, 3).map((item) => (
               <div
                 key={item.id}
-                className="p-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs flex items-center justify-between gap-2"
+                className="p-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs flex items-center justify-between gap-2"
               >
-                <span className={item.completed ? 'line-through text-[#786962] dark:text-[#B5A89F]' : 'font-medium text-[#322622] dark:text-[#F4EDE6]'}>
+                <span className={item.completed ? 'line-through text-nova-text-muted' : 'font-medium text-nova-text'}>
                   {item.title}
                 </span>
                 <span
                   className={`text-[10px] font-bold shrink-0 ${
-                    item.completed
-                      ? 'text-[#4F6B56] dark:text-[#8DA892]'
-                      : 'text-[#9E5B3B] dark:text-[#D7BA86]'
+                    item.completed ? 'text-nova-sage-text' : 'text-nova-warning'
                   }`}
                 >
                   {item.completed ? 'Xong' : 'Cần làm'}
@@ -348,14 +346,14 @@ export const WeeklyScreen: React.FC<WeeklyScreenProps> = ({
 
         {/* Matched Articles & Videos */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          <div className="p-4 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] space-y-2">
+          <div className="p-4 rounded-2xl bg-nova-surface border border-nova-border space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5">
-                <BookOpen className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892]" /> Bài đọc phù hợp Tuần {selectedWeek}
+              <h3 className="text-sm font-bold text-nova-text flex items-center gap-1.5">
+                <BookOpen className="w-4 h-4 text-nova-sage-text" /> Bài đọc phù hợp Tuần {selectedWeek}
               </h3>
               <button
                 onClick={() => onNavigateScreen('library')}
-                className="text-xs font-bold text-[#B55841] dark:text-[#D47A63] cursor-pointer whitespace-nowrap"
+                className="text-xs font-bold text-nova-accent cursor-pointer whitespace-nowrap"
               >
                 Tất cả
               </button>
@@ -364,22 +362,22 @@ export const WeeklyScreen: React.FC<WeeklyScreenProps> = ({
               <button
                 key={art.id}
                 onClick={() => onNavigateScreen('library', { articleId: art.id })}
-                className="w-full p-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] text-left hover:border-[#B55841] border border-[#E6DDD1] dark:border-[#362E2A] cursor-pointer block transition-colors"
+                className="w-full p-2.5 rounded-xl bg-nova-bg text-left hover:border-nova-accent border border-nova-border cursor-pointer block transition-colors"
               >
-                <p className="text-xs font-bold text-[#322622] dark:text-[#F4EDE6] truncate">{art.title}</p>
-                <p className="text-[10.5px] text-[#786962] dark:text-[#B5A89F] truncate mt-0.5">{art.medicalSource}</p>
+                <p className="text-xs font-bold text-nova-text truncate">{art.title}</p>
+                <p className="text-[10.5px] text-nova-text-muted truncate mt-0.5">{art.medicalSource}</p>
               </button>
             ))}
           </div>
 
-          <div className="p-4 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] space-y-2">
+          <div className="p-4 rounded-2xl bg-nova-surface border border-nova-border space-y-2">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5">
-                <PlayCircle className="w-4 h-4 text-[#9E5B3B] dark:text-[#D7BA86]" /> Video thai giáo phù hợp
+              <h3 className="text-sm font-bold text-nova-text flex items-center gap-1.5">
+                <PlayCircle className="w-4 h-4 text-nova-accent" /> Video thai giáo phù hợp
               </h3>
               <button
                 onClick={() => onNavigateScreen('video')}
-                className="text-xs font-bold text-[#B55841] dark:text-[#D47A63] cursor-pointer whitespace-nowrap"
+                className="text-xs font-bold text-nova-accent cursor-pointer whitespace-nowrap"
               >
                 Xem thêm
               </button>
@@ -388,13 +386,13 @@ export const WeeklyScreen: React.FC<WeeklyScreenProps> = ({
               <button
                 key={vid.id}
                 onClick={() => onNavigateScreen('video', { videoId: vid.id })}
-                className="w-full p-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#B55841] text-left cursor-pointer flex items-center justify-between gap-2 transition-colors"
+                className="w-full p-2.5 rounded-xl bg-nova-bg border border-nova-border hover:border-nova-accent text-left cursor-pointer flex items-center justify-between gap-2 transition-colors"
               >
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-[#322622] dark:text-[#F4EDE6] truncate">{vid.title}</p>
-                  <p className="text-[10.5px] text-[#786962] dark:text-[#B5A89F] truncate">{vid.channelName}</p>
+                  <p className="text-xs font-bold text-nova-text truncate">{vid.title}</p>
+                  <p className="text-[10.5px] text-nova-text-muted truncate">{vid.channelName}</p>
                 </div>
-                <PlayCircle className="w-4 h-4 text-[#9E5B3B] dark:text-[#D7BA86] shrink-0" />
+                <PlayCircle className="w-4 h-4 text-nova-accent shrink-0" />
               </button>
             ))}
           </div>

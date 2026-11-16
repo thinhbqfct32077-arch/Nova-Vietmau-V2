@@ -105,7 +105,7 @@ export const JourneyScreen: React.FC<JourneyScreenProps> = ({
       );
       setJourney(saved);
       storageService.setOfflineCache(user.id, 'journey', saved);
-      showMsg('Đã cập nhật tuổi thai & lưu lịch sử thay đổi');
+      showMsg('Đã cập nhật tuổi thai và lưu lịch sử thay đổi');
     } catch {
       showMsg('Đã lưu ngày dự sinh mới trên thiết bị');
     }
@@ -126,36 +126,36 @@ export const JourneyScreen: React.FC<JourneyScreenProps> = ({
   });
 
   return (
-    <div className="flex-1 flex flex-col bg-[#FAF6F0] dark:bg-[#161311] overflow-y-auto no-scrollbar select-none">
+    <div className="flex-1 flex flex-col bg-nova-bg text-nova-text overflow-y-auto no-scrollbar select-none">
       {toast && (
-        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-[#322622] dark:bg-[#231E1B] text-[#FAF6F0] border border-[#E6DDD1]/20 text-xs font-semibold px-4 py-2 rounded-full shadow-lg flex items-center gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 text-[#D7BA86]" />
+        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-nova-text text-nova-bg border border-nova-border/20 text-xs font-semibold px-4 py-2 rounded-full shadow-lg flex items-center gap-1.5">
+          <Sparkles className="w-3.5 h-3.5 text-nova-taupe" />
           <span>{toast}</span>
         </div>
       )}
 
       {/* Header */}
-      <header className="px-4 sm:px-5 py-3 flex items-center justify-between border-b border-[#E6DDD1] dark:border-[#362E2A] sticky top-0 bg-[#FAF6F0]/95 dark:bg-[#161311]/95 backdrop-blur-md z-20">
+      <header className="px-4 sm:px-5 py-3 flex items-center justify-between border-b border-nova-border sticky top-0 bg-nova-bg/95 backdrop-blur-md z-20">
         <div className="flex items-center gap-3">
           <button
             onClick={onBack}
             aria-label="Quay lại"
-            className="w-9 h-9 rounded-full bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-[#6B5D56] dark:text-[#C5B9B0] hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B] transition-colors cursor-pointer"
+            className="w-9 h-9 rounded-full bg-nova-surface border border-nova-border flex items-center justify-center text-nova-text-muted hover:bg-nova-bg-subtle transition-colors cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
-            <h1 className="font-editorial text-[18px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5 leading-tight">
-              <Compass className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" /> Hành trình 40 tuần
+            <h1 className="font-editorial text-[18px] font-bold text-nova-text flex items-center gap-1.5 leading-tight">
+              <Compass className="w-4 h-4 text-nova-accent" /> Hành trình 40 tuần
             </h1>
-            <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">
-              Theo dõi cột mốc phát triển & lịch sử dự sinh
+            <p className="text-[11px] text-nova-text-muted">
+              Theo dõi cột mốc phát triển và lịch sử dự sinh
             </p>
           </div>
         </div>
         <button
           onClick={() => setShowEditDueModal(true)}
-          className="min-h-[38px] px-3 py-1.5 rounded-xl bg-[#F7EAE5] dark:bg-[#35231E] border border-[#EBCDC2] dark:border-[#52352D] text-[#B55841] dark:text-[#D47A63] text-xs font-bold flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
+          className="min-h-[38px] px-3 py-1.5 rounded-xl bg-nova-accent-soft border border-nova-border text-nova-accent text-xs font-bold flex items-center gap-1.5 cursor-pointer whitespace-nowrap hover:bg-nova-bg-subtle transition-colors"
         >
           <Edit3 className="w-3.5 h-3.5" /> Đổi dự sinh
         </button>
@@ -163,24 +163,24 @@ export const JourneyScreen: React.FC<JourneyScreenProps> = ({
 
       <div className="p-4 sm:p-5 space-y-4">
         {/* Progress Summary */}
-        <div className="p-4 sm:p-5 rounded-3xl bg-[#F7EAE5] dark:bg-[#231E1B] border border-[#EBCDC2] dark:border-[#362E2A] space-y-3">
+        <div className="p-4 sm:p-5 rounded-3xl bg-nova-accent-soft border border-nova-border space-y-3">
           <div className="flex items-center justify-between gap-3">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-[#B55841] dark:text-[#D47A63]">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-nova-accent">
                 Tuổi thai hiện tại
               </p>
-              <h2 className="font-editorial text-[26px] font-bold text-[#322622] dark:text-[#F4EDE6] tabular-nums leading-tight mt-0.5">
+              <h2 className="font-editorial text-[26px] font-bold text-nova-text tabular-nums leading-tight mt-0.5">
                 Tuần {summary.weeks} {summary.days > 0 ? `+ ${summary.days} ngày` : ''}
               </h2>
-              <p className="text-xs text-[#6B5D56] dark:text-[#C5B9B0] mt-1 tabular-nums">
-                Dự sinh: <strong className="text-[#322622] dark:text-[#F4EDE6]">{user.dueDate}</strong> · Còn {summary.daysRemaining} ngày
+              <p className="text-xs text-nova-text-muted mt-1 tabular-nums">
+                Dự sinh: <strong className="text-nova-text">{user.dueDate}</strong> · Còn {summary.daysRemaining} ngày
               </p>
             </div>
             <div className="text-right shrink-0">
-              <div className="w-14 h-14 ml-auto rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#EBCDC2] dark:border-[#362E2A] flex items-center justify-center mb-1">
+              <div className="w-14 h-14 ml-auto rounded-2xl bg-nova-surface border border-nova-border flex items-center justify-center mb-1">
                 <span className="text-3xl">{summary.fruitComparison.fruitEmoji}</span>
               </div>
-              <p className="text-[11px] font-bold text-[#4F6B56] dark:text-[#8DA892]">
+              <p className="text-[11px] font-bold text-nova-sage-text">
                 {summary.fruitComparison.fruitName}
               </p>
             </div>
@@ -188,16 +188,16 @@ export const JourneyScreen: React.FC<JourneyScreenProps> = ({
 
           <div className="space-y-1.5">
             <div className="flex justify-between text-[11px] font-bold">
-              <span className="text-[#322622] dark:text-[#F4EDE6] tabular-nums">
+              <span className="text-nova-text tabular-nums">
                 Tiến trình thai kỳ ({summary.progressPercent}%)
               </span>
-              <span className="text-[#B55841] dark:text-[#D47A63] tabular-nums">
+              <span className="text-nova-accent tabular-nums">
                 {journey.completedMilestoneWeeks.length}/40 cột mốc đã đánh dấu
               </span>
             </div>
-            <div className="h-2.5 w-full rounded-full bg-white/85 dark:bg-[#161311] overflow-hidden">
+            <div className="h-2.5 w-full rounded-full bg-nova-surface overflow-hidden">
               <div
-                className="h-full bg-[#B55841] dark:bg-[#D47A63] rounded-full transition-all"
+                className="h-full bg-nova-accent rounded-full transition-all"
                 style={{ width: `${summary.progressPercent}%` }}
               />
             </div>
@@ -205,18 +205,18 @@ export const JourneyScreen: React.FC<JourneyScreenProps> = ({
         </div>
 
         {/* Monthly Progress Grid */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A]">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-[#786962] dark:text-[#B5A89F] mb-2.5">
+        <div className="p-4 rounded-2xl bg-nova-surface border border-nova-border">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-nova-text-muted mb-2.5">
             Tổng quan 9 tháng thai kỳ
           </h3>
           <div className="grid grid-cols-3 sm:grid-cols-9 gap-2">
             {monthlyStats.map((m) => (
               <div
                 key={m.month}
-                className="p-2 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] text-center border border-[#E6DDD1] dark:border-[#362E2A]"
+                className="p-2 rounded-xl bg-nova-bg text-center border border-nova-border"
               >
-                <p className="text-[10px] font-bold text-[#786962] dark:text-[#B5A89F]">Tháng {m.month}</p>
-                <p className="text-xs font-extrabold text-[#B55841] dark:text-[#D47A63] tabular-nums mt-0.5">
+                <p className="text-[10px] font-bold text-nova-text-muted">Tháng {m.month}</p>
+                <p className="text-xs font-extrabold text-nova-accent tabular-nums mt-0.5">
                   {m.done}/{m.total}
                 </p>
               </div>
@@ -227,20 +227,23 @@ export const JourneyScreen: React.FC<JourneyScreenProps> = ({
         {/* Trimester Switcher */}
         <div className="grid grid-cols-3 gap-2">
           {[
-            { id: 1 as const, label: 'Tam cá 1 (1–13w)' },
-            { id: 2 as const, label: 'Tam cá 2 (14–27w)' },
-            { id: 3 as const, label: 'Tam cá 3 (28–40w)' },
+            { id: 1 as const, label: 'Tam cá nguyệt 1', sub: 'Tuần 1–13' },
+            { id: 2 as const, label: 'Tam cá nguyệt 2', sub: 'Tuần 14–27' },
+            { id: 3 as const, label: 'Tam cá nguyệt 3', sub: 'Tuần 28–40' },
           ].map((t) => (
             <button
               key={t.id}
               onClick={() => setActiveTrimester(t.id)}
-              className={`min-h-[42px] py-2.5 px-2 rounded-2xl text-xs font-bold transition-colors cursor-pointer whitespace-nowrap tabular-nums ${
+              className={`min-h-[48px] py-2 px-2 rounded-2xl text-center transition-colors cursor-pointer tabular-nums flex flex-col items-center justify-center ${
                 activeTrimester === t.id
-                  ? 'bg-[#B55841] text-white shadow-2xs'
-                  : 'bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-[#6B5D56] dark:text-[#C5B9B0] hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B]'
+                  ? 'bg-nova-accent text-nova-accent-contrast shadow-2xs'
+                  : 'bg-nova-surface border border-nova-border text-nova-text-muted hover:bg-nova-bg-subtle'
               }`}
             >
-              {t.label}
+              <span className="text-[11.5px] font-bold leading-tight">{t.label}</span>
+              <span className={`text-[10px] mt-0.5 ${activeTrimester === t.id ? 'opacity-85' : 'opacity-75'}`}>
+                {t.sub}
+              </span>
             </button>
           ))}
         </div>
@@ -257,8 +260,8 @@ export const JourneyScreen: React.FC<JourneyScreenProps> = ({
                 key={week}
                 className={`p-3.5 rounded-2xl border transition-all flex items-start gap-3 ${
                   isCurrent
-                    ? 'bg-[#F7EAE5]/65 dark:bg-[#35231E]/60 border-[#B55841]'
-                    : 'bg-white dark:bg-[#1E1A17] border-[#E6DDD1] dark:border-[#362E2A]'
+                    ? 'bg-nova-accent-soft border-nova-accent'
+                    : 'bg-nova-surface border-nova-border'
                 }`}
               >
                 <button
@@ -267,40 +270,40 @@ export const JourneyScreen: React.FC<JourneyScreenProps> = ({
                   className="mt-0.5 shrink-0 cursor-pointer"
                 >
                   {isCompleted ? (
-                    <CheckCircle2 className="w-6 h-6 text-[#4F6B56] dark:text-[#8DA892]" />
+                    <CheckCircle2 className="w-6 h-6 text-nova-sage-text" />
                   ) : (
-                    <Circle className="w-6 h-6 text-[#C5B9B0] dark:text-[#4A403B]" />
+                    <Circle className="w-6 h-6 text-nova-icon" />
                   )}
                 </button>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-sm font-extrabold text-[#322622] dark:text-[#F4EDE6] tabular-nums">
+                      <span className="text-sm font-extrabold text-nova-text tabular-nums">
                         Tuần {week}
                       </span>
-                      <span className="text-[#D6CCC0] dark:text-[#4A403B]">·</span>
-                      <span className="text-xs font-medium text-[#6B5D56] dark:text-[#C5B9B0]">
+                      <span className="text-nova-border">·</span>
+                      <span className="text-xs font-medium text-nova-text-muted">
                         {fruit.fruitEmoji} {fruit.fruitName}
                       </span>
                       {isCurrent && (
-                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#B55841] text-white whitespace-nowrap">
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-nova-accent text-nova-accent-contrast whitespace-nowrap">
                           Hiện tại
                         </span>
                       )}
                     </div>
                     <button
                       onClick={() => onOpenWeek(week)}
-                      className="text-[11px] font-bold text-[#B55841] dark:text-[#D47A63] flex items-center gap-0.5 cursor-pointer hover:underline whitespace-nowrap"
+                      className="text-[11px] font-bold text-nova-accent flex items-center gap-0.5 cursor-pointer hover:underline whitespace-nowrap"
                     >
                       Chi tiết <ChevronRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
-                  <p className="text-xs font-bold text-[#322622] dark:text-[#F4EDE6] mt-1">{info.title}</p>
-                  <p className="text-[11.5px] text-[#6B5D56] dark:text-[#C5B9B0] mt-0.5 line-clamp-2">
+                  <p className="text-xs font-bold text-nova-text mt-1">{info.title}</p>
+                  <p className="text-[11.5px] text-nova-text-muted mt-0.5 line-clamp-2">
                     {info.babyDevelopment}
                   </p>
                   {info.checkupMilestone && (
-                    <p className="text-[11px] text-[#B55841] dark:text-[#D47A63] font-semibold mt-1">
+                    <p className="text-[11px] text-nova-accent font-semibold mt-1">
                       Mốc khám: {info.checkupMilestone}
                     </p>
                   )}
@@ -311,28 +314,28 @@ export const JourneyScreen: React.FC<JourneyScreenProps> = ({
         </div>
 
         {/* Due Date Adjustment History */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] space-y-2.5">
-          <h3 className="text-xs font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5">
-            <History className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" /> Lịch sử điều chỉnh ngày dự sinh
+        <div className="p-4 rounded-2xl bg-nova-surface border border-nova-border space-y-2.5">
+          <h3 className="text-xs font-bold text-nova-text flex items-center gap-1.5">
+            <History className="w-4 h-4 text-nova-accent" /> Lịch sử điều chỉnh ngày dự sinh
           </h3>
           {journey.dueDateHistory.length === 0 ? (
-            <p className="text-[11.5px] text-[#786962] dark:text-[#B5A89F]">
-              Chưa có lần điều chỉnh nào. Nhấn "Đổi dự sinh" để cập nhật theo siêu âm mới.
+            <p className="text-[11.5px] text-nova-text-muted">
+              Chưa có lần điều chỉnh nào. Nhấn "Đổi dự sinh" để cập nhật theo kết quả siêu âm mới.
             </p>
           ) : (
             <div className="space-y-2">
               {journey.dueDateHistory.map((h) => (
                 <div
                   key={h.id}
-                  className="p-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs flex items-center justify-between gap-2"
+                  className="p-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs flex items-center justify-between gap-2"
                 >
                   <div>
-                    <p className="font-bold text-[#322622] dark:text-[#F4EDE6] tabular-nums">
+                    <p className="font-bold text-nova-text tabular-nums">
                       {h.previousDueDate} (Tuần {h.previousWeek}) → {h.newDueDate} (Tuần {h.newWeek})
                     </p>
-                    <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">{h.reason}</p>
+                    <p className="text-[11px] text-nova-text-muted">{h.reason}</p>
                   </div>
-                  <span className="text-[10px] text-[#786962] dark:text-[#B5A89F] shrink-0 tabular-nums">
+                  <span className="text-[10px] text-nova-text-muted shrink-0 tabular-nums">
                     {new Date(h.changedAt).toLocaleDateString('vi-VN')}
                   </span>
                 </div>
@@ -344,34 +347,34 @@ export const JourneyScreen: React.FC<JourneyScreenProps> = ({
 
       {/* Edit Due Date Modal */}
       {showEditDueModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#161311]/60 backdrop-blur-xs">
-          <div className="w-full max-w-sm bg-[#FAF6F0] dark:bg-[#1E1A17] rounded-3xl p-5 border border-[#E6DDD1] dark:border-[#362E2A] space-y-3 shadow-2xl">
-            <div className="flex items-center justify-between pb-2 border-b border-[#E6DDD1] dark:border-[#362E2A]">
-              <h3 className="font-editorial text-[18px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5">
-                <Calendar className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" /> Cập nhật ngày dự sinh
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1C1B18]/60 backdrop-blur-xs">
+          <div className="w-full max-w-sm bg-nova-surface-elevated rounded-3xl p-5 border border-nova-border space-y-3 shadow-2xl">
+            <div className="flex items-center justify-between pb-2 border-b border-nova-border">
+              <h3 className="font-editorial text-[18px] font-bold text-nova-text flex items-center gap-1.5">
+                <Calendar className="w-4 h-4 text-nova-accent" /> Cập nhật ngày dự sinh
               </h3>
               <button
                 onClick={() => setShowEditDueModal(false)}
                 aria-label="Đóng"
-                className="w-8 h-8 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] dark:text-[#B5A89F] flex items-center justify-center cursor-pointer"
+                className="w-8 h-8 rounded-full bg-nova-bg-subtle text-nova-text-muted flex items-center justify-center cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
             <div className="space-y-2.5">
               <div>
-                <label className="block text-[11px] font-bold text-[#6B5D56] dark:text-[#C5B9B0] mb-1">
-                  Ngày dự sinh mới (DD/MM/YYYY)
+                <label className="block text-[11px] font-bold text-nova-text-muted mb-1">
+                  Ngày dự sinh mới (Ngày/Tháng/Năm)
                 </label>
                 <input
                   type="text"
                   value={newDueDate}
                   onChange={(e) => setNewDueDate(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-sm text-[#322622] dark:text-[#F4EDE6] tabular-nums"
+                  className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-sm text-nova-text tabular-nums focus:outline-none focus:border-nova-accent"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-bold text-[#6B5D56] dark:text-[#C5B9B0] mb-1">
+                <label className="block text-[11px] font-bold text-nova-text-muted mb-1">
                   Tuần thai hiện tại (1 - 42)
                 </label>
                 <input
@@ -380,33 +383,33 @@ export const JourneyScreen: React.FC<JourneyScreenProps> = ({
                   max={42}
                   value={newWeek}
                   onChange={(e) => setNewWeek(Number(e.target.value))}
-                  className="w-full px-3 py-2.5 rounded-xl bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-sm text-[#322622] dark:text-[#F4EDE6] tabular-nums"
+                  className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-sm text-nova-text tabular-nums focus:outline-none focus:border-nova-accent"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-bold text-[#6B5D56] dark:text-[#C5B9B0] mb-1">
+                <label className="block text-[11px] font-bold text-nova-text-muted mb-1">
                   Lý do cập nhật
                 </label>
                 <input
                   type="text"
                   value={reason}
                   onChange={(e) => setReason(e.target.value)}
-                  className="w-full px-3 py-2.5 rounded-xl bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-sm text-[#322622] dark:text-[#F4EDE6]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-sm text-nova-text focus:outline-none focus:border-nova-accent"
                 />
               </div>
             </div>
             <div className="flex gap-2 pt-2">
               <button
                 onClick={() => setShowEditDueModal(false)}
-                className="flex-1 min-h-[44px] py-2.5 rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] text-xs font-bold text-[#6B5D56] dark:text-[#C5B9B0] cursor-pointer"
+                className="flex-1 min-h-[44px] py-2.5 rounded-xl border border-nova-border bg-nova-bg text-xs font-bold text-nova-text-muted cursor-pointer"
               >
                 Hủy
               </button>
               <button
                 onClick={handleSaveDueDate}
-                className="flex-1 min-h-[44px] py-2.5 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-xs font-bold cursor-pointer transition-colors"
+                className="flex-1 min-h-[44px] py-2.5 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-bold cursor-pointer transition-colors"
               >
-                Lưu & Ghi lịch sử
+                Lưu và ghi lịch sử
               </button>
             </div>
           </div>

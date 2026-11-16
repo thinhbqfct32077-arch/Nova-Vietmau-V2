@@ -43,7 +43,7 @@ const LOG_TYPES: { id: BabyCareLog['type']; label: string }[] = [
   { id: 'diaper', label: 'Thay tã' },
   { id: 'sleep', label: 'Giấc ngủ bé' },
   { id: 'bath', label: 'Tắm bé' },
-  { id: 'tummy_time', label: 'Tummy Time' },
+  { id: 'tummy_time', label: 'Tập nằm sấp cho bé' },
   { id: 'note', label: 'Ghi chú khác' },
 ];
 
@@ -141,7 +141,7 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
     onUpdateUser({ pregnancyStatus: postpartumOn ? 'postpartum' : 'pregnant' });
     notify(
       postpartumOn
-        ? 'Đã bật chế độ Sau sinh & Chăm sóc bé (dữ liệu thai kỳ vẫn được giữ nguyên).'
+        ? 'Đã bật chế độ Sau sinh và chăm sóc bé (dữ liệu thai kỳ vẫn được giữ nguyên).'
         : 'Đã chuyển về chế độ Theo dõi thai kỳ.'
     );
   };
@@ -217,7 +217,7 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
 
     setLogTitle('');
     setLogDetails('');
-    notify(createReminder ? 'Đã lưu nhật ký bé & tạo nhắc nhở!' : 'Đã lưu nhật ký chăm bé!');
+    notify(createReminder ? 'Đã lưu nhật ký bé và tạo nhắc nhở!' : 'Đã lưu nhật ký chăm bé!');
   };
 
   const handleAddMomDiary = async (e: React.FormEvent) => {
@@ -279,46 +279,46 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] overflow-y-auto no-scrollbar pb-16">
+    <div className="flex-1 flex flex-col bg-nova-bg text-nova-text overflow-y-auto no-scrollbar pb-16">
       {toast && (
-        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-[#322622] dark:bg-[#F4EDE6] text-white dark:text-[#161311] text-xs font-bold px-4 py-2 rounded-full shadow-xl">
+        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-nova-text text-nova-bg text-xs font-bold px-4 py-2 rounded-full shadow-xl">
           {toast}
         </div>
       )}
 
       {/* Header */}
-      <header className="px-4 sm:px-6 pt-3 pb-3 flex items-center justify-between border-b border-[#E6DDD1] dark:border-[#362E2A] bg-[#FAF6F0]/95 dark:bg-[#161311]/95 backdrop-blur-md sticky top-0 z-20">
+      <header className="px-4 sm:px-6 pt-3 pb-3 flex items-center justify-between border-b border-nova-border bg-nova-bg/95 backdrop-blur-md sticky top-0 z-20">
         <div className="flex items-center gap-2.5 min-w-0">
           <button
             onClick={onBack}
-            className="w-10 h-10 rounded-full bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-[#6B5D56] dark:text-[#C5B9B0] cursor-pointer shrink-0 hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B]"
+            className="w-10 h-10 rounded-full bg-nova-surface border border-nova-border flex items-center justify-center text-nova-text-muted cursor-pointer shrink-0 hover:bg-nova-bg-subtle"
             aria-label="Quay lại"
           >
             <ArrowLeft className="w-4.5 h-4.5" />
           </button>
           <div className="min-w-0">
-            <h1 className="font-editorial text-[17px] font-bold text-[#322622] dark:text-[#F4EDE6] leading-tight flex items-center gap-1.5 truncate">
-              <Baby className="w-4.5 h-4.5 text-[#B55841] dark:text-[#D47A63] shrink-0" />
-              <span>Sau sinh & Chăm sóc bé</span>
+            <h1 className="font-editorial text-[17px] font-bold text-nova-text leading-tight flex items-center gap-1.5 truncate">
+              <Baby className="w-4.5 h-4.5 text-nova-accent shrink-0" />
+              <span>Sau sinh và chăm sóc bé</span>
             </h1>
-            <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] truncate">Chuyển giai đoạn nhẹ nhàng, lưu trọn ký ức thai kỳ</p>
+            <p className="text-[11px] text-nova-text-muted truncate">Chuyển giai đoạn nhẹ nhàng, lưu trọn ký ức thai kỳ</p>
           </div>
         </div>
       </header>
 
       <div className="px-4 sm:px-6 pt-4 space-y-4 max-w-5xl mx-auto w-full">
         {/* Hero Banner & Stage Switcher */}
-        <div className="relative rounded-3xl overflow-hidden border border-[#E6DDD1] dark:border-[#362E2A] bg-white dark:bg-[#1E1A17] shadow-xs">
+        <div className="relative rounded-3xl overflow-hidden border border-nova-border bg-nova-surface shadow-xs">
           <div className="h-36 sm:h-44 w-full overflow-hidden relative">
             <NovaImage
               src={ECOSYSTEM_BANNERS.babyBanner}
               alt="Mẹ và bé sau sinh"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#161311]/75 via-[#161311]/25 to-transparent" />
-            <div className="absolute bottom-3 left-4 right-4 text-white">
-              <span className="text-[10px] font-bold uppercase tracking-wider bg-white/20 backdrop-blur-xs px-2.5 py-0.5 rounded-md">
-                {state.isPostpartumMode ? 'Đang ở chế độ Sau sinh & Em bé' : 'Chế độ chuẩn bị đón bé'}
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1C1B18]/75 via-[#1C1B18]/25 to-transparent" />
+            <div className="absolute bottom-3 left-4 right-4 text-[#FAF9F6]">
+              <span className="text-[10px] font-bold uppercase tracking-wider bg-[#1C1B18]/45 backdrop-blur-xs px-2.5 py-0.5 rounded-md">
+                {state.isPostpartumMode ? 'Đang ở chế độ Sau sinh và em bé' : 'Chế độ chuẩn bị đón bé'}
               </span>
               <h2 className="font-editorial text-base sm:text-lg font-bold mt-1">
                 Đồng hành cùng mẹ hồi phục và theo dõi từng tháng đầu đời của bé
@@ -327,17 +327,17 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
           </div>
 
           <div className="p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <p className="text-xs text-[#6B5D56] dark:text-[#C5B9B0]">
+            <p className="text-xs text-nova-text-muted">
               Việc bật chế độ Sau sinh hoàn toàn không xóa nhật ký, siêu âm hay kỷ niệm thai kỳ cũ.
             </p>
             <div className="flex items-center gap-2 shrink-0">
               <button
                 type="button"
                 onClick={() => handleToggleMode(false)}
-                className={`min-h-[38px] px-3 py-2 rounded-xl text-xs font-bold cursor-pointer whitespace-nowrap ${
+                className={`min-h-[38px] px-3 py-2 rounded-xl text-xs font-bold cursor-pointer whitespace-nowrap transition-colors ${
                   !state.isPostpartumMode
-                    ? 'bg-[#322622] dark:bg-[#F4EDE6] text-white dark:text-[#161311]'
-                    : 'bg-[#F2ECE3] dark:bg-[#231E1B] text-[#6B5D56] dark:text-[#C5B9B0]'
+                    ? 'bg-nova-text text-nova-bg'
+                    : 'bg-nova-bg-subtle text-nova-text-muted'
                 }`}
               >
                 Thai kỳ
@@ -345,13 +345,13 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
               <button
                 type="button"
                 onClick={() => handleToggleMode(true)}
-                className={`min-h-[38px] px-3 py-2 rounded-xl text-xs font-bold cursor-pointer whitespace-nowrap ${
+                className={`min-h-[38px] px-3 py-2 rounded-xl text-xs font-bold cursor-pointer whitespace-nowrap transition-colors ${
                   state.isPostpartumMode
-                    ? 'bg-[#B55841] text-white'
-                    : 'bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63]'
+                    ? 'bg-nova-accent text-nova-accent-contrast'
+                    : 'bg-nova-accent-soft text-nova-accent'
                 }`}
               >
-                Sau sinh & Em bé
+                Sau sinh và em bé
               </button>
             </div>
           </div>
@@ -360,18 +360,18 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
         {/* Navigation Sub-tabs */}
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
           {[
-            { id: 'overview' as const, label: 'Hồ sơ & Checklist' },
-            { id: 'logs' as const, label: 'Nhật ký mẹ & chăm bé' },
-            { id: 'milestones' as const, label: 'Mốc 0–12 tháng & Cẩm nang' },
+            { id: 'overview' as const, label: 'Hồ sơ và sổ chuẩn bị' },
+            { id: 'logs' as const, label: 'Nhật ký mẹ và chăm bé' },
+            { id: 'milestones' as const, label: 'Mốc 0–12 tháng và cẩm nang' },
             { id: 'album' as const, label: `Album bé (${state.albumPhotos.length})` },
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer shrink-0 border tabular-nums ${
+              className={`px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer shrink-0 border tabular-nums transition-colors ${
                 activeTab === tab.id
-                  ? 'bg-[#B55841] text-white border-[#B55841]'
-                  : 'bg-white dark:bg-[#1E1A17] text-[#6B5D56] dark:text-[#C5B9B0] border-[#E6DDD1] dark:border-[#362E2A]'
+                  ? 'bg-nova-accent text-nova-accent-contrast border-nova-accent'
+                  : 'bg-nova-surface text-nova-text-muted border-nova-border hover:bg-nova-bg-subtle'
               }`}
             >
               {tab.label}
@@ -382,44 +382,44 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
         {activeTab === 'overview' && (
           <div className="space-y-4">
             {/* Baby Profile Form */}
-            <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3">
+            <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3">
               <div className="flex items-center justify-between gap-2">
-                <h3 className="font-editorial text-[16px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-                  <Baby className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />
+                <h3 className="font-editorial text-[16px] font-bold text-nova-text flex items-center gap-2">
+                  <Baby className="w-4 h-4 text-nova-accent" />
                   <span>Hồ sơ của bé yêu</span>
                 </h3>
                 <button
                   onClick={handleSaveBabyProfile}
-                  className="min-h-[38px] px-3.5 py-1.5 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-xs font-bold cursor-pointer whitespace-nowrap"
+                  className="min-h-[38px] px-3.5 py-1.5 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-bold cursor-pointer whitespace-nowrap transition-colors"
                 >
                   Lưu hồ sơ bé
                 </button>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 <div>
-                  <label className="text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] block mb-1">Tên / Biệt danh bé</label>
+                  <label className="text-[11px] font-bold text-nova-text-muted block mb-1">Tên / Biệt danh bé</label>
                   <input
                     type="text"
                     value={babyName}
                     onChange={(e) => setBabyName(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
+                    className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-accent"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] block mb-1">Ngày sinh</label>
+                  <label className="text-[11px] font-bold text-nova-text-muted block mb-1">Ngày sinh</label>
                   <input
                     type="date"
                     value={birthDate}
                     onChange={(e) => setBirthDate(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] tabular-nums focus:outline-none focus:border-[#B55841]"
+                    className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text tabular-nums focus:outline-none focus:border-nova-accent"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] block mb-1">Giới tính</label>
+                  <label className="text-[11px] font-bold text-nova-text-muted block mb-1">Giới tính</label>
                   <select
                     value={babyGender}
                     onChange={(e) => setBabyGender(e.target.value as BabyProfile['gender'])}
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
+                    className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-accent"
                   >
                     <option value="unspecified">Chưa chọn</option>
                     <option value="boy">Bé trai</option>
@@ -427,22 +427,22 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                   </select>
                 </div>
                 <div>
-                  <label className="text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] block mb-1">Cân nặng lúc sinh (kg)</label>
+                  <label className="text-[11px] font-bold text-nova-text-muted block mb-1">Cân nặng lúc sinh (kg)</label>
                   <input
                     type="number"
                     step="0.1"
                     value={birthWeightKg}
                     onChange={(e) => setBirthWeightKg(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] tabular-nums focus:outline-none focus:border-[#B55841]"
+                    className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text tabular-nums focus:outline-none focus:border-nova-accent"
                   />
                 </div>
                 <div>
-                  <label className="text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] block mb-1">Chiều dài lúc sinh (cm)</label>
+                  <label className="text-[11px] font-bold text-nova-text-muted block mb-1">Chiều dài lúc sinh (cm)</label>
                   <input
                     type="number"
                     value={birthLengthCm}
                     onChange={(e) => setBirthLengthCm(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] tabular-nums focus:outline-none focus:border-[#B55841]"
+                    className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text tabular-nums focus:outline-none focus:border-nova-accent"
                   />
                 </div>
               </div>
@@ -450,10 +450,10 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
 
             {/* Mom & Baby Checklists */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-2.5">
-                <h3 className="font-editorial text-[16px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-                  <Heart className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />
-                  <span>Checklist hồi phục của mẹ</span>
+              <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-2.5">
+                <h3 className="font-editorial text-[16px] font-bold text-nova-text flex items-center gap-2">
+                  <Heart className="w-4 h-4 text-nova-accent" />
+                  <span>Sổ chuẩn bị hồi phục của mẹ</span>
                 </h3>
                 {POSTPARTUM_MOM_CHECKLIST_ITEMS.map((item) => {
                   const done = state.completedMomChecklistIds.includes(item.id);
@@ -462,14 +462,14 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                       key={item.id}
                       type="button"
                       onClick={() => toggleMomCheck(item.id)}
-                      className="w-full p-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-left text-xs flex items-start gap-2.5 cursor-pointer"
+                      className="w-full p-2.5 rounded-xl bg-nova-bg border border-nova-border text-left text-xs flex items-start gap-2.5 cursor-pointer"
                     >
                       {done ? (
-                        <CheckCircle2 className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892] shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-4 h-4 text-nova-sage-text shrink-0 mt-0.5" />
                       ) : (
-                        <Circle className="w-4 h-4 text-[#C5B9B0] dark:text-[#786962] shrink-0 mt-0.5" />
+                        <Circle className="w-4 h-4 text-nova-icon shrink-0 mt-0.5" />
                       )}
-                      <span className={done ? 'line-through text-[#786962] dark:text-[#B5A89F]' : 'text-[#322622] dark:text-[#F4EDE6]'}>
+                      <span className={done ? 'line-through text-nova-text-muted' : 'text-nova-text'}>
                         {item.title}
                       </span>
                     </button>
@@ -477,10 +477,10 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                 })}
               </section>
 
-              <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-2.5">
-                <h3 className="font-editorial text-[16px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-                  <Baby className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892]" />
-                  <span>Checklist chăm sóc bé sơ sinh</span>
+              <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-2.5">
+                <h3 className="font-editorial text-[16px] font-bold text-nova-text flex items-center gap-2">
+                  <Baby className="w-4 h-4 text-nova-sage-text" />
+                  <span>Sổ chuẩn bị chăm sóc bé sơ sinh</span>
                 </h3>
                 {POSTPARTUM_BABY_CHECKLIST_ITEMS.map((item) => {
                   const done = state.completedBabyChecklistIds.includes(item.id);
@@ -489,14 +489,14 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                       key={item.id}
                       type="button"
                       onClick={() => toggleBabyCheck(item.id)}
-                      className="w-full p-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-left text-xs flex items-start gap-2.5 cursor-pointer"
+                      className="w-full p-2.5 rounded-xl bg-nova-bg border border-nova-border text-left text-xs flex items-start gap-2.5 cursor-pointer"
                     >
                       {done ? (
-                        <CheckCircle2 className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892] shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-4 h-4 text-nova-sage-text shrink-0 mt-0.5" />
                       ) : (
-                        <Circle className="w-4 h-4 text-[#C5B9B0] dark:text-[#786962] shrink-0 mt-0.5" />
+                        <Circle className="w-4 h-4 text-nova-icon shrink-0 mt-0.5" />
                       )}
-                      <span className={done ? 'line-through text-[#786962] dark:text-[#B5A89F]' : 'text-[#322622] dark:text-[#F4EDE6]'}>
+                      <span className={done ? 'line-through text-nova-text-muted' : 'text-nova-text'}>
                         {item.title}
                       </span>
                     </button>
@@ -510,10 +510,10 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
         {activeTab === 'logs' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Baby Care Log */}
-            <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3 shadow-xs">
-              <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-                <Clock className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892]" />
-                <span>Ghi nhận cữ bú, tã & giấc ngủ bé</span>
+            <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3 shadow-xs">
+              <h3 className="font-editorial text-[15px] font-bold text-nova-text flex items-center gap-2">
+                <Clock className="w-4 h-4 text-nova-sage-text" />
+                <span>Ghi nhận cữ bú, tã và giấc ngủ bé</span>
               </h3>
               <form onSubmit={handleAddCareLog} className="space-y-2.5">
                 <div className="flex flex-wrap gap-1.5">
@@ -524,8 +524,8 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                       onClick={() => setLogType(lt.id)}
                       className={`min-h-[36px] px-3 py-1.5 rounded-xl text-[11px] font-bold cursor-pointer whitespace-nowrap transition-colors ${
                         logType === lt.id
-                          ? 'bg-[#B55841] text-white'
-                          : 'bg-[#F2ECE3] dark:bg-[#231E1B] text-[#6B5D56] dark:text-[#C5B9B0] border border-[#E6DDD1] dark:border-[#362E2A]'
+                          ? 'bg-nova-accent text-nova-accent-contrast'
+                          : 'bg-nova-bg-subtle text-nova-text-muted border border-nova-border'
                       }`}
                     >
                       {lt.label}
@@ -536,15 +536,15 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                   type="text"
                   value={logTitle}
                   onChange={(e) => setLogTitle(e.target.value)}
-                  placeholder="Tiêu đề ngắn (VD: Bú mẹ 15 phút / Ngủ trưa 90p)"
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] dark:placeholder:text-[#B5A89F] focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
+                  placeholder="Tiêu đề ngắn (Ví dụ: Bú mẹ 15 phút / Ngủ trưa 90 phút)"
+                  className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text placeholder:text-nova-text-muted focus:outline-none focus:border-nova-accent"
                 />
                 <input
                   type="text"
                   value={logDetails}
                   onChange={(e) => setLogDetails(e.target.value)}
                   placeholder="Chi tiết lượng sữa / tã / ghi chú thêm..."
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] dark:placeholder:text-[#B5A89F] focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text placeholder:text-nova-text-muted focus:outline-none focus:border-nova-accent"
                 />
                 <div className="flex items-center justify-between gap-2 text-xs py-0.5">
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -552,10 +552,10 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                       type="checkbox"
                       checked={createReminder}
                       onChange={(e) => setCreateReminder(e.target.checked)}
-                      className="w-4 h-4 accent-[#B55841]"
+                      className="w-4 h-4 accent-nova-accent"
                     />
-                    <span className="font-semibold text-[#6B5D56] dark:text-[#C5B9B0] flex items-center gap-1">
-                      <BellPlus className="w-3.5 h-3.5 text-[#B55841] dark:text-[#D47A63]" /> Tạo nhắc cữ tiếp theo
+                    <span className="font-semibold text-nova-text-muted flex items-center gap-1">
+                      <BellPlus className="w-3.5 h-3.5 text-nova-accent" /> Tạo nhắc cữ tiếp theo
                     </span>
                   </label>
                   {createReminder && (
@@ -563,13 +563,13 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                       type="time"
                       value={reminderTime}
                       onChange={(e) => setReminderTime(e.target.value)}
-                      className="px-2.5 py-1.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] tabular-nums"
+                      className="px-2.5 py-1.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text tabular-nums"
                     />
                   )}
                 </div>
                 <button
                   type="submit"
-                  className="w-full min-h-[44px] py-2.5 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-xs font-bold cursor-pointer inline-flex items-center justify-center gap-1.5 transition-colors"
+                  className="w-full min-h-[44px] py-2.5 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-bold cursor-pointer inline-flex items-center justify-center gap-1.5 transition-colors"
                 >
                   <Plus className="w-4 h-4" /> Ghi nhận hoạt động của bé
                 </button>
@@ -577,20 +577,20 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
 
               <div className="space-y-2 max-h-64 overflow-y-auto no-scrollbar pt-2">
                 {state.careLogs.length === 0 ? (
-                  <p className="text-xs text-[#786962] dark:text-[#B5A89F] italic">Chưa có ghi nhận chăm sóc bé nào.</p>
+                  <p className="text-xs text-nova-text-muted italic">Chưa có ghi nhận chăm sóc bé nào.</p>
                 ) : (
                   state.careLogs.map((l) => (
                     <div
                       key={l.id}
-                      className="p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A]"
+                      className="p-3 rounded-2xl bg-nova-bg border border-nova-border"
                     >
                       <div className="flex items-center justify-between text-xs font-bold gap-2">
-                        <span className="text-[#322622] dark:text-[#F4EDE6]">{l.title}</span>
-                        <span className="text-[10.5px] text-[#786962] dark:text-[#B5A89F] tabular-nums shrink-0">
+                        <span className="text-nova-text">{l.title}</span>
+                        <span className="text-[10.5px] text-nova-text-muted tabular-nums shrink-0">
                           {new Date(l.loggedAt).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}
                         </span>
                       </div>
-                      <p className="text-[11px] text-[#6B5D56] dark:text-[#C5B9B0] mt-0.5">{l.details}</p>
+                      <p className="text-[11px] text-nova-text-muted mt-0.5">{l.details}</p>
                     </div>
                   ))
                 )}
@@ -598,9 +598,9 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
             </section>
 
             {/* Mom Recovery Diary */}
-            <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3 shadow-xs">
-              <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-                <Heart className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />
+            <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3 shadow-xs">
+              <h3 className="font-editorial text-[15px] font-bold text-nova-text flex items-center gap-2">
+                <Heart className="w-4 h-4 text-nova-accent" />
                 <span>Nhật ký hồi phục của mẹ sau sinh</span>
               </h3>
               <form onSubmit={handleAddMomDiary} className="space-y-2.5">
@@ -608,9 +608,9 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                   <select
                     value={momMood}
                     onChange={(e) => setMomMood(e.target.value as MoodType)}
-                    className="px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
+                    className="px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-accent"
                   >
-                    <option value="happy">Vui vẻ & bình an</option>
+                    <option value="happy">Vui vẻ và bình an</option>
                     <option value="calm">Thư thái</option>
                     <option value="tired">Hơi mệt / thiếu ngủ</option>
                     <option value="anxious">Lo âu cần chia sẻ</option>
@@ -620,8 +620,8 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                     step="0.5"
                     value={momSleepHours}
                     onChange={(e) => setMomSleepHours(e.target.value)}
-                    placeholder="Số giờ ngủ (VD: 6.5)"
-                    className="px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] dark:placeholder:text-[#B5A89F] tabular-nums focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
+                    placeholder="Số giờ ngủ (Ví dụ: 6.5)"
+                    className="px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text placeholder:text-nova-text-muted tabular-nums focus:outline-none focus:border-nova-accent"
                   />
                 </div>
                 <textarea
@@ -629,11 +629,11 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                   value={momRecoveryNote}
                   onChange={(e) => setMomRecoveryNote(e.target.value)}
                   placeholder="Ghi lại tình trạng vết sinh, bữa ăn, cảm xúc của mẹ hôm nay..."
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] dark:placeholder:text-[#B5A89F] resize-none focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text placeholder:text-nova-text-muted resize-none focus:outline-none focus:border-nova-accent"
                 />
                 <button
                   type="submit"
-                  className="w-full min-h-[44px] py-2.5 rounded-xl bg-[#4F6B56] hover:bg-[#3F5745] text-white text-xs font-bold cursor-pointer transition-colors"
+                  className="w-full min-h-[44px] py-2.5 rounded-xl bg-nova-sage hover:opacity-90 text-nova-accent-contrast text-xs font-bold cursor-pointer transition-opacity"
                 >
                   Lưu nhật ký mẹ hôm nay
                 </button>
@@ -641,18 +641,18 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
 
               <div className="space-y-2 max-h-64 overflow-y-auto no-scrollbar pt-2">
                 {state.postpartumDiary.length === 0 ? (
-                  <p className="text-xs text-[#786962] dark:text-[#B5A89F] italic">Chưa có nhật ký hậu sản.</p>
+                  <p className="text-xs text-nova-text-muted italic">Chưa có nhật ký hậu sản.</p>
                 ) : (
                   state.postpartumDiary.map((d) => (
                     <div
                       key={d.id}
-                      className="p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A]"
+                      className="p-3 rounded-2xl bg-nova-bg border border-nova-border"
                     >
-                      <div className="flex items-center justify-between text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] tabular-nums">
+                      <div className="flex items-center justify-between text-[11px] font-bold text-nova-text-muted tabular-nums">
                         <span>{d.date}</span>
-                        {d.sleepHours && <span>Ngủ {d.sleepHours}h</span>}
+                        {d.sleepHours && <span>Ngủ {d.sleepHours} giờ</span>}
                       </div>
-                      <p className="text-xs text-[#322622] dark:text-[#F4EDE6] mt-0.5 leading-relaxed">{d.recoveryNote}</p>
+                      <p className="text-xs text-nova-text mt-0.5 leading-relaxed">{d.recoveryNote}</p>
                     </div>
                   ))
                 )}
@@ -663,8 +663,8 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
 
         {activeTab === 'milestones' && (
           <div className="space-y-4">
-            <div className="p-3.5 rounded-2xl bg-[#F6EFE2] dark:bg-[#2F281C] border border-[#E5D4B3] dark:border-[#4A3F2B] flex items-start gap-2.5 text-xs text-[#6B5D56] dark:text-[#DFD5D0]">
-              <ShieldAlert className="w-4 h-4 text-[#9E5B3B] dark:text-[#D7BA86] shrink-0 mt-0.5" />
+            <div className="p-3.5 rounded-2xl bg-nova-warning-soft border border-nova-warning-border flex items-start gap-2.5 text-xs text-nova-text">
+              <ShieldAlert className="w-4 h-4 text-nova-warning shrink-0 mt-0.5" />
               <span className="leading-relaxed">
                 Mốc phát triển 0–12 tháng chỉ mang tính tham khảo nhịp chung; mỗi em bé có tốc độ phát triển riêng. Nếu có bất kỳ băn khoăn nào về sức khỏe bé, hãy trao đổi cùng bác sĩ nhi khoa.
               </span>
@@ -679,20 +679,20 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                     onClick={() => toggleMilestone(m.id)}
                     className={`p-4 rounded-2xl border cursor-pointer transition-colors ${
                       done
-                        ? 'bg-[#EBF1EC] dark:bg-[#1E2922] border-[#C8D9CB] dark:border-[#33483A]'
-                        : 'bg-white dark:bg-[#1E1A17] border-[#E6DDD1] dark:border-[#362E2A]'
+                        ? 'bg-nova-sage-soft border-nova-sage'
+                        : 'bg-nova-surface border-nova-border'
                     }`}
                   >
                     <div className="flex items-start gap-3">
                       {done ? (
-                        <CheckCircle2 className="w-5 h-5 text-[#4F6B56] dark:text-[#8DA892] shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-5 h-5 text-nova-sage-text shrink-0 mt-0.5" />
                       ) : (
-                        <Circle className="w-5 h-5 text-[#C5B9B0] dark:text-[#5B4F49] shrink-0 mt-0.5" />
+                        <Circle className="w-5 h-5 text-nova-icon shrink-0 mt-0.5" />
                       )}
                       <div>
-                        <h4 className="font-editorial text-[14px] font-bold text-[#322622] dark:text-[#F4EDE6]">{m.title}</h4>
-                        <p className="text-xs text-[#6B5D56] dark:text-[#C5B9B0] mt-1 leading-relaxed">{m.description}</p>
-                        <p className="text-[11px] font-semibold text-[#B55841] dark:text-[#D47A63] mt-1.5 flex items-center gap-1">
+                        <h4 className="font-editorial text-[14px] font-bold text-nova-text">{m.title}</h4>
+                        <p className="text-xs text-nova-text-muted mt-1 leading-relaxed">{m.description}</p>
+                        <p className="text-[11px] font-semibold text-nova-accent mt-1.5 flex items-center gap-1">
                           <Sparkles className="w-3.5 h-3.5 shrink-0" /> Gợi ý đồng hành: {m.careFocus}
                         </p>
                       </div>
@@ -702,20 +702,20 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
               })}
             </div>
 
-            <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3 shadow-xs">
-              <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892]" />
+            <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3 shadow-xs">
+              <h3 className="font-editorial text-[15px] font-bold text-nova-text flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-nova-sage-text" />
                 <span>Hướng dẫn sau sinh có trích dẫn nguồn</span>
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {POSTPARTUM_KNOWLEDGE_GUIDES.map((g) => (
                   <div
                     key={g.id}
-                    className="p-3.5 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A]"
+                    className="p-3.5 rounded-2xl bg-nova-bg border border-nova-border"
                   >
-                    <h4 className="text-xs font-bold text-[#322622] dark:text-[#F4EDE6]">{g.title}</h4>
-                    <p className="text-[11px] text-[#6B5D56] dark:text-[#C5B9B0] mt-1 leading-relaxed">{g.summary}</p>
-                    <p className="text-[10.5px] font-bold text-[#4F6B56] dark:text-[#8DA892] mt-2">Nguồn: {g.source}</p>
+                    <h4 className="text-xs font-bold text-nova-text">{g.title}</h4>
+                    <p className="text-[11px] text-nova-text-muted mt-1 leading-relaxed">{g.summary}</p>
+                    <p className="text-[10.5px] font-bold text-nova-sage-text mt-2">Nguồn: {g.source}</p>
                   </div>
                 ))}
               </div>
@@ -727,17 +727,17 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
           <div className="space-y-4">
             <form
               onSubmit={handleAddAlbumPhoto}
-              className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3 shadow-xs"
+              className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3 shadow-xs"
             >
-              <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-                <Camera className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />
+              <h3 className="font-editorial text-[15px] font-bold text-nova-text flex items-center gap-2">
+                <Camera className="w-4 h-4 text-nova-accent" />
                 <span>Lưu ảnh kỷ niệm từng tháng đầu đời của bé</span>
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                 <select
                   value={albumMonth}
                   onChange={(e) => setAlbumMonth(Number(e.target.value))}
-                  className="px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
+                  className="px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-accent"
                 >
                   {Array.from({ length: 13 }, (_, i) => (
                     <option key={i} value={i}>
@@ -750,19 +750,19 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                   value={albumTitle}
                   onChange={(e) => setAlbumTitle(e.target.value)}
                   placeholder="Tiêu đề bức ảnh..."
-                  className="px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] dark:placeholder:text-[#B5A89F] focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
+                  className="px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text placeholder:text-nova-text-muted focus:outline-none focus:border-nova-accent"
                 />
                 <input
                   type="text"
                   value={albumCaption}
                   onChange={(e) => setAlbumCaption(e.target.value)}
                   placeholder="Lời nhắn cho bé..."
-                  className="px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] dark:placeholder:text-[#B5A89F] focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
+                  className="px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text placeholder:text-nova-text-muted focus:outline-none focus:border-nova-accent"
                 />
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
-                <label className="min-h-[40px] px-3.5 py-2 rounded-xl bg-[#F7EAE5] dark:bg-[#35231E] border border-[#EBCDC2] dark:border-[#52352D] text-xs font-bold text-[#B55841] dark:text-[#D47A63] inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
+                <label className="min-h-[40px] px-3.5 py-2 rounded-xl bg-nova-accent-soft border border-nova-border text-xs font-bold text-nova-accent inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap">
                   <Upload className="w-3.5 h-3.5" />
                   <span>{isUploading ? 'Đang tải ảnh...' : 'Tải ảnh từ thiết bị'}</span>
                   <input type="file" accept="image/*" onChange={handleUploadAlbumImage} className="hidden" />
@@ -771,12 +771,12 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                   <NovaImage
                     src={albumImageUrl}
                     alt="Xem trước ảnh bé"
-                    className="w-12 h-12 rounded-xl object-cover border border-[#E6DDD1] dark:border-[#362E2A]"
+                    className="w-12 h-12 rounded-xl object-cover border border-nova-border"
                   />
                 )}
                 <button
                   type="submit"
-                  className="ml-auto min-h-[40px] px-4 py-2 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-xs font-bold cursor-pointer whitespace-nowrap transition-colors"
+                  className="ml-auto min-h-[40px] px-4 py-2 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-bold cursor-pointer whitespace-nowrap transition-colors"
                 >
                   Lưu vào Album
                 </button>
@@ -784,7 +784,7 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
             </form>
 
             {state.albumPhotos.length === 0 ? (
-              <div className="p-8 rounded-3xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-center text-xs text-[#786962] dark:text-[#B5A89F]">
+              <div className="p-8 rounded-3xl bg-nova-surface border border-nova-border text-center text-xs text-nova-text-muted">
                 Chưa có bức ảnh nào trong Album sau sinh của bé.
               </div>
             ) : (
@@ -792,16 +792,16 @@ export const PostpartumBabyScreen: React.FC<PostpartumBabyScreenProps> = ({
                 {state.albumPhotos.map((photo) => (
                   <div
                     key={photo.id}
-                    className="rounded-3xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] overflow-hidden shadow-xs"
+                    className="rounded-3xl bg-nova-surface border border-nova-border overflow-hidden shadow-xs"
                   >
                     <NovaImage src={photo.imageUrl} alt={photo.title} className="w-full h-44 object-cover" />
                     <div className="p-3.5">
-                      <span className="text-[10.5px] font-bold text-[#B55841] dark:text-[#D47A63] tabular-nums">
+                      <span className="text-[10.5px] font-bold text-nova-accent tabular-nums">
                         {photo.monthAge === 0 ? 'Sơ sinh' : `Tháng ${photo.monthAge}`} · {photo.takenDate}
                       </span>
-                      <h4 className="font-editorial text-sm font-bold text-[#322622] dark:text-[#F4EDE6] mt-0.5">{photo.title}</h4>
+                      <h4 className="font-editorial text-sm font-bold text-nova-text mt-0.5">{photo.title}</h4>
                       {photo.caption && (
-                        <p className="text-xs text-[#6B5D56] dark:text-[#C5B9B0] mt-1 leading-relaxed">{photo.caption}</p>
+                        <p className="text-xs text-nova-text-muted mt-1 leading-relaxed">{photo.caption}</p>
                       )}
                     </div>
                   </div>

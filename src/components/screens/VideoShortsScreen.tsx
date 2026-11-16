@@ -292,10 +292,10 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
         if (nextLiked) {
           try {
             confetti({
-              particleCount: 20,
+              particleCount: 18,
               spread: 40,
               origin: { y: 0.6 },
-              colors: ['#B55841', '#C4A46B', '#F2ECE3'],
+              colors: ['#51483F', '#A3A795', '#B8AA98', '#EDE7DE'],
               disableForReducedMotion: true,
             });
           } catch {}
@@ -319,7 +319,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
       const nextFavs = await apiService.toggleVideoFavorite(videoId, user);
       setFavoriteVideoIds(nextFavs);
       showToast(
-        nextFavs.includes(videoId) ? 'Đã lưu video vào Danh sách yêu thích' : 'Đã bỏ lưu video'
+        nextFavs.includes(videoId) ? 'Đã lưu video vào danh sách yêu thích' : 'Đã bỏ lưu video'
       );
     } catch {}
   };
@@ -578,7 +578,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
       await loadAllVideoData();
       showToast(
         status === 'approved'
-          ? 'Đã duyệt & hiển thị video!'
+          ? 'Đã duyệt và hiển thị video!'
           : status === 'rejected'
           ? 'Đã từ chối video.'
           : 'Đã ẩn video khỏi bảng tin.'
@@ -637,38 +637,38 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
 
   const getStatusBadge = (status: NovaVideoItem['status']) => {
     if (status === 'approved')
-      return <span className="text-[10.5px] font-semibold text-[#4F6B56] dark:text-[#8DA892]">Đã duyệt</span>;
+      return <span className="text-[10.5px] font-semibold text-nova-success">Đã duyệt</span>;
     if (status === 'pending')
-      return <span className="text-[10.5px] font-semibold text-[#9E5B3B] dark:text-[#D7BA86]">Chờ duyệt</span>;
+      return <span className="text-[10.5px] font-semibold text-nova-warning">Chờ duyệt</span>;
     if (status === 'rejected')
-      return <span className="text-[10.5px] font-semibold text-[#B55841] dark:text-[#D47A63]">Từ chối</span>;
-    return <span className="text-[10.5px] font-semibold text-[#786962]">Đang ẩn</span>;
+      return <span className="text-[10.5px] font-semibold text-nova-danger">Từ chối</span>;
+    return <span className="text-[10.5px] font-semibold text-nova-text-muted">Đang ẩn</span>;
   };
 
   return (
-    <div className="relative flex-1 w-full h-full bg-[#120F0E] select-none overflow-hidden text-white">
+    <div className="relative flex-1 w-full h-full bg-[#1C1B18] select-none overflow-hidden text-[#F0EBE0]">
       <AnimatePresence>
         {toastMessage && (
           <motion.div
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="absolute top-16 left-1/2 -translate-x-1/2 z-50 bg-[#231E1B]/95 backdrop-blur-md px-4 py-2 rounded-full text-xs font-semibold text-[#FAF6F0] shadow-xl border border-white/15 flex items-center gap-1.5 whitespace-nowrap"
+            className="absolute top-16 left-1/2 -translate-x-1/2 z-50 bg-[#25231F]/95 backdrop-blur-md px-4 py-2 rounded-full text-xs font-semibold text-[#F0EBE0] shadow-xl border border-[#3D3932] flex items-center gap-1.5 whitespace-nowrap"
           >
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#8DA892]" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#B2B6A3]" />
             <span>{toastMessage}</span>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Top Header */}
-      <header className="absolute top-0 left-0 right-0 z-30 pt-2.5 pb-2 px-3 bg-gradient-to-b from-[#120F0E]/90 via-[#120F0E]/55 to-transparent pointer-events-none">
+      <header className="absolute top-0 left-0 right-0 z-30 pt-2.5 pb-2 px-3 bg-gradient-to-b from-[#1C1B18]/90 via-[#1C1B18]/55 to-transparent pointer-events-none">
         <div className="flex items-center justify-between gap-2 pointer-events-auto">
           <div className="flex items-center gap-2 min-w-0">
-            <span className="font-editorial text-[16px] font-semibold tracking-wide text-[#FAF6F0] drop-shadow-md truncate">
-              Video Thai Giáo
+            <span className="font-editorial text-[16px] font-semibold tracking-wide text-[#FAF9F6] drop-shadow-md truncate">
+              Video thai giáo
             </span>
-            <span className="text-[11px] font-medium text-[#FAF6F0]/75 tabular-nums whitespace-nowrap">
+            <span className="text-[11px] font-medium text-[#F0EBE0]/75 tabular-nums whitespace-nowrap">
               {filteredVideos.length > 0 ? `${currentIndex + 1}/${filteredVideos.length}` : '0/0'}
             </span>
           </div>
@@ -676,7 +676,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
           <div className="flex items-center gap-1.5 shrink-0">
             <button
               onClick={() => setShowSearchBar((v) => !v)}
-              className="w-9 h-9 rounded-xl bg-[#1E1A17]/75 backdrop-blur-md border border-white/15 flex items-center justify-center text-[#FAF6F0] cursor-pointer hover:bg-[#1E1A17]"
+              className="w-9 h-9 rounded-xl bg-[#25231F]/80 backdrop-blur-md border border-[#3D3932] flex items-center justify-center text-[#F0EBE0] cursor-pointer hover:bg-[#2E2B26]"
               title="Tìm video"
             >
               <Search className="w-4 h-4" />
@@ -684,16 +684,16 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
 
             <button
               onClick={() => setIsLibraryOpen(true)}
-              className="px-2.5 py-2 rounded-xl bg-[#1E1A17]/75 backdrop-blur-md border border-white/15 text-[#FAF6F0] text-[11px] font-semibold flex items-center gap-1 cursor-pointer hover:bg-[#1E1A17] whitespace-nowrap"
-              title="Danh sách yêu thích, lịch sử & playlist"
+              className="px-2.5 py-2 rounded-xl bg-[#25231F]/80 backdrop-blur-md border border-[#3D3932] text-[#F0EBE0] text-[11px] font-semibold flex items-center gap-1 cursor-pointer hover:bg-[#2E2B26] whitespace-nowrap"
+              title="Danh sách yêu thích, lịch sử xem và danh sách phát"
             >
-              <ListMusic className="w-3.5 h-3.5 text-[#D7BA86]" />
+              <ListMusic className="w-3.5 h-3.5 text-[#CDBFA9]" />
               <span className="hidden sm:inline">Thư viện</span>
             </button>
 
             <button
               onClick={openCreateModal}
-              className="px-2.5 py-2 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-[11px] font-semibold flex items-center gap-1 cursor-pointer shadow-md whitespace-nowrap"
+              className="px-2.5 py-2 rounded-xl bg-[#CDBFA9] hover:bg-[#DFD3BF] text-[#1C1B18] text-[11px] font-semibold flex items-center gap-1 cursor-pointer shadow-md whitespace-nowrap"
               title="Đăng video thai giáo mới"
             >
               <Upload className="w-3.5 h-3.5" />
@@ -705,13 +705,13 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                 setManageTab(canModerate && pendingCount > 0 ? 'moderation' : 'mine');
                 setIsManageOpen(true);
               }}
-              className="relative px-2.5 py-2 rounded-xl bg-[#1E1A17]/75 backdrop-blur-md border border-white/15 text-[#FAF6F0] text-[11px] font-semibold flex items-center gap-1 cursor-pointer hover:bg-[#1E1A17] whitespace-nowrap"
-              title={canModerate ? 'Quản lý & Kiểm duyệt video' : 'Video của tôi'}
+              className="relative px-2.5 py-2 rounded-xl bg-[#25231F]/80 backdrop-blur-md border border-[#3D3932] text-[#F0EBE0] text-[11px] font-semibold flex items-center gap-1 cursor-pointer hover:bg-[#2E2B26] whitespace-nowrap"
+              title={canModerate ? 'Quản lý và kiểm duyệt video' : 'Video của tôi'}
             >
-              {canModerate ? <Shield className="w-3.5 h-3.5 text-[#D7BA86]" /> : <FileVideo className="w-3.5 h-3.5" />}
+              {canModerate ? <Shield className="w-3.5 h-3.5 text-[#CDBFA9]" /> : <FileVideo className="w-3.5 h-3.5" />}
               <span className="hidden sm:inline">{canModerate ? 'Duyệt' : 'Của tôi'}</span>
               {canModerate && pendingCount > 0 && (
-                <span className="w-4 h-4 rounded-full bg-[#C4A46B] text-[#161311] text-[9px] font-bold flex items-center justify-center">
+                <span className="w-4 h-4 rounded-full bg-[#CDBFA9] text-[#1C1B18] text-[9px] font-bold flex items-center justify-center">
                   {pendingCount}
                 </span>
               )}
@@ -719,12 +719,12 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
 
             <button
               onClick={() => setIsNotifOpen(true)}
-              className="relative w-9 h-9 rounded-xl bg-[#1E1A17]/75 backdrop-blur-md border border-white/15 flex items-center justify-center text-[#FAF6F0] cursor-pointer hover:bg-[#1E1A17]"
+              className="relative w-9 h-9 rounded-xl bg-[#25231F]/80 backdrop-blur-md border border-[#3D3932] flex items-center justify-center text-[#F0EBE0] cursor-pointer hover:bg-[#2E2B26]"
               title="Thông báo video"
             >
               <Bell className="w-4 h-4" />
               {unreadVideoCount > 0 && (
-                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#B55841] text-white text-[9px] font-bold flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-[#CDBFA9] text-[#1C1B18] text-[9px] font-bold flex items-center justify-center">
                   {unreadVideoCount}
                 </span>
               )}
@@ -734,8 +734,8 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
               onClick={() => setIsMuted(!isMuted)}
               className={`w-9 h-9 rounded-xl backdrop-blur-md border flex items-center justify-center cursor-pointer ${
                 isMuted
-                  ? 'bg-[#1E1A17]/75 border-white/15 text-[#FAF6F0]/90'
-                  : 'bg-[#B55841]/90 border-[#B55841] text-white'
+                  ? 'bg-[#25231F]/80 border-[#3D3932] text-[#F0EBE0]/90'
+                  : 'bg-[#CDBFA9] border-[#CDBFA9] text-[#1C1B18]'
               }`}
               title={isMuted ? 'Bật âm thanh' : 'Tắt tiếng'}
             >
@@ -753,13 +753,13 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                 setSearchQuery(e.target.value);
                 setCurrentIndex(0);
               }}
-              placeholder="Tìm tiêu đề video, hashtag (#thaigiao, #yoga)..."
-              className="flex-1 px-3 py-2 rounded-xl bg-[#1E1A17]/85 border border-white/20 text-xs text-white placeholder:text-white/50 focus:outline-none"
+              placeholder="Tìm tiêu đề video, từ khóa (#thaigiao, #yoga)..."
+              className="flex-1 px-3 py-2 rounded-xl bg-[#25231F]/90 border border-[#3D3932] text-xs text-[#F0EBE0] placeholder:text-[#A39D93] focus:outline-none"
             />
             {searchQuery && (
               <button
                 onClick={() => setSearchQuery('')}
-                className="px-2.5 py-2 rounded-xl bg-white/15 text-xs font-semibold cursor-pointer"
+                className="px-2.5 py-2 rounded-xl bg-[#2E2B26] text-xs font-semibold text-[#F0EBE0] cursor-pointer"
               >
                 Xóa
               </button>
@@ -773,8 +773,8 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
             onClick={() => setWeekFilter((f) => (f === 'my_week' ? 'all' : 'my_week'))}
             className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap cursor-pointer transition-colors ${
               weekFilter === 'my_week'
-                ? 'bg-[#C4A46B] text-[#161311]'
-                : 'bg-[#1E1A17]/70 text-[#FAF6F0]/90 border border-white/15'
+                ? 'bg-[#CDBFA9] text-[#1C1B18]'
+                : 'bg-[#25231F]/80 text-[#F0EBE0]/90 border border-[#3D3932]'
             }`}
           >
             Tuần {user?.pregnancyWeek || 24}
@@ -784,8 +784,8 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
             onClick={() => setWeekFilter((f) => (f === 'favorites' ? 'all' : 'favorites'))}
             className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap cursor-pointer transition-colors ${
               weekFilter === 'favorites'
-                ? 'bg-[#B55841] text-white'
-                : 'bg-[#1E1A17]/70 text-[#FAF6F0]/90 border border-white/15'
+                ? 'bg-[#B2B6A3] text-[#1C1B18]'
+                : 'bg-[#25231F]/80 text-[#F0EBE0]/90 border border-[#3D3932]'
             }`}
           >
             Đã lưu ({favoriteVideoIds.length})
@@ -802,8 +802,8 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                 }}
                 className={`px-3 py-1.5 rounded-lg text-[11px] font-semibold whitespace-nowrap cursor-pointer transition-colors ${
                   active
-                    ? 'bg-[#FAF6F0] text-[#322622]'
-                    : 'bg-[#1E1A17]/65 text-[#FAF6F0]/80 border border-white/15 hover:bg-[#1E1A17]/85'
+                    ? 'bg-[#FAF9F6] text-[#373630]'
+                    : 'bg-[#25231F]/75 text-[#F0EBE0]/85 border border-[#3D3932] hover:bg-[#2E2B26]'
                 }`}
               >
                 {cat.label}
@@ -811,11 +811,11 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
             );
           })}
 
-          <div className="ml-auto hidden sm:flex items-center gap-1 bg-[#1E1A17]/70 px-1 py-0.5 rounded-lg border border-white/15">
+          <div className="ml-auto hidden sm:flex items-center gap-1 bg-[#25231F]/80 px-1 py-0.5 rounded-lg border border-[#3D3932]">
             <button
               onClick={() => scrollToVideo(Math.max(0, currentIndex - 1))}
               disabled={currentIndex === 0}
-              className="w-6 h-6 flex items-center justify-center text-white disabled:opacity-30 cursor-pointer"
+              className="w-6 h-6 flex items-center justify-center text-[#F0EBE0] disabled:opacity-30 cursor-pointer"
               title="Video trước"
             >
               <ChevronUp className="w-3.5 h-3.5" />
@@ -823,7 +823,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
             <button
               onClick={() => scrollToVideo(Math.min(filteredVideos.length - 1, currentIndex + 1))}
               disabled={currentIndex >= filteredVideos.length - 1}
-              className="w-6 h-6 flex items-center justify-center text-white disabled:opacity-30 cursor-pointer"
+              className="w-6 h-6 flex items-center justify-center text-[#F0EBE0] disabled:opacity-30 cursor-pointer"
               title="Video tiếp theo"
             >
               <ChevronDown className="w-3.5 h-3.5" />
@@ -834,12 +834,12 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
 
       {/* Main Feed */}
       {filteredVideos.length === 0 ? (
-        <div className="h-full w-full flex flex-col items-center justify-center px-6 text-center bg-[#161311]">
-          <FileVideo className="w-12 h-12 text-[#FAF6F0]/40 mb-3" />
-          <h3 className="font-editorial text-lg font-semibold text-[#FAF6F0]">
+        <div className="h-full w-full flex flex-col items-center justify-center px-6 text-center bg-[#1C1B18]">
+          <FileVideo className="w-12 h-12 text-[#A39D93] mb-3" />
+          <h3 className="font-editorial text-lg font-semibold text-[#F0EBE0]">
             {isLoadingFeed ? 'Đang tải video thai giáo...' : 'Không có video phù hợp bộ lọc'}
           </h3>
-          <p className="text-xs text-[#FAF6F0]/60 mt-1 max-w-[260px]">
+          <p className="text-xs text-[#A39D93] mt-1 max-w-[260px]">
             Mẹ có thể đặt lại bộ lọc hoặc nhấn nút "Đăng video" để chia sẻ cùng cộng đồng.
           </p>
           <button
@@ -848,7 +848,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
               setWeekFilter('all');
               setSearchQuery('');
             }}
-            className="mt-4 px-4 py-2.5 bg-[#B55841] rounded-xl text-xs font-semibold text-white cursor-pointer"
+            className="mt-4 px-4 py-2.5 bg-[#CDBFA9] text-[#1C1B18] rounded-xl text-xs font-semibold cursor-pointer"
           >
             Xem tất cả video
           </button>
@@ -872,7 +872,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                 key={video.id}
                 onClick={togglePlayPause}
                 onDoubleClick={(e) => handleDoubleTap(e, video.id)}
-                className="relative h-full w-full snap-start shrink-0 flex items-center justify-center bg-[#120F0E] overflow-hidden"
+                className="relative h-full w-full snap-start shrink-0 flex items-center justify-center bg-[#1C1B18] overflow-hidden"
                 style={{ height: '100%' }}
               >
                 {video.poster && (
@@ -910,10 +910,10 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                     className="relative z-10 w-full h-full max-w-[560px] object-cover pointer-events-none"
                   />
                 ) : (
-                  <div className="relative z-20 p-6 rounded-2xl bg-[#1E1A17]/90 border border-white/15 text-center max-w-[300px] interactive-control">
-                    <AlertTriangle className="w-8 h-8 text-[#D7BA86] mx-auto mb-2" />
-                    <p className="text-xs font-semibold text-white">Không thể phát video này</p>
-                    <p className="text-[11px] text-white/65 mt-1">
+                  <div className="relative z-20 p-6 rounded-2xl bg-[#25231F]/95 border border-[#3D3932] text-center max-w-[300px] interactive-control">
+                    <AlertTriangle className="w-8 h-8 text-[#D4B47C] mx-auto mb-2" />
+                    <p className="text-xs font-semibold text-[#F0EBE0]">Không thể phát video này</p>
+                    <p className="text-[11px] text-[#A39D93] mt-1">
                       Tệp video bị lỗi hoặc kết nối mạng gián đoạn.
                     </p>
                     <button
@@ -921,7 +921,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                         e.stopPropagation();
                         setVideoErrors((prev) => ({ ...prev, [video.id]: false }));
                       }}
-                      className="mt-3 px-3.5 py-2 bg-[#B55841] rounded-xl text-xs font-semibold text-white inline-flex items-center gap-1 cursor-pointer"
+                      className="mt-3 px-3.5 py-2 bg-[#CDBFA9] text-[#1C1B18] rounded-xl text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
                     >
                       <RefreshCw className="w-3.5 h-3.5" />
                       <span>Thử lại</span>
@@ -929,10 +929,10 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                   </div>
                 )}
 
-                <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#120F0E]/35 via-transparent to-[#120F0E]/92 pointer-events-none" />
+                <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#1C1B18]/35 via-transparent to-[#1C1B18]/92 pointer-events-none" />
 
                 {!isPlaying && isActive && !hasError && (
-                  <div className="absolute z-20 w-16 h-16 rounded-full bg-[#1E1A17]/75 backdrop-blur-md border border-white/20 flex items-center justify-center text-[#FAF6F0] pointer-events-none shadow-2xl">
+                  <div className="absolute z-20 w-16 h-16 rounded-full bg-[#25231F]/80 backdrop-blur-md border border-[#3D3932] flex items-center justify-center text-[#FAF9F6] pointer-events-none shadow-2xl">
                     <Play className="w-8 h-8 fill-current translate-x-0.5" />
                   </div>
                 )}
@@ -943,23 +943,23 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                     initial={{ scale: 0.4, opacity: 1, y: 0 }}
                     animate={{ scale: [0.8, 1.4, 1.2], opacity: [1, 1, 0], y: -90 }}
                     transition={{ duration: 0.9, ease: 'easeOut' }}
-                    className="absolute pointer-events-none z-30 text-[#D47A63]"
+                    className="absolute pointer-events-none z-30 text-[#CDBFA9]"
                     style={{ left: heart.x - 20, top: heart.y - 20 }}
                   >
-                    <Heart className="w-10 h-10 fill-[#D47A63]" />
+                    <Heart className="w-10 h-10 fill-[#CDBFA9]" />
                   </motion.div>
                 ))}
 
                 {/* Right Action Bar */}
                 <aside className="absolute right-3 bottom-4 z-20 flex flex-col items-center gap-3 interactive-control">
                   <div className="relative mb-0.5">
-                    <div className="w-10 h-10 rounded-full border-2 border-[#FAF6F0] overflow-hidden bg-[#322622] flex items-center justify-center text-xs font-bold text-[#F7EAE5] shadow-md">
+                    <div className="w-10 h-10 rounded-full border-2 border-[#FAF9F6] overflow-hidden bg-[#2E2B26] flex items-center justify-center text-xs font-bold text-[#F0EBE0] shadow-md">
                       {video.channelAvatar}
                     </div>
                     <button
                       onClick={(e) => handleToggleFollow(video.id, e)}
-                      className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full flex items-center justify-center text-white shadow-xs cursor-pointer ${
-                        video.isFollowing ? 'bg-[#6D8572]' : 'bg-[#B55841]'
+                      className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-5 h-5 rounded-full flex items-center justify-center shadow-xs cursor-pointer ${
+                        video.isFollowing ? 'bg-[#B2B6A3] text-[#1C1B18]' : 'bg-[#CDBFA9] text-[#1C1B18]'
                       }`}
                     >
                       {video.isFollowing ? <Check className="w-2.5 h-2.5 stroke-[3]" /> : <Plus className="w-3 h-3 stroke-[3]" />}
@@ -973,7 +973,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                     >
                       <Heart
                         className={`w-6 h-6 drop-shadow-md ${
-                          video.isLiked ? 'fill-[#D47A63] text-[#D47A63]' : 'text-white stroke-[2]'
+                          video.isLiked ? 'fill-[#D48A80] text-[#D48A80]' : 'text-[#FAF9F6] stroke-[2]'
                         }`}
                       />
                     </button>
@@ -988,7 +988,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                     >
                       <Bookmark
                         className={`w-5.5 h-5.5 drop-shadow-md ${
-                          isFav ? 'fill-[#D7BA86] text-[#D7BA86]' : 'text-white stroke-[2]'
+                          isFav ? 'fill-[#CDBFA9] text-[#CDBFA9]' : 'text-[#FAF9F6] stroke-[2]'
                         }`}
                       />
                     </button>
@@ -1014,7 +1014,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                       setDetailVideo(video);
                     }}
                     className="w-9 h-9 flex items-center justify-center cursor-pointer"
-                    title="Chi tiết & Video liên quan"
+                    title="Chi tiết và video liên quan"
                   >
                     <Info className="w-5 h-5 drop-shadow-md" />
                   </button>
@@ -1038,25 +1038,25 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                 {/* Bottom Caption */}
                 <div className="absolute left-0 right-16 bottom-3 z-20 flex flex-col px-4 pb-1 pointer-events-none max-w-[600px]">
                   <div className="flex items-center gap-2 mb-1 pointer-events-auto interactive-control flex-wrap">
-                    <h3 className="text-[14px] font-semibold text-white drop-shadow-md">{video.channelName}</h3>
-                    {video.isVerified && <CheckCircle2 className="w-3.5 h-3.5 text-[#8DA892]" />}
-                    <span className="text-[10.5px] font-medium text-[#FAF6F0]/80">
+                    <h3 className="text-[14px] font-semibold text-[#FAF9F6] drop-shadow-md">{video.channelName}</h3>
+                    {video.isVerified && <CheckCircle2 className="w-3.5 h-3.5 text-[#B2B6A3]" />}
+                    <span className="text-[10.5px] font-medium text-[#F0EBE0]/80">
                       · {VIDEO_CATEGORIES.find((c) => c.id === video.category)?.label}
                     </span>
                     {watchInfo && watchInfo.progressSec > 3 && (
-                      <span className="text-[10.5px] font-semibold text-[#D7BA86] tabular-nums">
-                        · Tiếp {watchInfo.progressSec}s
+                      <span className="text-[10.5px] font-semibold text-[#CDBFA9] tabular-nums">
+                        · Tiếp {watchInfo.progressSec} giây
                       </span>
                     )}
                   </div>
 
-                  <h4 className="font-editorial text-[15px] font-semibold text-[#FAF6F0] leading-snug drop-shadow-md mb-1 pointer-events-auto interactive-control">
+                  <h4 className="font-editorial text-[15px] font-semibold text-[#FAF9F6] leading-snug drop-shadow-md mb-1 pointer-events-auto interactive-control">
                     {video.title}
                   </h4>
 
                   <div className="pointer-events-auto interactive-control mb-1">
                     <p
-                      className={`text-[11.5px] text-[#FAF6F0]/90 leading-relaxed drop-shadow-md ${
+                      className={`text-[11.5px] text-[#F0EBE0]/90 leading-relaxed drop-shadow-md ${
                         isExpanded ? 'line-clamp-none' : 'line-clamp-2'
                       }`}
                     >
@@ -1064,23 +1064,23 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                     </p>
                     <button
                       onClick={(e) => toggleCaptionExpand(video.id, e)}
-                      className="text-[10.5px] font-semibold text-[#FAF6F0]/75 hover:text-white flex items-center gap-0.5 mt-0.5 cursor-pointer"
+                      className="text-[10.5px] font-semibold text-[#F0EBE0]/75 hover:text-[#FAF9F6] flex items-center gap-0.5 mt-0.5 cursor-pointer"
                     >
                       <span>{isExpanded ? 'Thu gọn' : 'Xem thêm'}</span>
                       {isExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                     </button>
                   </div>
 
-                  <div className="flex items-center gap-1.5 text-[#FAF6F0]/80 text-[10.5px] drop-shadow-md">
+                  <div className="flex items-center gap-1.5 text-[#F0EBE0]/80 text-[10.5px] drop-shadow-md">
                     <Music className="w-3 h-3 shrink-0" />
                     <span className="truncate">{video.musicTitle}</span>
                   </div>
                 </div>
 
                 {/* Progress Bar */}
-                <div className="absolute left-0 right-0 bottom-0 h-1 bg-white/20 z-30">
+                <div className="absolute left-0 right-0 bottom-0 h-1 bg-[#FAF9F6]/20 z-30">
                   <div
-                    className="h-full bg-[#D7BA86] transition-all duration-150"
+                    className="h-full bg-[#CDBFA9] transition-all duration-150"
                     style={{ width: `${isActive ? videoProgress : 0}%` }}
                   />
                 </div>
@@ -1093,34 +1093,34 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
       {/* Video Library Modal (Favorites, Watch History, Playlists) */}
       <AnimatePresence>
         {isLibraryOpen && (
-          <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-[#120F0E]/65 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-[#1C1B18]/65 backdrop-blur-xs">
             <motion.div
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 40, opacity: 0 }}
-              className="w-full max-w-[500px] max-h-[85vh] bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] rounded-t-[28px] md:rounded-[28px] p-5 shadow-2xl flex flex-col overflow-hidden border border-[#E6DDD1] dark:border-[#362E2A]"
+              className="w-full max-w-[500px] max-h-[85vh] bg-nova-bg text-nova-text rounded-t-[28px] md:rounded-[28px] p-5 shadow-2xl flex flex-col overflow-hidden border border-nova-border"
             >
-              <div className="flex items-center justify-between pb-3 border-b border-[#E6DDD1] dark:border-[#362E2A] mb-3">
-                <h3 className="font-editorial text-lg font-semibold">Thư viện Video của mẹ</h3>
+              <div className="flex items-center justify-between pb-3 border-b border-nova-border mb-3">
+                <h3 className="font-editorial text-lg font-semibold">Thư viện video của mẹ</h3>
                 <button
                   onClick={() => setIsLibraryOpen(false)}
-                  className="w-8 h-8 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] flex items-center justify-center cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-nova-bg-subtle text-nova-text-muted flex items-center justify-center cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="flex gap-1.5 p-1 bg-[#F2ECE3] dark:bg-[#231E1B] rounded-xl mb-3">
+              <div className="flex gap-1.5 p-1 bg-nova-bg-subtle rounded-xl mb-3">
                 {[
                   { id: 'favorites', label: `Yêu thích (${favoriteVideoIds.length})` },
                   { id: 'history', label: `Lịch sử (${watchHistory.length})` },
-                  { id: 'playlists', label: `Playlist (${playlists.length})` },
+                  { id: 'playlists', label: `Danh sách phát (${playlists.length})` },
                 ].map((t) => (
                   <button
                     key={t.id}
                     onClick={() => setLibraryTab(t.id as any)}
                     className={`flex-1 py-2 rounded-lg text-xs font-semibold cursor-pointer ${
-                      libraryTab === t.id ? 'bg-white dark:bg-[#1E1A17] text-[#322622] dark:text-[#F4EDE6]' : 'text-[#786962] dark:text-[#B5A89F]'
+                      libraryTab === t.id ? 'bg-nova-surface text-nova-text' : 'text-nova-text-muted'
                     }`}
                   >
                     {t.label}
@@ -1132,7 +1132,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                 {libraryTab === 'favorites' && (
                   <>
                     {favoriteVideoIds.length === 0 ? (
-                      <p className="py-10 text-center text-xs text-[#786962]">Chưa có video nào được lưu yêu thích.</p>
+                      <p className="py-10 text-center text-xs text-nova-text-muted">Chưa có video nào được lưu yêu thích.</p>
                     ) : (
                       videos
                         .filter((v) => favoriteVideoIds.includes(v.id))
@@ -1147,13 +1147,13 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                                 setTimeout(() => scrollToVideo(idx), 100);
                               }
                             }}
-                            className="w-full p-3 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-left flex items-center justify-between gap-2 cursor-pointer"
+                            className="w-full p-3 rounded-2xl bg-nova-surface border border-nova-border text-left flex items-center justify-between gap-2 cursor-pointer"
                           >
                             <div className="min-w-0">
                               <p className="text-xs font-semibold truncate">{v.title}</p>
-                              <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] mt-0.5">{v.channelName}</p>
+                              <p className="text-[11px] text-nova-text-muted mt-0.5">{v.channelName}</p>
                             </div>
-                            <Play className="w-4 h-4 text-[#B55841] shrink-0" />
+                            <Play className="w-4 h-4 text-nova-accent shrink-0" />
                           </button>
                         ))
                     )}
@@ -1163,7 +1163,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                 {libraryTab === 'history' && (
                   <>
                     {watchHistory.length === 0 ? (
-                      <p className="py-10 text-center text-xs text-[#786962]">Chưa có lịch sử xem video.</p>
+                      <p className="py-10 text-center text-xs text-nova-text-muted">Chưa có lịch sử xem video.</p>
                     ) : (
                       watchHistory.map((h) => {
                         const v = videos.find((x) => x.id === h.videoId);
@@ -1179,15 +1179,15 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                                 setTimeout(() => scrollToVideo(idx), 100);
                               }
                             }}
-                            className="w-full p-3 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-left flex items-center justify-between gap-2 cursor-pointer"
+                            className="w-full p-3 rounded-2xl bg-nova-surface border border-nova-border text-left flex items-center justify-between gap-2 cursor-pointer"
                           >
                             <div className="min-w-0">
                               <p className="text-xs font-semibold truncate">{v.title}</p>
-                              <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] flex items-center gap-1 mt-0.5 tabular-nums">
-                                <History className="w-3 h-3" /> Đã xem đến {h.progressSec}s / {h.durationSec}s
+                              <p className="text-[11px] text-nova-text-muted flex items-center gap-1 mt-0.5 tabular-nums">
+                                <History className="w-3 h-3" /> Đã xem đến {h.progressSec} giây / {h.durationSec} giây
                               </p>
                             </div>
-                            <Play className="w-4 h-4 text-[#B55841] shrink-0" />
+                            <Play className="w-4 h-4 text-nova-accent shrink-0" />
                           </button>
                         );
                       })
@@ -1202,12 +1202,12 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                         type="text"
                         value={newPlaylistName}
                         onChange={(e) => setNewPlaylistName(e.target.value)}
-                        placeholder="Tên danh sách phát mới (VD: Nhạc ngủ tối)..."
-                        className="flex-1 px-3 py-2 rounded-xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-xs"
+                        placeholder="Tên danh sách phát mới (Ví dụ: Nhạc ngủ tối)..."
+                        className="flex-1 px-3 py-2 rounded-xl bg-nova-surface border border-nova-border text-xs text-nova-text"
                       />
                       <button
                         type="submit"
-                        className="px-4 py-2 rounded-xl bg-[#B55841] text-white text-xs font-semibold cursor-pointer"
+                        className="px-4 py-2 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-semibold cursor-pointer"
                       >
                         Tạo
                       </button>
@@ -1217,17 +1217,17 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                       const activeVid = filteredVideos[currentIndex];
                       const hasCurrent = activeVid ? pl.videoIds.includes(activeVid.id) : false;
                       return (
-                        <div key={pl.id} className="p-3 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] space-y-2">
+                        <div key={pl.id} className="p-3 rounded-2xl bg-nova-surface border border-nova-border space-y-2">
                           <div className="flex items-center justify-between gap-2">
                             <div>
                               <h4 className="text-xs font-semibold">{pl.name}</h4>
-                              <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">{pl.videoIds.length} video</p>
+                              <p className="text-[11px] text-nova-text-muted">{pl.videoIds.length} video</p>
                             </div>
                             {activeVid && (
                               <button
                                 onClick={() => handleToggleInPlaylist(pl.id, activeVid.id)}
                                 className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold cursor-pointer ${
-                                  hasCurrent ? 'bg-[#EBF1EC] text-[#263E35]' : 'bg-[#F7EAE5] text-[#B55841]'
+                                  hasCurrent ? 'bg-nova-sage-soft text-nova-sage-text' : 'bg-nova-accent-soft text-nova-accent'
                                 }`}
                               >
                                 {hasCurrent ? 'Đã thêm video đang xem' : '+ Thêm video đang xem'}
@@ -1248,32 +1248,32 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
       {/* Video Detail & Related Videos Modal */}
       <AnimatePresence>
         {detailVideo && (
-          <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-[#120F0E]/65 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-[#1C1B18]/65 backdrop-blur-xs">
             <motion.div
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 40, opacity: 0 }}
-              className="w-full max-w-[480px] max-h-[85vh] bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] rounded-t-[28px] md:rounded-[28px] p-5 shadow-2xl flex flex-col overflow-hidden border border-[#E6DDD1] dark:border-[#362E2A]"
+              className="w-full max-w-[480px] max-h-[85vh] bg-nova-bg text-nova-text rounded-t-[28px] md:rounded-[28px] p-5 shadow-2xl flex flex-col overflow-hidden border border-nova-border"
             >
-              <div className="flex items-center justify-between pb-3 border-b border-[#E6DDD1] dark:border-[#362E2A] mb-3">
-                <h3 className="font-editorial text-lg font-semibold">Chi tiết video & Gợi ý liên quan</h3>
+              <div className="flex items-center justify-between pb-3 border-b border-nova-border mb-3">
+                <h3 className="font-editorial text-lg font-semibold">Chi tiết video và gợi ý liên quan</h3>
                 <button
                   onClick={() => setDetailVideo(null)}
-                  className="w-8 h-8 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] flex items-center justify-center cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-nova-bg-subtle text-nova-text-muted flex items-center justify-center cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto space-y-3 no-scrollbar">
                 <h4 className="font-editorial text-base font-semibold">{detailVideo.title}</h4>
-                <p className="text-xs text-[#6B5D56] dark:text-[#C5B9B0] leading-relaxed">{detailVideo.description}</p>
-                <div className="flex flex-wrap gap-2 text-[11px] font-medium text-[#B55841] dark:text-[#D47A63]">
+                <p className="text-xs text-nova-text-muted leading-relaxed">{detailVideo.description}</p>
+                <div className="flex flex-wrap gap-2 text-[11px] font-medium text-nova-accent">
                   {detailVideo.hashtags.map((h) => (
                     <span key={h}>{h}</span>
                   ))}
                 </div>
-                <div className="pt-3 border-t border-[#E6DDD1] dark:border-[#362E2A]">
-                  <p className="text-xs font-semibold text-[#786962] uppercase mb-2">Video cùng chủ đề</p>
+                <div className="pt-3 border-t border-nova-border">
+                  <p className="text-xs font-semibold text-nova-text-muted uppercase mb-2">Video cùng chủ đề</p>
                   <div className="space-y-2">
                     {videos
                       .filter((v) => v.id !== detailVideo.id && v.category === detailVideo.category)
@@ -1289,13 +1289,13 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                               setTimeout(() => scrollToVideo(idx), 100);
                             }
                           }}
-                          className="w-full p-3 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-left flex items-center justify-between cursor-pointer"
+                          className="w-full p-3 rounded-2xl bg-nova-surface border border-nova-border text-left flex items-center justify-between cursor-pointer"
                         >
                           <div className="min-w-0 pr-2">
                             <p className="text-xs font-semibold truncate">{rel.title}</p>
-                            <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">{rel.channelName}</p>
+                            <p className="text-[11px] text-nova-text-muted">{rel.channelName}</p>
                           </div>
-                          <Play className="w-4 h-4 text-[#B55841] shrink-0" />
+                          <Play className="w-4 h-4 text-nova-accent shrink-0" />
                         </button>
                       ))}
                   </div>
@@ -1309,32 +1309,32 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
       {/* Report Video Modal */}
       <AnimatePresence>
         {reportTargetVideo && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#120F0E]/65 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1C1B18]/65 backdrop-blur-xs">
             <form
               onSubmit={handleSubmitReport}
-              className="w-full max-w-sm bg-white dark:bg-[#1E1A17] text-[#322622] dark:text-[#F4EDE6] rounded-3xl p-5 shadow-2xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3"
+              className="w-full max-w-sm bg-nova-surface text-nova-text rounded-3xl p-5 shadow-2xl border border-nova-border space-y-3"
             >
               <h3 className="font-editorial text-base font-semibold">Báo cáo nội dung video</h3>
-              <p className="text-xs text-[#6B5D56] dark:text-[#C5B9B0]">{reportTargetVideo.title}</p>
+              <p className="text-xs text-nova-text-muted">{reportTargetVideo.title}</p>
               <textarea
                 rows={3}
                 required
                 value={reportReason}
                 onChange={(e) => setReportReason(e.target.value)}
-                placeholder="Mô tả lý do vi phạm (thông tin sai lệch, phản cảm...)..."
-                className="w-full p-3 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs"
+                placeholder="Mô tả lý do báo cáo (thông tin sai lệch, nội dung không phù hợp...)..."
+                className="w-full p-3 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text"
               />
               <div className="flex gap-2 justify-end">
                 <button
                   type="button"
                   onClick={() => setReportTargetVideo(null)}
-                  className="px-3 py-2 text-xs font-semibold text-[#786962] cursor-pointer"
+                  className="px-3 py-2 text-xs font-semibold text-nova-text-muted cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 rounded-xl bg-[#B55841] text-white text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-nova-accent text-nova-accent-contrast text-xs font-semibold cursor-pointer"
                 >
                   Gửi báo cáo
                 </button>
@@ -1348,55 +1348,55 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
       <AnimatePresence>
         {activeCommentVideo && (
           <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center select-none">
-            <div onClick={() => setActiveCommentVideo(null)} className="absolute inset-0 bg-[#120F0E]/65" />
+            <div onClick={() => setActiveCommentVideo(null)} className="absolute inset-0 bg-[#1C1B18]/65" />
             <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              className="relative w-full max-w-[460px] max-h-[80%] bg-[#1E1A17] text-[#FAF6F0] rounded-t-[28px] md:rounded-[28px] p-5 shadow-2xl flex flex-col z-10 border border-white/10"
+              className="relative w-full max-w-[460px] max-h-[80%] bg-nova-bg text-nova-text rounded-t-[28px] md:rounded-[28px] p-5 shadow-2xl flex flex-col z-10 border border-nova-border"
             >
-              <div className="flex items-center justify-between pb-3 border-b border-white/10">
+              <div className="flex items-center justify-between pb-3 border-b border-nova-border">
                 <h3 className="font-editorial text-base font-semibold">{activeCommentVideo.commentsCount} bình luận</h3>
                 <button
                   onClick={() => setActiveCommentVideo(null)}
-                  className="w-8 h-8 rounded-full bg-white/10 text-white/70 flex items-center justify-center cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-nova-bg-subtle text-nova-text-muted flex items-center justify-center cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
               <div className="flex-1 overflow-y-auto py-3 space-y-3 no-scrollbar max-h-[300px]">
                 {activeCommentVideo.comments.length === 0 ? (
-                  <p className="py-8 text-center text-white/50 text-xs">Chưa có bình luận nào.</p>
+                  <p className="py-8 text-center text-nova-text-muted text-xs">Chưa có bình luận nào.</p>
                 ) : (
                   activeCommentVideo.comments.map((c) => (
                     <div key={c.id} className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-[#B55841] text-white font-semibold text-xs flex items-center justify-center shrink-0">
+                      <div className="w-8 h-8 rounded-full bg-nova-accent text-nova-accent-contrast font-semibold text-xs flex items-center justify-center shrink-0">
                         {c.avatar}
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-semibold">{c.author}</span>
-                          <span className="text-[10px] text-white/45">{c.timeAgo}</span>
+                          <span className="text-xs font-semibold text-nova-text">{c.author}</span>
+                          <span className="text-[10px] text-nova-text-muted">{c.timeAgo}</span>
                         </div>
-                        <p className="text-xs text-white/80 mt-0.5">{c.content}</p>
+                        <p className="text-xs text-nova-text-muted mt-0.5">{c.content}</p>
                       </div>
                     </div>
                   ))
                 )}
               </div>
-              <div className="pt-2 border-t border-white/10 flex items-center gap-2">
+              <div className="pt-2 border-t border-nova-border flex items-center gap-2">
                 <input
                   type="text"
                   value={commentInput}
                   onChange={(e) => setCommentInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAddComment()}
                   placeholder="Thêm bình luận..."
-                  className="flex-1 px-3.5 py-2.5 bg-white/10 border border-white/15 rounded-xl text-xs text-white focus:outline-none"
+                  className="flex-1 px-3.5 py-2.5 bg-nova-surface border border-nova-border rounded-xl text-xs text-nova-text focus:outline-none"
                 />
                 <button
                   onClick={handleAddComment}
                   disabled={!commentInput.trim()}
-                  className="w-10 h-10 rounded-xl bg-[#B55841] disabled:opacity-40 text-white flex items-center justify-center cursor-pointer"
+                  className="w-10 h-10 rounded-xl bg-nova-accent disabled:opacity-40 text-nova-accent-contrast flex items-center justify-center cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
                 </button>
@@ -1409,27 +1409,27 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
       {/* Upload / Edit Video Modal */}
       <AnimatePresence>
         {isUploadOpen && (
-          <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-[#120F0E]/65 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-[#1C1B18]/65 backdrop-blur-xs">
             <motion.div
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 40, opacity: 0 }}
-              className="w-full max-w-[480px] max-h-[90vh] bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] rounded-t-[28px] md:rounded-[28px] p-5 shadow-2xl flex flex-col overflow-y-auto no-scrollbar border border-[#E6DDD1] dark:border-[#362E2A]"
+              className="w-full max-w-[480px] max-h-[90vh] bg-nova-bg text-nova-text rounded-t-[28px] md:rounded-[28px] p-5 shadow-2xl flex flex-col overflow-y-auto no-scrollbar border border-nova-border"
             >
-              <div className="flex items-center justify-between pb-3 border-b border-[#E6DDD1] dark:border-[#362E2A] mb-4">
+              <div className="flex items-center justify-between pb-3 border-b border-nova-border mb-4">
                 <h3 className="font-editorial text-lg font-semibold">
                   {editingVideo ? 'Chỉnh sửa video thai giáo' : 'Đăng video thai giáo mới'}
                 </h3>
                 <button
                   onClick={() => setIsUploadOpen(false)}
-                  className="w-8 h-8 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] flex items-center justify-center cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-nova-bg-subtle text-nova-text-muted flex items-center justify-center cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               {uploadError && (
-                <div className="mb-3 p-3 rounded-xl bg-[#F7EAE5] dark:bg-[#35231E] border border-[#EBCDC2] text-xs text-[#9E4A35] font-semibold">
+                <div className="mb-3 p-3 rounded-xl bg-nova-danger-soft border border-nova-danger-border text-xs text-nova-danger font-semibold">
                   {uploadError}
                 </div>
               )}
@@ -1442,8 +1442,8 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                     required
                     value={formTitle}
                     onChange={(e) => setFormTitle(e.target.value)}
-                    placeholder="VD: Nhạc giao hưởng thai giáo buổi tối cho bé"
-                    className="w-full px-3.5 py-2.5 bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#B55841]/30"
+                    placeholder="Ví dụ: Nhạc giao hưởng thai giáo buổi tối cho bé"
+                    className="w-full px-3.5 py-2.5 bg-nova-surface border border-nova-border rounded-xl text-xs text-nova-text focus:outline-none focus:ring-2 focus:ring-nova-accent/30"
                   />
                 </div>
 
@@ -1452,7 +1452,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                   <select
                     value={formCategory}
                     onChange={(e) => setFormCategory(e.target.value as any)}
-                    className="w-full px-3.5 py-2.5 bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs font-semibold focus:outline-none"
+                    className="w-full px-3.5 py-2.5 bg-nova-surface border border-nova-border rounded-xl text-xs font-semibold text-nova-text focus:outline-none"
                   >
                     {VIDEO_CATEGORIES.filter((c) => c.id !== 'all').map((c) => (
                       <option key={c.id} value={c.id}>
@@ -1469,7 +1469,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                     value={formDesc}
                     onChange={(e) => setFormDesc(e.target.value)}
                     placeholder="Chia sẻ lợi ích thai kỳ hoặc hướng dẫn thực hành..."
-                    className="w-full px-3.5 py-2.5 bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs focus:outline-none resize-none"
+                    className="w-full px-3.5 py-2.5 bg-nova-surface border border-nova-border rounded-xl text-xs text-nova-text focus:outline-none resize-none"
                   />
                 </div>
 
@@ -1482,8 +1482,8 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                         onClick={() => setUploadMode('file')}
                         className={`flex-1 py-2 rounded-xl text-xs font-semibold border cursor-pointer ${
                           uploadMode === 'file'
-                            ? 'bg-[#B55841] text-white border-[#B55841]'
-                            : 'bg-white dark:bg-[#1E1A17] text-[#6B5D56] dark:text-[#C5B9B0] border-[#E6DDD1] dark:border-[#362E2A]'
+                            ? 'bg-nova-accent text-nova-accent-contrast border-nova-accent'
+                            : 'bg-nova-surface text-nova-text-muted border-nova-border'
                         }`}
                       >
                         Tải tệp từ máy (MP4/WebM/MOV)
@@ -1493,8 +1493,8 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                         onClick={() => setUploadMode('url')}
                         className={`flex-1 py-2 rounded-xl text-xs font-semibold border cursor-pointer ${
                           uploadMode === 'url'
-                            ? 'bg-[#B55841] text-white border-[#B55841]'
-                            : 'bg-white dark:bg-[#1E1A17] text-[#6B5D56] dark:text-[#C5B9B0] border-[#E6DDD1] dark:border-[#362E2A]'
+                            ? 'bg-nova-accent text-nova-accent-contrast border-nova-accent'
+                            : 'bg-nova-surface text-nova-text-muted border-nova-border'
                         }`}
                       >
                         Nhập đường dẫn URL
@@ -1502,14 +1502,14 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                     </div>
 
                     {uploadMode === 'file' ? (
-                      <div className="p-3 bg-white dark:bg-[#1E1A17] border border-dashed border-[#C4B7AD] rounded-xl">
+                      <div className="p-3 bg-nova-surface border border-dashed border-nova-taupe rounded-xl">
                         <input
                           type="file"
                           accept="video/mp4,video/webm,video/quicktime"
                           onChange={handleSelectVideoFile}
                           className="text-xs w-full"
                         />
-                        <p className="text-[10.5px] text-[#786962] mt-1">
+                        <p className="text-[10.5px] text-nova-text-muted mt-1">
                           Định dạng: MP4, WebM, MOV · Tối đa 50MB.
                           {formVideoFile && ` Đã chọn: ${formVideoFile.name} (${(formVideoFile.size / (1024 * 1024)).toFixed(1)}MB)`}
                         </p>
@@ -1520,7 +1520,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                         value={formVideoUrl}
                         onChange={(e) => setFormVideoUrl(e.target.value)}
                         placeholder="https://... hoặc /videos/music.mp4"
-                        className="w-full px-3.5 py-2.5 bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs focus:outline-none"
+                        className="w-full px-3.5 py-2.5 bg-nova-surface border border-nova-border rounded-xl text-xs text-nova-text focus:outline-none"
                       />
                     )}
                   </div>
@@ -1539,8 +1539,8 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                       type="text"
                       value={formPosterUrl}
                       onChange={(e) => setFormPosterUrl(e.target.value)}
-                      placeholder="Hoặc dán URL ảnh bìa (tối đa 5MB nếu tải tệp)"
-                      className="w-full px-3.5 py-2 bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs focus:outline-none"
+                      placeholder="Hoặc dán đường dẫn ảnh bìa (tối đa 5MB nếu tải tệp)"
+                      className="w-full px-3.5 py-2 bg-nova-surface border border-nova-border rounded-xl text-xs text-nova-text focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1549,21 +1549,21 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsUploadOpen(false)}
-                    className="flex-1 py-2.5 rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] text-xs font-semibold text-[#6B5D56] cursor-pointer min-h-[44px]"
+                    className="flex-1 py-2.5 rounded-xl border border-nova-border text-xs font-semibold text-nova-text-muted cursor-pointer min-h-[44px]"
                   >
                     Hủy
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmittingVideo}
-                    className="flex-1 py-2.5 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] disabled:opacity-50 text-white text-xs font-semibold cursor-pointer min-h-[44px]"
+                    className="flex-1 py-2.5 rounded-xl bg-nova-accent hover:bg-nova-accent-hover disabled:opacity-50 text-nova-accent-contrast text-xs font-semibold cursor-pointer min-h-[44px]"
                   >
                     {isSubmittingVideo
                       ? 'Đang xử lý...'
                       : editingVideo
                       ? 'Lưu thay đổi'
                       : canModerate
-                      ? 'Đăng & Xuất bản ngay'
+                      ? 'Đăng và xuất bản ngay'
                       : 'Gửi video chờ duyệt'}
                   </button>
                 </div>
@@ -1576,31 +1576,31 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
       {/* Manage & Moderation Modal */}
       <AnimatePresence>
         {isManageOpen && (
-          <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-[#120F0E]/65 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-[#1C1B18]/65 backdrop-blur-xs">
             <motion.div
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 40, opacity: 0 }}
-              className="w-full max-w-[520px] max-h-[88vh] bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] rounded-t-[28px] md:rounded-[28px] p-5 shadow-2xl flex flex-col overflow-hidden border border-[#E6DDD1] dark:border-[#362E2A]"
+              className="w-full max-w-[520px] max-h-[88vh] bg-nova-bg text-nova-text rounded-t-[28px] md:rounded-[28px] p-5 shadow-2xl flex flex-col overflow-hidden border border-nova-border"
             >
-              <div className="flex items-center justify-between pb-3 border-b border-[#E6DDD1] dark:border-[#362E2A] mb-3 shrink-0">
+              <div className="flex items-center justify-between pb-3 border-b border-nova-border mb-3 shrink-0">
                 <h3 className="font-editorial text-lg font-semibold">
-                  {canModerate ? 'Quản lý & Kiểm duyệt video' : 'Video bạn đã đăng'}
+                  {canModerate ? 'Quản lý và kiểm duyệt video' : 'Video bạn đã đăng'}
                 </h3>
                 <button
                   onClick={() => setIsManageOpen(false)}
-                  className="w-8 h-8 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] flex items-center justify-center cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-nova-bg-subtle text-nova-text-muted flex items-center justify-center cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               {canModerate && (
-                <div className="flex gap-1.5 p-1 bg-[#F2ECE3] dark:bg-[#231E1B] rounded-xl mb-3 shrink-0">
+                <div className="flex gap-1.5 p-1 bg-nova-bg-subtle rounded-xl mb-3 shrink-0">
                   <button
                     onClick={() => setManageTab('mine')}
                     className={`flex-1 py-2 rounded-lg text-xs font-semibold cursor-pointer ${
-                      manageTab === 'mine' ? 'bg-white dark:bg-[#1E1A17] text-[#322622] dark:text-[#F4EDE6]' : 'text-[#786962]'
+                      manageTab === 'mine' ? 'bg-nova-surface text-nova-text' : 'text-nova-text-muted'
                     }`}
                   >
                     Video của tôi ({myVideos.length})
@@ -1608,7 +1608,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                   <button
                     onClick={() => setManageTab('moderation')}
                     className={`flex-1 py-2 rounded-lg text-xs font-semibold cursor-pointer ${
-                      manageTab === 'moderation' ? 'bg-white dark:bg-[#1E1A17] text-[#322622] dark:text-[#F4EDE6]' : 'text-[#786962]'
+                      manageTab === 'moderation' ? 'bg-nova-surface text-nova-text' : 'text-nova-text-muted'
                     }`}
                   >
                     Kiểm duyệt ({pendingCount} chờ duyệt)
@@ -1618,44 +1618,44 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
 
               <div className="flex-1 overflow-y-auto space-y-2.5 no-scrollbar">
                 {(manageTab === 'moderation' && canModerate ? moderationVideos : myVideos).length === 0 ? (
-                  <div className="py-10 text-center text-xs text-[#786962]">
+                  <div className="py-10 text-center text-xs text-nova-text-muted">
                     Chưa có video nào trong danh sách này.
                   </div>
                 ) : (
                   (manageTab === 'moderation' && canModerate ? moderationVideos : myVideos).map((vid) => (
                     <div
                       key={vid.id}
-                      className="p-3.5 bg-white dark:bg-[#1E1A17] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-2"
+                      className="p-3.5 bg-nova-surface rounded-2xl border border-nova-border space-y-2"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5 flex-wrap mb-1">
                             {getStatusBadge(vid.status)}
-                            <span className="text-[10.5px] text-[#786962]">
+                            <span className="text-[10.5px] text-nova-text-muted">
                               · {vid.channelName} · {VIDEO_CATEGORIES.find((c) => c.id === vid.category)?.label}
                             </span>
                           </div>
-                          <h4 className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6]">{vid.title}</h4>
+                          <h4 className="text-xs font-semibold text-nova-text">{vid.title}</h4>
                           {vid.status === 'rejected' && vid.rejectionReason && (
-                            <p className="text-[11px] text-[#B55841] mt-1">
+                            <p className="text-[11px] text-nova-danger mt-1">
                               Lý do từ chối: {vid.rejectionReason}
                             </p>
                           )}
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5 flex-wrap pt-1.5 border-t border-[#E6DDD1]/60 dark:border-[#362E2A]">
+                      <div className="flex items-center gap-1.5 flex-wrap pt-1.5 border-t border-nova-border">
                         {(vid.authorId === user?.id || canModerate) && (
                           <>
                             <button
                               onClick={() => openEditModal(vid)}
-                              className="px-2.5 py-1.5 rounded-lg bg-[#FAF6F0] dark:bg-[#231E1B] text-[#322622] dark:text-[#F4EDE6] text-[11px] font-semibold inline-flex items-center gap-1 cursor-pointer hover:bg-[#F2ECE3]"
+                              className="px-2.5 py-1.5 rounded-lg bg-nova-bg-subtle text-nova-text text-[11px] font-semibold inline-flex items-center gap-1 cursor-pointer hover:bg-nova-accent-soft"
                             >
                               <Edit3 className="w-3 h-3" /> Sửa
                             </button>
                             <button
                               onClick={() => handleDeleteVideo(vid.id)}
-                              className="px-2.5 py-1.5 rounded-lg bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] text-[11px] font-semibold inline-flex items-center gap-1 cursor-pointer"
+                              className="px-2.5 py-1.5 rounded-lg bg-nova-danger-soft text-nova-danger text-[11px] font-semibold inline-flex items-center gap-1 cursor-pointer"
                             >
                               <Trash2 className="w-3 h-3" /> Xóa
                             </button>
@@ -1667,7 +1667,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                             {vid.status !== 'approved' && (
                               <button
                                 onClick={() => handleModerate(vid.id, 'approved')}
-                                className="px-2.5 py-1.5 rounded-lg bg-[#EBF1EC] text-[#263E35] text-[11px] font-semibold cursor-pointer"
+                                className="px-2.5 py-1.5 rounded-lg bg-nova-success-soft text-nova-success text-[11px] font-semibold cursor-pointer"
                               >
                                 Duyệt
                               </button>
@@ -1675,7 +1675,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                             {vid.status !== 'hidden' && (
                               <button
                                 onClick={() => handleModerate(vid.id, 'hidden')}
-                                className="px-2.5 py-1.5 rounded-lg bg-[#F2ECE3] text-[#786962] text-[11px] font-semibold inline-flex items-center gap-1 cursor-pointer"
+                                className="px-2.5 py-1.5 rounded-lg bg-nova-bg-subtle text-nova-text-muted text-[11px] font-semibold inline-flex items-center gap-1 cursor-pointer"
                               >
                                 <EyeOff className="w-3 h-3" /> Ẩn
                               </button>
@@ -1683,7 +1683,7 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                             {vid.status !== 'rejected' && (
                               <button
                                 onClick={() => setRejectingVideoId(vid.id)}
-                                className="px-2.5 py-1.5 rounded-lg bg-[#F6EFE2] text-[#9E5B3B] text-[11px] font-semibold cursor-pointer"
+                                className="px-2.5 py-1.5 rounded-lg bg-nova-warning-soft text-nova-warning text-[11px] font-semibold cursor-pointer"
                               >
                                 Từ chối
                               </button>
@@ -1699,11 +1699,11 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                             value={rejectionReasonInput}
                             onChange={(e) => setRejectionReasonInput(e.target.value)}
                             placeholder="Nhập lý do từ chối video..."
-                            className="flex-1 px-2.5 py-1.5 bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-lg text-xs"
+                            className="flex-1 px-2.5 py-1.5 bg-nova-bg border border-nova-border rounded-lg text-xs text-nova-text"
                           />
                           <button
                             onClick={() => handleModerate(vid.id, 'rejected', rejectionReasonInput)}
-                            className="px-3 py-1.5 bg-[#B55841] text-white rounded-lg text-xs font-semibold cursor-pointer"
+                            className="px-3 py-1.5 bg-nova-accent text-nova-accent-contrast rounded-lg text-xs font-semibold cursor-pointer"
                           >
                             Xác nhận
                           </button>
@@ -1721,48 +1721,48 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
       {/* Video Notifications Drawer */}
       <AnimatePresence>
         {isNotifOpen && (
-          <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-[#120F0E]/65 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center p-0 md:p-4 bg-[#1C1B18]/65 backdrop-blur-xs">
             <motion.div
               initial={{ y: 40, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: 40, opacity: 0 }}
-              className="w-full max-w-[460px] max-h-[85vh] bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] rounded-t-[28px] md:rounded-[28px] p-5 shadow-2xl flex flex-col overflow-hidden border border-[#E6DDD1] dark:border-[#362E2A]"
+              className="w-full max-w-[460px] max-h-[85vh] bg-nova-bg text-nova-text rounded-t-[28px] md:rounded-[28px] p-5 shadow-2xl flex flex-col overflow-hidden border border-nova-border"
             >
-              <div className="flex items-center justify-between pb-3 border-b border-[#E6DDD1] dark:border-[#362E2A] mb-3 shrink-0">
+              <div className="flex items-center justify-between pb-3 border-b border-nova-border mb-3 shrink-0">
                 <div className="flex items-center gap-2">
-                  <Bell className="w-4 h-4 text-[#B55841]" />
+                  <Bell className="w-4 h-4 text-nova-accent" />
                   <h3 className="font-editorial text-lg font-semibold">Thông báo video</h3>
                 </div>
                 <button
                   onClick={() => setIsNotifOpen(false)}
-                  className="w-8 h-8 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] flex items-center justify-center cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-nova-bg-subtle text-nova-text-muted flex items-center justify-center cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="p-3 bg-white dark:bg-[#1E1A17] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-between mb-3 shrink-0">
+              <div className="p-3 bg-nova-surface rounded-2xl border border-nova-border flex items-center justify-between mb-3 shrink-0">
                 <div>
                   <p className="text-xs font-semibold">Nhận thông báo video thai giáo</p>
-                  <p className="text-[10.5px] text-[#786962] dark:text-[#B5A89F]">Báo khi có video mới hoặc trạng thái duyệt video</p>
+                  <p className="text-[10.5px] text-nova-text-muted">Báo khi có video mới hoặc trạng thái duyệt video</p>
                 </div>
                 <button
                   type="button"
                   onClick={handleToggleNotifPref}
                   className={`w-11 h-6 rounded-full transition-colors p-0.5 cursor-pointer ${
-                    videoNotifEnabled ? 'bg-[#6D8572]' : 'bg-[#D6CDC2] dark:bg-[#3A322D]'
+                    videoNotifEnabled ? 'bg-nova-sage' : 'bg-nova-border'
                   }`}
                 >
                   <motion.div
                     animate={{ x: videoNotifEnabled ? 20 : 0 }}
-                    className="w-5 h-5 rounded-full bg-white shadow-xs"
+                    className="w-5 h-5 rounded-full bg-nova-surface shadow-xs"
                   />
                 </button>
               </div>
 
               <div className="flex-1 overflow-y-auto space-y-2 no-scrollbar">
                 {videoNotifs.length === 0 ? (
-                  <p className="py-10 text-center text-xs text-[#786962]">Chưa có thông báo video nào.</p>
+                  <p className="py-10 text-center text-xs text-nova-text-muted">Chưa có thông báo video nào.</p>
                 ) : (
                   videoNotifs.map((n) => (
                     <div
@@ -1770,17 +1770,17 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
                       onClick={() => handleClickVideoNotif(n)}
                       className={`p-3 rounded-2xl border cursor-pointer transition-colors ${
                         n.isRead
-                          ? 'bg-white dark:bg-[#1E1A17] border-[#E6DDD1] dark:border-[#362E2A]'
-                          : 'bg-[#F7EAE5] dark:bg-[#35231E] border-[#EBCDC2]'
+                          ? 'bg-nova-surface border-nova-border'
+                          : 'bg-nova-accent-soft border-nova-taupe/40'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <h4 className={`text-xs ${n.isRead ? 'font-semibold' : 'font-semibold text-[#B55841]'}`}>
+                        <h4 className={`text-xs font-semibold ${n.isRead ? 'text-nova-text' : 'text-nova-accent'}`}>
                           {n.title}
                         </h4>
-                        <span className="text-[10px] text-[#786962] shrink-0">{n.timestamp}</span>
+                        <span className="text-[10px] text-nova-text-muted shrink-0">{n.timestamp}</span>
                       </div>
-                      <p className="text-[11px] text-[#6B5D56] dark:text-[#C5B9B0] mt-1">{n.description}</p>
+                      <p className="text-[11px] text-nova-text-muted mt-1">{n.description}</p>
                     </div>
                   ))
                 )}
@@ -1789,9 +1789,9 @@ export const VideoShortsScreen: React.FC<VideoShortsScreenProps> = ({
               {unreadVideoCount > 0 && (
                 <button
                   onClick={handleMarkAllVideoNotifsRead}
-                  className="mt-3 w-full py-2.5 bg-[#F2ECE3] hover:bg-[#E6DDD1] rounded-xl text-xs font-semibold text-[#322622] flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="mt-3 w-full py-2.5 bg-nova-bg-subtle hover:bg-nova-accent-soft rounded-xl text-xs font-semibold text-nova-text flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <CheckCheck className="w-4 h-4 text-[#4F6B56]" />
+                  <CheckCheck className="w-4 h-4 text-nova-sage-text" />
                   <span>Đánh dấu tất cả đã đọc</span>
                 </button>
               )}

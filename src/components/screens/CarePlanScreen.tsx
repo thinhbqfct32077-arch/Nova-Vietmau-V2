@@ -169,7 +169,6 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
     return () => window.removeEventListener('nova_storage_update', handleStorageChange);
   }, [selectedDateStr, userId]);
 
-  // Water handlers
   const handleAddWaterLog = (amount: number, note?: string) => {
     const updated = storageService.addWaterLog(amount, note, selectedDateStr);
     setWaterRecord(updated);
@@ -197,7 +196,6 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
     setActivities(storageService.loadCareActivities(selectedDateStr));
   };
 
-  // Reminder handlers
   const handleAddReminder = (newRem: Omit<HealthReminder, 'id' | 'createdAt'>) => {
     storageService.addHealthReminder(newRem, userId);
     const updated = storageService.loadHealthReminders(userId);
@@ -234,7 +232,6 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
     }
   };
 
-  // Activity handlers
   const handleToggleFavorite = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     const updated = storageService.toggleFavoriteActivity(id, selectedDateStr);
@@ -343,7 +340,7 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
   };
 
   return (
-    <div className="flex-1 flex flex-col px-4 sm:px-6 pt-3 pb-8 overflow-y-auto no-scrollbar select-none bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6]">
+    <div className="flex-1 flex flex-col px-4 sm:px-6 pt-3 pb-8 overflow-y-auto no-scrollbar select-none bg-nova-bg text-nova-text">
       {/* In-App Alarm Alert Banner */}
       <AnimatePresence>
         {activeAlarm && (
@@ -351,29 +348,30 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
             initial={{ opacity: 0, y: -16, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -16, scale: 0.96 }}
-            className="fixed top-14 left-4 right-4 z-50 bg-[#263E35] text-[#FAF6F0] p-4 rounded-2xl ios-float-shadow border border-[#C4A46B]/40 flex flex-col gap-2 max-w-[420px] mx-auto"
+            className="fixed top-14 left-4 right-4 z-50 bg-nova-accent text-nova-accent-contrast p-4 rounded-2xl ios-float-shadow border border-nova-border flex flex-col gap-2 max-w-[420px] mx-auto"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-[#B55841] flex items-center justify-center">
-                  <Bell className="w-3.5 h-3.5 text-white" />
+                <div className="w-7 h-7 rounded-full bg-nova-accent-contrast/15 flex items-center justify-center">
+                  <Bell className="w-3.5 h-3.5" />
                 </div>
-                <span className="text-xs font-semibold text-[#D7BA86] uppercase tracking-wider tabular-nums">
+                <span className="text-xs font-semibold uppercase tracking-wider tabular-nums opacity-90">
                   Đến giờ nhắc nhẹ ({activeAlarm.time})
                 </span>
               </div>
               <button
                 type="button"
                 onClick={() => setActiveAlarm(null)}
-                className="text-xs text-[#FAF6F0]/70 hover:text-white cursor-pointer"
+                aria-label="Đóng thông báo"
+                className="text-xs opacity-75 hover:opacity-100 cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <h4 className="text-sm font-semibold text-white">{activeAlarm.title}</h4>
+            <h4 className="text-sm font-semibold">{activeAlarm.title}</h4>
             {activeAlarm.notes && (
-              <p className="text-xs text-[#FAF6F0]/80 leading-relaxed">{activeAlarm.notes}</p>
+              <p className="text-xs opacity-85 leading-relaxed">{activeAlarm.notes}</p>
             )}
 
             <div className="flex gap-2 pt-1">
@@ -398,14 +396,14 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                   }
                   setActiveAlarm(null);
                 }}
-                className="flex-1 py-2 bg-[#B55841] text-white rounded-xl text-xs font-semibold hover:bg-[#9E4A35] cursor-pointer"
+                className="flex-1 py-2 bg-nova-surface text-nova-text rounded-xl text-xs font-semibold hover:opacity-90 cursor-pointer"
               >
                 Thực hiện ngay
               </button>
               <button
                 type="button"
                 onClick={() => setActiveAlarm(null)}
-                className="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-medium cursor-pointer"
+                className="px-4 py-2 bg-nova-accent-contrast/15 hover:bg-nova-accent-contrast/25 rounded-xl text-xs font-medium cursor-pointer"
               >
                 Đóng
               </button>
@@ -421,14 +419,14 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
             Chăm sóc & Nhật ký
           </h1>
           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-            <p className="text-[12.5px] font-medium text-[#786962] dark:text-[#B5A89F]">
+            <p className="text-[12.5px] font-medium text-nova-text-muted">
               {isToday ? 'Hôm nay' : `Ngày ${selectedDateStr}`} · {user?.name || 'Khánh Băng'}
             </p>
             {!isToday && (
               <button
                 type="button"
                 onClick={() => setSelectedDateStr(todayStr)}
-                className="text-[11px] font-semibold text-[#B55841] dark:text-[#D47A63] hover:underline cursor-pointer"
+                className="text-[11px] font-semibold text-nova-accent hover:underline cursor-pointer"
               >
                 · Về hôm nay
               </button>
@@ -441,10 +439,10 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
             <button
               type="button"
               onClick={() => onNavigate('report')}
-              className="px-3 h-10 rounded-xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-[#322622] dark:text-[#F4EDE6] text-xs font-semibold flex items-center gap-1.5 cursor-pointer hover:border-[#B55841]/50 whitespace-nowrap"
+              className="px-3 h-10 rounded-xl bg-nova-surface border border-nova-border text-nova-text text-xs font-semibold flex items-center gap-1.5 cursor-pointer hover:border-nova-taupe whitespace-nowrap"
               title="Xuất báo cáo khám thai"
             >
-              <FileBarChart2 className="w-3.5 h-3.5 text-[#B55841] dark:text-[#D47A63]" />
+              <FileBarChart2 className="w-3.5 h-3.5 text-nova-accent" />
               <span className="hidden sm:inline">Báo cáo PDF</span>
             </button>
           )}
@@ -457,7 +455,7 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
               setReminderModalOpenForm(true);
               setIsReminderModalOpen(true);
             }}
-            className="px-3.5 h-10 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] dark:bg-[#D47A63] text-white flex items-center gap-1 cursor-pointer transition-colors text-xs font-semibold whitespace-nowrap"
+            className="px-3.5 h-10 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast flex items-center gap-1 cursor-pointer transition-colors text-xs font-semibold whitespace-nowrap"
             title="Thêm nhắc nhở mới"
           >
             <Plus className="w-4 h-4 stroke-[2.2]" />
@@ -471,8 +469,9 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
               setEditingActivity(null);
               setIsAddModalOpen(true);
             }}
-            className="w-10 h-10 rounded-xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-[#322622] dark:text-[#F4EDE6] flex items-center justify-center cursor-pointer hover:border-[#B55841]/50"
+            className="w-10 h-10 rounded-xl bg-nova-surface border border-nova-border text-nova-text flex items-center justify-center cursor-pointer hover:border-nova-taupe"
             title="Thêm hoạt động chăm sóc"
+            aria-label="Thêm hoạt động chăm sóc"
           >
             <ListTodo className="w-4 h-4 stroke-[2]" />
           </motion.button>
@@ -480,14 +479,14 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
       </header>
 
       {/* 3 Main View Tabs */}
-      <div className="flex items-center gap-1.5 p-1 bg-[#F2ECE3] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-2xl mb-4 shrink-0">
+      <div className="flex items-center gap-1.5 p-1 bg-nova-bg-subtle border border-nova-border rounded-2xl mb-4 shrink-0">
         <button
           type="button"
           onClick={() => setMainTab('activities')}
           className={`flex-1 py-2 px-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer min-h-[42px] whitespace-nowrap ${
             mainTab === 'activities'
-              ? 'bg-[#FFFFFF] dark:bg-[#1E1A17] text-[#B55841] dark:text-[#D47A63]'
-              : 'text-[#786962] dark:text-[#B5A89F] hover:text-[#322622] dark:hover:text-[#F4EDE6]'
+              ? 'bg-nova-surface text-nova-accent shadow-2xs'
+              : 'text-nova-text-muted hover:text-nova-text'
           }`}
         >
           <ListTodo className="w-3.5 h-3.5" />
@@ -498,8 +497,8 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
           onClick={() => setMainTab('diary')}
           className={`flex-1 py-2 px-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer min-h-[42px] whitespace-nowrap ${
             mainTab === 'diary'
-              ? 'bg-[#FFFFFF] dark:bg-[#1E1A17] text-[#B55841] dark:text-[#D47A63]'
-              : 'text-[#786962] dark:text-[#B5A89F] hover:text-[#322622] dark:hover:text-[#F4EDE6]'
+              ? 'bg-nova-surface text-nova-accent shadow-2xs'
+              : 'text-nova-text-muted hover:text-nova-text'
           }`}
         >
           <BookOpen className="w-3.5 h-3.5" />
@@ -510,8 +509,8 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
           onClick={() => setMainTab('appointments')}
           className={`flex-1 py-2 px-2 rounded-xl text-xs font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer min-h-[42px] whitespace-nowrap ${
             mainTab === 'appointments'
-              ? 'bg-[#FFFFFF] dark:bg-[#1E1A17] text-[#B55841] dark:text-[#D47A63]'
-              : 'text-[#786962] dark:text-[#B5A89F] hover:text-[#322622] dark:hover:text-[#F4EDE6]'
+              ? 'bg-nova-surface text-nova-accent shadow-2xs'
+              : 'text-nova-text-muted hover:text-nova-text'
           }`}
         >
           <Stethoscope className="w-3.5 h-3.5" />
@@ -526,17 +525,17 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
       {mainTab === 'activities' && (
         <>
           {/* REMINDERS SECTION */}
-          <section className="bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl p-4 sm:p-5 nova-card-shadow border border-[#E6DDD1] dark:border-[#362E2A] mb-4">
+          <section className="bg-nova-surface rounded-2xl p-4 sm:p-5 nova-card-shadow border border-nova-border mb-4">
             <div className="flex items-center justify-between gap-2 mb-3 flex-wrap">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-nova-accent-soft text-nova-accent flex items-center justify-center">
                   <Bell className="w-4 h-4 stroke-[2]" />
                 </div>
                 <div>
                   <h2 className="font-editorial text-[16px] font-semibold leading-tight">
                     Nhắc nhở của mẹ ({reminders.length})
                   </h2>
-                  <p className="text-[11.5px] text-[#786962] dark:text-[#B5A89F]">
+                  <p className="text-[11.5px] text-nova-text-muted">
                     Uống nước, vitamin, lịch khám, nghỉ ngơi & vận động
                   </p>
                 </div>
@@ -546,7 +545,7 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                 <button
                   type="button"
                   onClick={() => setShowHistoryDrawer((v) => !v)}
-                  className="px-3 py-2 bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs font-semibold text-[#786962] dark:text-[#B5A89F] flex items-center gap-1 cursor-pointer whitespace-nowrap"
+                  className="px-3 py-2 bg-nova-bg-subtle border border-nova-border rounded-xl text-xs font-semibold text-nova-text-muted flex items-center gap-1 cursor-pointer whitespace-nowrap"
                 >
                   <History className="w-3.5 h-3.5" />
                   <span>Lịch sử ({reminderHistory.length})</span>
@@ -558,7 +557,7 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                     setReminderModalOpenForm(true);
                     setIsReminderModalOpen(true);
                   }}
-                  className="px-3.5 py-2 bg-[#B55841] hover:bg-[#9E4A35] dark:bg-[#D47A63] text-white rounded-xl text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors shrink-0 whitespace-nowrap"
+                  className="px-3.5 py-2 bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast rounded-xl text-xs font-semibold flex items-center gap-1 cursor-pointer transition-colors shrink-0 whitespace-nowrap"
                 >
                   <Plus className="w-3.5 h-3.5 stroke-[2.2]" />
                   <span>THÊM</span>
@@ -567,19 +566,19 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
             </div>
 
             {showHistoryDrawer && (
-              <div className="mb-3 p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] space-y-1.5">
+              <div className="mb-3 p-3 rounded-2xl bg-nova-bg-subtle border border-nova-border space-y-1.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold">Lịch sử nhắc nhở gần đây</span>
                   <button
                     type="button"
                     onClick={() => setShowHistoryDrawer(false)}
-                    className="text-[11px] font-semibold text-[#786962] dark:text-[#B5A89F] cursor-pointer"
+                    className="text-[11px] font-semibold text-nova-text-muted cursor-pointer"
                   >
                     Đóng
                   </button>
                 </div>
                 {reminderHistory.length === 0 ? (
-                  <p className="text-[11.5px] text-[#786962] dark:text-[#B5A89F]">
+                  <p className="text-[11.5px] text-nova-text-muted">
                     Chưa có nhắc nhở nào được kích hoạt trên hệ thống.
                   </p>
                 ) : (
@@ -587,10 +586,10 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                     {reminderHistory.slice(0, 8).map((h) => (
                       <div
                         key={h.id}
-                        className="text-[11px] flex items-center justify-between py-1 border-b border-[#E6DDD1] dark:border-[#362E2A] last:border-0"
+                        className="text-[11px] flex items-center justify-between py-1 border-b border-nova-border last:border-0"
                       >
                         <span className="font-medium truncate pr-2">{h.title}</span>
-                        <span className="text-[#786962] dark:text-[#B5A89F] shrink-0 tabular-nums">
+                        <span className="text-nova-text-muted shrink-0 tabular-nums">
                           {new Date(h.triggeredAt).toLocaleString('vi-VN')}
                         </span>
                       </div>
@@ -601,12 +600,12 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
             )}
 
             {permissionStatus !== 'granted' && (
-              <div className="mb-3 p-3 rounded-2xl bg-[#F2ECE3] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-[#786962] dark:text-[#D7BA86]">
+              <div className="mb-3 p-3 rounded-2xl bg-nova-bg-subtle border border-nova-border text-nova-text-muted">
                 <div className="flex items-center justify-between gap-2">
                   <div className="flex items-start gap-2">
-                    <AlertCircle className="w-4 h-4 text-[#9E5B3B] dark:text-[#D7BA86] shrink-0 mt-0.5" />
+                    <AlertCircle className="w-4 h-4 text-nova-warning shrink-0 mt-0.5" />
                     <div className="text-[11.5px] leading-snug">
-                      <span className="font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                      <span className="font-semibold text-nova-text">
                         {permissionStatus === 'denied'
                           ? 'Thông báo thiết bị đang bị tắt.'
                           : permissionStatus === 'unsupported'
@@ -616,7 +615,7 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                       <button
                         type="button"
                         onClick={() => setShowPermissionGuide((v) => !v)}
-                        className="underline font-semibold text-[#B55841] dark:text-[#D47A63] cursor-pointer ml-1"
+                        className="underline font-semibold text-nova-accent cursor-pointer ml-1"
                       >
                         {showPermissionGuide ? 'Ẩn hướng dẫn' : 'Xem cách bật'}
                       </button>
@@ -626,7 +625,7 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                     <button
                       type="button"
                       onClick={handleRequestNotifPermission}
-                      className="px-3 py-1.5 bg-[#B55841] text-white rounded-xl text-[11px] font-semibold shrink-0 cursor-pointer"
+                      className="px-3 py-1.5 bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast rounded-xl text-[11px] font-semibold shrink-0 cursor-pointer"
                     >
                       Bật ngay
                     </button>
@@ -634,8 +633,8 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                 </div>
 
                 {showPermissionGuide && (
-                  <div className="mt-2 pt-2 border-t border-[#E6DDD1] dark:border-[#362E2A] text-[11.5px] space-y-1">
-                    <p className="font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                  <div className="mt-2 pt-2 border-t border-nova-border text-[11.5px] space-y-1">
+                    <p className="font-semibold text-nova-text">
                       {platformGuide.title}:
                     </p>
                     <ol className="list-decimal list-inside space-y-0.5">
@@ -649,8 +648,8 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
             )}
 
             {reminders.length === 0 ? (
-              <div className="p-5 bg-[#FAF6F0] dark:bg-[#231E1B] rounded-2xl border border-dashed border-[#E6DDD1] dark:border-[#362E2A] text-center space-y-2">
-                <p className="text-xs font-medium text-[#786962] dark:text-[#B5A89F]">
+              <div className="p-5 bg-nova-bg-subtle rounded-2xl border border-dashed border-nova-border text-center space-y-2">
+                <p className="text-xs font-medium text-nova-text-muted">
                   Chưa có nhắc nhở nào được tạo cho tài khoản này.
                 </p>
                 <button
@@ -660,7 +659,7 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                     setReminderModalOpenForm(true);
                     setIsReminderModalOpen(true);
                   }}
-                  className="px-4 py-2 bg-[#B55841] text-white rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer hover:bg-[#9E4A35]"
+                  className="px-4 py-2 bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast rounded-xl text-xs font-semibold inline-flex items-center gap-1.5 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Tạo nhắc nhở đầu tiên</span>
@@ -673,24 +672,24 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                     key={rem.id}
                     className={`p-3 rounded-2xl border transition-all flex items-center justify-between gap-2 ${
                       rem.isEnabled
-                        ? 'bg-[#FAF6F0] dark:bg-[#231E1B] border-[#E6DDD1] dark:border-[#362E2A]'
-                        : 'bg-[#F2ECE3]/50 dark:bg-[#1A1614] border-[#E6DDD1] dark:border-[#362E2A] opacity-65'
+                        ? 'bg-nova-bg-subtle border-nova-border'
+                        : 'bg-nova-bg-subtle/60 border-nova-border opacity-65'
                     }`}
                   >
                     <div className="flex items-start gap-2.5 min-w-0">
-                      <div className="w-9 h-9 rounded-xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center shrink-0 text-[#B55841] dark:text-[#D47A63]">
+                      <div className="w-9 h-9 rounded-xl bg-nova-surface border border-nova-border flex items-center justify-center shrink-0 text-nova-accent">
                         {renderCategoryIcon(rem.category)}
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <span className="text-sm font-semibold tabular-nums">{rem.time}</span>
-                          <span className="text-[11px] text-[#786962] dark:text-[#B5A89F]">
+                          <span className="text-[11px] text-nova-text-muted">
                             · {getFrequencyLabel(rem)}
                           </span>
                         </div>
                         <h3 className="text-xs font-semibold mt-0.5 truncate">{rem.title}</h3>
                         {rem.notes && (
-                          <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] line-clamp-1 mt-0.5">
+                          <p className="text-[11px] text-nova-text-muted line-clamp-1 mt-0.5">
                             {rem.notes}
                           </p>
                         )}
@@ -702,14 +701,15 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                         type="button"
                         onClick={() => handleToggleReminder(rem.id)}
                         className={`w-9 h-5 rounded-full transition-colors relative cursor-pointer p-0.5 ${
-                          rem.isEnabled ? 'bg-[#6D8572]' : 'bg-[#D6CBC0] dark:bg-[#362E2A]'
+                          rem.isEnabled ? 'bg-nova-sage' : 'bg-nova-border'
                         }`}
                         title={rem.isEnabled ? 'Tạm tắt' : 'Bật lại'}
+                        aria-label={rem.isEnabled ? 'Tạm tắt nhắc nhở' : 'Bật lại nhắc nhở'}
                       >
                         <motion.div
                           animate={{ x: rem.isEnabled ? 16 : 0 }}
                           transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                          className="w-4 h-4 rounded-full bg-white shadow-xs"
+                          className="w-4 h-4 rounded-full bg-nova-surface shadow-xs"
                         />
                       </button>
 
@@ -720,8 +720,9 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                           setReminderModalOpenForm(true);
                           setIsReminderModalOpen(true);
                         }}
-                        className="w-7 h-7 rounded-lg text-[#786962] dark:text-[#B5A89F] hover:text-[#B55841] flex items-center justify-center cursor-pointer"
+                        className="w-7 h-7 rounded-lg text-nova-icon hover:text-nova-accent flex items-center justify-center cursor-pointer"
                         title="Chỉnh sửa nhắc nhở"
+                        aria-label="Chỉnh sửa nhắc nhở"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                       </button>
@@ -729,8 +730,9 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                       <button
                         type="button"
                         onClick={() => handleDeleteReminder(rem.id)}
-                        className="w-7 h-7 rounded-lg text-[#786962] dark:text-[#B5A89F] hover:text-[#B55841] flex items-center justify-center cursor-pointer"
+                        className="w-7 h-7 rounded-lg text-nova-icon hover:text-nova-danger flex items-center justify-center cursor-pointer"
                         title="Xóa nhắc nhở"
+                        aria-label="Xóa nhắc nhở"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>
@@ -743,29 +745,28 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
 
           {/* Chart & Water Tracker Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-            {/* Habit & Weekly/Monthly Chart */}
-            <div className="bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl p-5 nova-card-shadow border border-[#E6DDD1] dark:border-[#362E2A]">
+            <div className="bg-nova-surface rounded-2xl p-5 nova-card-shadow border border-nova-border">
               <div className="flex items-center justify-between mb-3 gap-2">
                 <div>
                   <h2 className="font-editorial text-[16px] font-semibold tracking-tight flex items-center gap-2">
                     <span>Nhịp chăm sóc mỗi ngày</span>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-[#9E5B3B] dark:text-[#D7BA86] font-sans">
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-nova-warning font-sans">
                       <Flame className="w-3.5 h-3.5" /> {activeHabitDays}/7 ngày
                     </span>
                   </h2>
-                  <p className="text-[11.5px] text-[#786962] dark:text-[#B5A89F]">
+                  <p className="text-[11.5px] text-nova-text-muted">
                     Trung bình tuần: {avgWeeklyPercent}% nhẹ nhàng
                   </p>
                 </div>
 
-                <div className="flex items-center gap-1 bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] p-1 rounded-xl">
+                <div className="flex items-center gap-1 bg-nova-bg-subtle border border-nova-border p-1 rounded-xl">
                   <button
                     type="button"
                     onClick={() => setChartRange('week')}
                     className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold cursor-pointer ${
                       chartRange === 'week'
-                        ? 'bg-[#FFFFFF] dark:bg-[#1E1A17] text-[#B55841] dark:text-[#D47A63]'
-                        : 'text-[#786962] dark:text-[#B5A89F]'
+                        ? 'bg-nova-surface text-nova-accent'
+                        : 'text-nova-text-muted'
                     }`}
                   >
                     Tuần
@@ -775,8 +776,8 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                     onClick={() => setChartRange('month')}
                     className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold cursor-pointer ${
                       chartRange === 'month'
-                        ? 'bg-[#FFFFFF] dark:bg-[#1E1A17] text-[#B55841] dark:text-[#D47A63]'
-                        : 'text-[#786962] dark:text-[#B5A89F]'
+                        ? 'bg-nova-surface text-nova-accent'
+                        : 'text-nova-text-muted'
                     }`}
                   >
                     14 ngày
@@ -797,24 +798,24 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                         <span
                           className={`text-[10px] font-semibold mb-1 transition-all tabular-nums ${
                             isSelected
-                              ? 'text-[#B55841] dark:text-[#D47A63] opacity-100'
-                              : 'text-[#786962] opacity-0 group-hover:opacity-100'
+                              ? 'text-nova-accent opacity-100'
+                              : 'text-nova-text-muted opacity-0 group-hover:opacity-100'
                           }`}
                         >
                           {item.percent}%
                         </span>
-                        <div className="w-full max-w-[26px] h-24 bg-[#F2ECE3] dark:bg-[#231E1B] rounded-full p-0.5 flex flex-col justify-end relative overflow-hidden">
+                        <div className="w-full max-w-[26px] h-24 bg-nova-bg-subtle rounded-full p-0.5 flex flex-col justify-end relative overflow-hidden">
                           <motion.div
                             initial={{ height: 0 }}
                             animate={{ height: `${item.percent}%` }}
                             transition={{ type: 'spring', stiffness: 220, damping: 20 }}
                             className={`w-full rounded-full transition-colors ${
                               isSelected
-                                ? 'bg-[#B55841] dark:bg-[#D47A63]'
+                                ? 'bg-nova-accent'
                                 : item.percent >= 80
-                                ? 'bg-[#6D8572]'
+                                ? 'bg-nova-sage'
                                 : item.percent > 0
-                                ? 'bg-[#C4A46B]/75'
+                                ? 'bg-nova-taupe'
                                 : 'bg-transparent'
                             }`}
                           />
@@ -822,8 +823,8 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                         <span
                           className={`text-[11px] mt-2 font-medium ${
                             isSelected
-                              ? 'text-[#B55841] dark:text-[#D47A63] font-semibold'
-                              : 'text-[#786962] dark:text-[#B5A89F]'
+                              ? 'text-nova-accent font-semibold'
+                              : 'text-nova-text-muted'
                           }`}
                         >
                           {item.shortDay}
@@ -835,11 +836,11 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
               ) : (
                 <div className="h-36 pt-2 flex flex-col justify-between">
                   <svg viewBox="0 0 280 90" className="w-full h-24 overflow-visible">
-                    <line x1="0" y1="85" x2="280" y2="85" stroke="#E6DDD1" strokeWidth="1" />
-                    <line x1="0" y1="45" x2="280" y2="45" stroke="#E6DDD1" strokeDasharray="3 3" strokeWidth="1" />
+                    <line x1="0" y1="85" x2="280" y2="85" stroke="var(--color-nova-border)" strokeWidth="1" />
+                    <line x1="0" y1="45" x2="280" y2="45" stroke="var(--color-nova-border)" strokeDasharray="3 3" strokeWidth="1" />
                     <polyline
                       fill="none"
-                      stroke="#B55841"
+                      stroke="var(--color-nova-accent)"
                       strokeWidth="2.5"
                       strokeLinecap="round"
                       strokeLinejoin="round"
@@ -853,15 +854,15 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                         cx={i * 21 + 5}
                         cy={85 - (pt.percent / 100) * 75}
                         r="3"
-                        fill={pt.dateStr === selectedDateStr ? '#B55841' : '#FFFFFF'}
-                        stroke="#B55841"
+                        fill={pt.dateStr === selectedDateStr ? 'var(--color-nova-accent)' : 'var(--color-nova-surface)'}
+                        stroke="var(--color-nova-accent)"
                         strokeWidth="1.5"
                         className="cursor-pointer"
                         onClick={() => setSelectedDateStr(pt.dateStr)}
                       />
                     ))}
                   </svg>
-                  <div className="flex justify-between text-[10px] text-[#786962] dark:text-[#B5A89F]">
+                  <div className="flex justify-between text-[10px] text-nova-text-muted">
                     <span>{monthlyStats[0]?.label}</span>
                     <span>Xu hướng 14 ngày gần đây</span>
                     <span>{monthlyStats[monthlyStats.length - 1]?.label}</span>
@@ -869,11 +870,11 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                 </div>
               )}
 
-              <div className="mt-3 pt-2.5 border-t border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-between text-[11.5px] text-[#786962] dark:text-[#B5A89F]">
+              <div className="mt-3 pt-2.5 border-t border-nova-border flex items-center justify-between text-[11.5px] text-nova-text-muted">
                 <span className="tabular-nums">
                   {isToday ? 'Hôm nay' : selectedDateStr}: {completedCount}/{activities.length} việc nhẹ
                 </span>
-                <span className="text-[#263E35] dark:text-[#8DA892] font-semibold">
+                <span className="text-nova-sage-text font-semibold">
                   {completedCount === activities.length && activities.length > 0
                     ? 'Đủ đầy bình yên'
                     : completedCount > 0
@@ -883,56 +884,56 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
               </div>
             </div>
 
-            {/* Water Tracker Card — Calm Botanical Sage */}
+            {/* Water Tracker Card */}
             <motion.button
               type="button"
               whileTap={{ scale: 0.985 }}
               onClick={() => setIsWaterModalOpen(true)}
-              className="p-5 bg-[#EBF1EC] dark:bg-[#1E2922] rounded-2xl border border-[#D4E2D7] dark:border-[#2E3F34] flex flex-col justify-between cursor-pointer text-left hover:border-[#6D8572] transition-colors"
+              className="p-5 bg-nova-sage-soft rounded-2xl border border-nova-success-border flex flex-col justify-between cursor-pointer text-left hover:border-nova-sage transition-colors"
             >
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-3.5">
-                  <div className="w-12 h-12 rounded-2xl bg-[#FFFFFF] dark:bg-[#161F1A] text-[#263E35] dark:text-[#8DA892] flex items-center justify-center shrink-0">
+                  <div className="w-12 h-12 rounded-2xl bg-nova-surface text-nova-sage-text flex items-center justify-center shrink-0">
                     <Droplet className="w-6 h-6 fill-current" />
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-editorial text-[16px] font-semibold text-[#263E35] dark:text-[#EBF1EC]">
+                      <h3 className="font-editorial text-[16px] font-semibold text-nova-text">
                         Lượng nước ấm hôm nay
                       </h3>
                       {waterRecord.isCompleted && (
-                        <span className="text-[11px] font-semibold text-[#263E35] dark:text-[#8DA892]">
+                        <span className="text-[11px] font-semibold text-nova-sage-text">
                           · Đủ nước
                         </span>
                       )}
                     </div>
                     <div className="flex items-baseline gap-1.5 mt-1">
-                      <span className="text-[22px] font-semibold text-[#263E35] dark:text-[#A7C2AC] tabular-nums">
+                      <span className="text-[22px] font-semibold text-nova-sage-text tabular-nums">
                         {waterRecord.currentMl.toLocaleString('vi-VN')}
                       </span>
-                      <span className="text-xs font-medium text-[#6D8572] dark:text-[#8DA892] tabular-nums">
+                      <span className="text-xs font-medium text-nova-text-muted tabular-nums">
                         / {waterRecord.targetMl.toLocaleString('vi-VN')} ml
                       </span>
                     </div>
                   </div>
                 </div>
-                <ChevronRight className="w-5 h-5 text-[#263E35] dark:text-[#8DA892]" />
+                <ChevronRight className="w-5 h-5 text-nova-sage-text" />
               </div>
 
               <div className="mt-4 w-full">
-                <div className="w-full h-2 bg-[#FFFFFF]/80 dark:bg-black/25 rounded-full overflow-hidden mb-2">
+                <div className="w-full h-2 bg-nova-surface/80 rounded-full overflow-hidden mb-2">
                   <div
-                    className="h-full bg-[#6D8572] dark:bg-[#8DA892] rounded-full transition-all"
+                    className="h-full bg-nova-sage rounded-full transition-all"
                     style={{
                       width: `${Math.min(100, Math.round((waterRecord.currentMl / waterRecord.targetMl) * 100))}%`,
                     }}
                   />
                 </div>
-                <div className="flex items-center justify-between text-[11.5px] font-semibold text-[#263E35] dark:text-[#A7C2AC]">
+                <div className="flex items-center justify-between text-[11.5px] font-semibold text-nova-sage-text">
                   <span className="tabular-nums">
                     {Math.min(100, Math.round((waterRecord.currentMl / waterRecord.targetMl) * 100))}% gợi ý mỗi ngày
                   </span>
-                  <span className="bg-[#FFFFFF] dark:bg-[#161F1A] px-3 py-1 rounded-xl border border-[#D4E2D7] dark:border-[#2E3F34]">
+                  <span className="bg-nova-surface px-3 py-1 rounded-xl border border-nova-success-border">
                     + Uống thêm ly nước
                   </span>
                 </div>
@@ -946,7 +947,7 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
               <h2 className="font-editorial text-[17px] font-semibold tracking-tight">
                 Hoạt động chăm sóc ({activities.length})
               </h2>
-              <span className="text-[12px] font-medium text-[#786962] dark:text-[#B5A89F] tabular-nums">
+              <span className="text-[12px] font-medium text-nova-text-muted tabular-nums">
                 {completedCount}/{activities.length} đã ghi nhận
               </span>
             </div>
@@ -964,8 +965,8 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                   onClick={() => setFilterTab(tab.id as any)}
                   className={`text-[12px] font-semibold px-3.5 py-2 rounded-xl whitespace-nowrap cursor-pointer transition-colors shrink-0 min-h-[38px] ${
                     filterTab === tab.id
-                      ? 'bg-[#B55841] dark:bg-[#D47A63] text-white'
-                      : 'bg-[#FFFFFF] dark:bg-[#1E1A17] text-[#786962] dark:text-[#B5A89F] border border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#B55841]/40'
+                      ? 'bg-nova-accent text-nova-accent-contrast'
+                      : 'bg-nova-surface text-nova-text-muted border border-nova-border hover:border-nova-taupe'
                   }`}
                 >
                   {tab.label}
@@ -975,7 +976,7 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {filteredActivities.length === 0 ? (
-                <div className="col-span-full p-8 bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl border border-dashed border-[#E6DDD1] dark:border-[#362E2A] text-center text-xs text-[#786962] dark:text-[#B5A89F] space-y-2">
+                <div className="col-span-full p-8 bg-nova-surface rounded-2xl border border-dashed border-nova-border text-center text-xs text-nova-text-muted space-y-2">
                   <p>Không có hoạt động nào trong mục này.</p>
                   <button
                     type="button"
@@ -983,7 +984,7 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                       setEditingActivity(null);
                       setIsAddModalOpen(true);
                     }}
-                    className="text-xs font-semibold text-[#B55841] dark:text-[#D47A63] hover:underline inline-block cursor-pointer"
+                    className="text-xs font-semibold text-nova-accent hover:underline inline-block cursor-pointer"
                   >
                     + Thêm hoạt động mới
                   </button>
@@ -996,7 +997,7 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, delay: idx * 0.03 }}
                     onClick={() => handleOpenActivityDetail(activity)}
-                    className="bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl p-4 nova-card-shadow border border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#B55841]/50 transition-colors cursor-pointer flex items-center justify-between group"
+                    className="bg-nova-surface rounded-2xl p-4 nova-card-shadow border border-nova-border hover:border-nova-taupe transition-colors cursor-pointer flex items-center justify-between group"
                   >
                     <div className="flex items-center gap-3.5 min-w-0">
                       <div
@@ -1009,27 +1010,27 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                         <div className="flex items-center gap-2">
                           <h3
                             className={`text-[14.5px] font-semibold tracking-tight truncate ${
-                              activity.completed ? 'line-through decoration-[#6D8572]/60 decoration-2 text-[#786962] dark:text-[#B5A89F]' : ''
+                              activity.completed ? 'line-through decoration-nova-sage decoration-2 text-nova-text-muted' : ''
                             }`}
                           >
                             {activity.title}
                           </h3>
                           {activity.completed && (
-                            <CheckCircle2 className="w-4 h-4 text-[#6D8572] dark:text-[#8DA892] inline shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-nova-sage-text inline shrink-0" />
                           )}
                         </div>
 
-                        <p className="text-[12px] text-[#786962] dark:text-[#B5A89F] mt-0.5 line-clamp-1">
+                        <p className="text-[12px] text-nova-text-muted mt-0.5 line-clamp-1">
                           {activity.subtitle}
                         </p>
 
-                        <div className="flex items-center gap-2 mt-1 text-[11px] text-[#786962] dark:text-[#B5A89F]">
+                        <div className="flex items-center gap-2 mt-1 text-[11px] text-nova-text-muted">
                           <span className="flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {activity.timeTarget}
                           </span>
                           {activity.reminderEnabled && (
-                            <span className="font-semibold text-[#B55841] dark:text-[#D47A63] flex items-center gap-1">
+                            <span className="font-semibold text-nova-accent flex items-center gap-1">
                               · <Bell className="w-2.5 h-2.5" />
                               {activity.reminderTime || 'Nhắc nhẹ'}
                             </span>
@@ -1042,16 +1043,17 @@ export const CarePlanScreen: React.FC<CarePlanScreenProps> = ({ user, onNavigate
                       <button
                         type="button"
                         onClick={(e) => handleToggleFavorite(activity.id, e)}
-                        className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#FAF6F0] dark:hover:bg-[#231E1B] text-[#786962] hover:text-[#C4A46B] transition-colors cursor-pointer"
+                        aria-label={activity.isFavorite ? 'Bỏ yêu thích' : 'Đánh dấu yêu thích'}
+                        className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-nova-bg-subtle text-nova-icon hover:text-nova-taupe transition-colors cursor-pointer"
                       >
                         <Star
                           className={`w-4 h-4 ${
-                            activity.isFavorite ? 'text-[#C4A46B] fill-[#C4A46B]' : 'stroke-[1.8]'
+                            activity.isFavorite ? 'text-nova-taupe fill-nova-taupe' : 'stroke-[1.8]'
                           }`}
                         />
                       </button>
 
-                      <div className="w-8 h-8 rounded-full bg-[#FAF6F0] dark:bg-[#231E1B] flex items-center justify-center text-[#786962] group-hover:bg-[#F7EAE5] group-hover:text-[#B55841] transition-colors">
+                      <div className="w-8 h-8 rounded-full bg-nova-bg-subtle flex items-center justify-center text-nova-icon group-hover:bg-nova-accent-soft group-hover:text-nova-accent transition-colors">
                         <ChevronRight className="w-4 h-4 stroke-[2]" />
                       </div>
                     </div>

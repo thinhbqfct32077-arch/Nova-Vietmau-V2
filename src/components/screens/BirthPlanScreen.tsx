@@ -50,12 +50,12 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
       personalNotes: '',
       postpartumSupportPlan: '',
       prepItems: [
-        { id: 'bp-1', label: 'Đăng ký hồ sơ sinh & làm xét nghiệm tuần 36', checked: false },
+        { id: 'bp-1', label: 'Đăng ký hồ sơ sinh và làm xét nghiệm tuần 36', checked: false },
         { id: 'bp-2', label: 'Tìm hiểu lộ trình di chuyển tới bệnh viện', checked: false },
       ],
       hospitalBagItems: [
-        { id: 'hb-1', label: 'Giấy tờ tùy thân, BHYT & sổ khám thai', checked: false },
-        { id: 'hb-2', label: 'Quần áo mẹ & bé sơ sinh đã giặt ủi sạch', checked: false },
+        { id: 'hb-1', label: 'Giấy tờ tùy thân, bảo hiểm y tế và sổ khám thai', checked: false },
+        { id: 'hb-2', label: 'Quần áo mẹ và bé sơ sinh đã giặt ủi sạch', checked: false },
       ],
       updatedAt: new Date().toISOString(),
     })
@@ -162,44 +162,44 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] overflow-y-auto no-scrollbar pb-16 print:overflow-visible print:bg-white print:text-black print:pb-0">
+    <div className="flex-1 flex flex-col bg-nova-bg text-nova-text overflow-y-auto no-scrollbar pb-16 print:overflow-visible print:bg-white print:text-black print:pb-0">
       {toast && (
-        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-[#322622] dark:bg-[#F4EDE6] text-white dark:text-[#161311] text-xs font-bold px-4 py-2 rounded-full shadow-xl print:hidden">
+        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-nova-text text-nova-bg text-xs font-bold px-4 py-2 rounded-full shadow-xl print:hidden">
           {toast}
         </div>
       )}
 
       {/* Top Sticky Header */}
-      <header className="px-4 sm:px-6 pt-3 pb-3 flex items-center justify-between gap-2 border-b border-[#E6DDD1] dark:border-[#362E2A] bg-[#FAF6F0]/95 dark:bg-[#161311]/95 backdrop-blur-md sticky top-0 z-20 print:hidden">
+      <header className="px-4 sm:px-6 pt-3 pb-3 flex items-center justify-between gap-2 border-b border-nova-border bg-nova-bg/95 backdrop-blur-md sticky top-0 z-20 print:hidden">
         <div className="flex items-center gap-2.5 min-w-0">
           <button
             onClick={onBack}
-            className="w-10 h-10 rounded-full bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-[#6B5D56] dark:text-[#C5B9B0] cursor-pointer shrink-0 hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B]"
+            className="w-10 h-10 rounded-full bg-nova-surface border border-nova-border flex items-center justify-center text-nova-text-muted cursor-pointer shrink-0 hover:bg-nova-bg-subtle"
             aria-label="Quay lại"
           >
             <ArrowLeft className="w-4.5 h-4.5" />
           </button>
           <div className="min-w-0">
-            <h1 className="font-editorial text-[17px] font-bold text-[#322622] dark:text-[#F4EDE6] leading-tight flex items-center gap-1.5 truncate">
-              <ClipboardList className="w-4 h-4 text-[#B55841] dark:text-[#D47A63] shrink-0" />
+            <h1 className="font-editorial text-[17px] font-bold text-nova-text leading-tight flex items-center gap-1.5 truncate">
+              <ClipboardList className="w-4 h-4 text-nova-accent shrink-0" />
               <span>Kế hoạch đi sinh</span>
             </h1>
-            <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] truncate">Chuẩn bị rõ ràng để mẹ và gia đình an tâm đón bé</p>
+            <p className="text-[11px] text-nova-text-muted truncate">Chuẩn bị rõ ràng để mẹ và gia đình an tâm đón bé</p>
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => window.print()}
-            className="px-3 py-2 rounded-xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-xs font-bold text-[#6B5D56] dark:text-[#C5B9B0] inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap min-h-[40px] hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B]"
+            className="px-3 py-2 rounded-xl bg-nova-surface border border-nova-border text-xs font-bold text-nova-text-muted inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap min-h-[40px] hover:bg-nova-bg-subtle"
           >
-            <Printer className="w-3.5 h-3.5 text-[#B55841] dark:text-[#D47A63]" />
+            <Printer className="w-3.5 h-3.5 text-nova-accent" />
             <span className="hidden sm:inline">In / PDF</span>
           </button>
           <button
             onClick={() => handleSave(plan)}
             disabled={isSaving}
-            className="px-3.5 py-2 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap min-h-[40px] shadow-xs disabled:opacity-60"
+            className="px-3.5 py-2 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap min-h-[40px] shadow-xs disabled:opacity-60 transition-colors"
           >
             <Save className="w-3.5 h-3.5" />
             <span>{isSaving ? 'Đang lưu...' : 'Lưu kế hoạch'}</span>
@@ -208,91 +208,91 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
       </header>
 
       {/* Print Header */}
-      <div className="hidden print:block px-6 py-4 border-b border-gray-300">
-        <h1 className="font-editorial text-xl font-bold text-[#322622]">KẾ HOẠCH ĐI SINH — NOVA VIỆT MẪU</h1>
-        <p className="text-xs text-gray-600 mt-1 tabular-nums">
+      <div className="hidden print:block px-6 py-4 border-b border-[#D9D5CE]">
+        <h1 className="font-editorial text-xl font-bold text-[#1C1B18]">KẾ HOẠCH ĐI SINH — NOVA VIỆT MẪU</h1>
+        <p className="text-xs text-[#6E6A63] mt-1 tabular-nums">
           Mẹ bầu: {user.name} · Bé: {user.babyNickname || 'Bé yêu'} · Ngày dự sinh: {plan.expectedDueDate}
         </p>
       </div>
 
       <div className="px-4 sm:px-6 pt-4 space-y-4 max-w-4xl mx-auto w-full">
         {/* Section 1: Hospital & OB/GYN Info */}
-        <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3">
-          <h2 className="font-editorial text-[16px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-            <Hospital className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />
-            <span>Thông tin bệnh viện & Bác sĩ đồng hành</span>
+        <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3">
+          <h2 className="font-editorial text-[16px] font-bold text-nova-text flex items-center gap-2">
+            <Hospital className="w-4 h-4 text-nova-accent" />
+            <span>Thông tin bệnh viện và bác sĩ đồng hành</span>
           </h2>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] block mb-1">
+              <label className="text-[11px] font-bold text-nova-text-muted block mb-1">
                 Ngày dự sinh dự kiến
               </label>
               <input
                 type="text"
                 value={plan.expectedDueDate}
                 onChange={(e) => setPlan({ ...plan, expectedDueDate: e.target.value })}
-                placeholder="VD: 15/11/2026"
-                className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] tabular-nums focus:outline-none focus:border-[#B55841]"
+                placeholder="Ví dụ: 15/11/2026"
+                className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text tabular-nums focus:outline-none focus:border-nova-accent"
               />
             </div>
             <div>
-              <label className="text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] block mb-1">
+              <label className="text-[11px] font-bold text-nova-text-muted block mb-1">
                 Bác sĩ sản khoa theo dõi
               </label>
               <input
                 type="text"
                 value={plan.obgynName || ''}
                 onChange={(e) => setPlan({ ...plan, obgynName: e.target.value })}
-                placeholder="VD: BS. CKII Nguyễn Thị Ánh"
-                className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
+                placeholder="Ví dụ: BS. CKII Nguyễn Thị Ánh"
+                className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-accent"
               />
             </div>
             <div>
-              <label className="text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] block mb-1">
+              <label className="text-[11px] font-bold text-nova-text-muted block mb-1">
                 Bệnh viện dự kiến sinh
               </label>
               <input
                 type="text"
                 value={plan.preferredHospital}
                 onChange={(e) => setPlan({ ...plan, preferredHospital: e.target.value })}
-                placeholder="VD: Bệnh viện Phụ sản Từ Dũ"
-                className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
+                placeholder="Ví dụ: Bệnh viện Phụ sản Từ Dũ"
+                className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-accent"
               />
             </div>
             <div>
-              <label className="text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] block mb-1">
+              <label className="text-[11px] font-bold text-nova-text-muted block mb-1">
                 Địa chỉ / Cổng cấp cứu sản
               </label>
               <input
                 type="text"
                 value={plan.hospitalAddress || ''}
                 onChange={(e) => setPlan({ ...plan, hospitalAddress: e.target.value })}
-                placeholder="VD: 284 Cống Quỳnh, Q.1, TP.HCM"
-                className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
+                placeholder="Ví dụ: 284 Cống Quỳnh, Q.1, TP.HCM"
+                className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-accent"
               />
             </div>
           </div>
         </section>
 
         {/* Section 2: Support Contacts */}
-        <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3">
-          <h2 className="font-editorial text-[16px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-            <UserPlus className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892]" />
-            <span>Người đồng hành & Liên hệ khẩn cấp</span>
+        <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3">
+          <h2 className="font-editorial text-[16px] font-bold text-nova-text flex items-center gap-2">
+            <UserPlus className="w-4 h-4 text-nova-sage-text" />
+            <span>Người đồng hành và liên hệ khẩn cấp</span>
           </h2>
 
           <div className="space-y-2">
             {plan.supportContacts.map((c) => (
               <div
                 key={c.id}
-                className="flex items-center justify-between gap-2 p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A]"
+                className="flex items-center justify-between gap-2 p-3 rounded-2xl bg-nova-bg border border-nova-border"
               >
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-[#322622] dark:text-[#F4EDE6]">
-                    {c.name} <span className="text-[#786962] dark:text-[#B5A89F] font-medium">({c.role})</span>
+                  <p className="text-xs font-bold text-nova-text">
+                    {c.name} <span className="text-nova-text-muted font-medium">({c.role})</span>
                   </p>
-                  <p className="text-[11px] font-mono text-[#B55841] dark:text-[#D47A63] font-bold tabular-nums">{c.phone}</p>
+                  <p className="text-[11px] font-mono text-nova-accent font-bold tabular-nums">{c.phone}</p>
                 </div>
                 <button
                   onClick={() =>
@@ -301,7 +301,7 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
                       supportContacts: plan.supportContacts.filter((item) => item.id !== c.id),
                     })
                   }
-                  className="p-2 text-[#786962] dark:text-[#B5A89F] hover:text-[#A9422D] dark:hover:text-[#D47A63] cursor-pointer print:hidden"
+                  className="p-2 text-nova-text-muted hover:text-nova-danger cursor-pointer print:hidden"
                   aria-label="Xóa liên hệ"
                 >
                   <Trash2 className="w-4 h-4" />
@@ -316,14 +316,14 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
               value={newContactName}
               onChange={(e) => setNewContactName(e.target.value)}
               placeholder="Tên người thân..."
-              className="px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
+              className="px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-accent"
             />
             <input
               type="text"
               value={newContactRole}
               onChange={(e) => setNewContactRole(e.target.value)}
               placeholder="Vai trò (Chồng, Mẹ...)"
-              className="px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
+              className="px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-accent"
             />
             <div className="flex gap-1.5">
               <input
@@ -331,12 +331,12 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
                 value={newContactPhone}
                 onChange={(e) => setNewContactPhone(e.target.value)}
                 placeholder="Số điện thoại"
-                className="flex-1 px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs font-mono text-[#322622] dark:text-[#F4EDE6] tabular-nums focus:outline-none focus:border-[#B55841]"
+                className="flex-1 px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs font-mono text-nova-text tabular-nums focus:outline-none focus:border-nova-accent"
               />
               <button
                 type="button"
                 onClick={handleAddContact}
-                className="min-h-[40px] px-3 py-2 rounded-xl bg-[#322622] dark:bg-[#F4EDE6] text-white dark:text-[#161311] text-xs font-bold cursor-pointer shrink-0"
+                className="min-h-[40px] px-3 py-2 rounded-xl bg-nova-text text-nova-bg text-xs font-bold cursor-pointer shrink-0"
                 aria-label="Thêm người liên hệ"
               >
                 <Plus className="w-4 h-4" />
@@ -346,12 +346,12 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
         </section>
 
         {/* Section 3: Birth Preferences */}
-        <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3">
-          <h2 className="font-editorial text-[16px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-            <Heart className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />
+        <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3">
+          <h2 className="font-editorial text-[16px] font-bold text-nova-text flex items-center gap-2">
+            <Heart className="w-4 h-4 text-nova-accent" />
             <span>Mong muốn khi sinh (trao đổi cùng ê-kíp bác sĩ)</span>
           </h2>
-          <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">
+          <p className="text-[11px] text-nova-text-muted">
             * Lưu ý: Kế hoạch sinh mang tính chuẩn bị mong muốn, bác sĩ sẽ điều chỉnh linh hoạt để ưu tiên an toàn tối đa cho mẹ và bé.
           </p>
 
@@ -365,14 +365,14 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
                   onClick={() => togglePreference(pref)}
                   className={`p-3 rounded-2xl border text-left text-xs flex items-start gap-2.5 transition-colors cursor-pointer ${
                     checked
-                      ? 'bg-[#F7EAE5] dark:bg-[#35231E] border-[#EBCDC2] dark:border-[#52352D] text-[#322622] dark:text-[#F4EDE6] font-semibold'
-                      : 'bg-[#FAF6F0] dark:bg-[#231E1B] border-[#E6DDD1] dark:border-[#362E2A] text-[#6B5D56] dark:text-[#C5B9B0]'
+                      ? 'bg-nova-accent-soft border-nova-accent text-nova-text font-semibold'
+                      : 'bg-nova-bg border-nova-border text-nova-text-muted'
                   }`}
                 >
                   {checked ? (
-                    <CheckCircle2 className="w-4 h-4 text-[#B55841] dark:text-[#D47A63] shrink-0 mt-0.5" />
+                    <CheckCircle2 className="w-4 h-4 text-nova-accent shrink-0 mt-0.5" />
                   ) : (
-                    <Circle className="w-4 h-4 text-[#C5B9B0] dark:text-[#786962] shrink-0 mt-0.5" />
+                    <Circle className="w-4 h-4 text-nova-icon shrink-0 mt-0.5" />
                   )}
                   <span>{pref}</span>
                 </button>
@@ -386,12 +386,12 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
               value={newPref}
               onChange={(e) => setNewPref(e.target.value)}
               placeholder="Thêm mong muốn riêng của mẹ..."
-              className="flex-1 px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
+              className="flex-1 px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-accent"
             />
             <button
               type="button"
               onClick={handleAddPref}
-              className="min-h-[40px] px-4 py-2 rounded-xl bg-[#322622] dark:bg-[#F4EDE6] text-white dark:text-[#161311] text-xs font-bold cursor-pointer whitespace-nowrap"
+              className="min-h-[40px] px-4 py-2 rounded-xl bg-nova-text text-nova-bg text-xs font-bold cursor-pointer whitespace-nowrap"
             >
               Thêm mục
             </button>
@@ -400,16 +400,16 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
 
         {/* Section 4: Prep Items & Hospital Bag */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3">
-            <h2 className="font-editorial text-[16px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-[#9E5B3B] dark:text-[#D7BA86]" />
+          <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3">
+            <h2 className="font-editorial text-[16px] font-bold text-nova-text flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-nova-warning" />
               <span>Việc cần chuẩn bị trước ngày sinh</span>
             </h2>
             <div className="space-y-2">
               {plan.prepItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A]"
+                  className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-nova-bg border border-nova-border"
                 >
                   <label className="flex items-center gap-2.5 flex-1 cursor-pointer text-xs">
                     <input
@@ -423,9 +423,9 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
                           ),
                         })
                       }
-                      className="w-4 h-4 accent-[#B55841]"
+                      className="w-4 h-4 accent-nova-accent"
                     />
-                    <span className={item.checked ? 'line-through text-[#786962] dark:text-[#B5A89F]' : 'text-[#322622] dark:text-[#F4EDE6]'}>
+                    <span className={item.checked ? 'line-through text-nova-text-muted' : 'text-nova-text'}>
                       {item.label}
                     </span>
                   </label>
@@ -433,7 +433,7 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
                     onClick={() =>
                       setPlan({ ...plan, prepItems: plan.prepItems.filter((p) => p.id !== item.id) })
                     }
-                    className="p-1 text-[#786962] dark:text-[#B5A89F] hover:text-[#A9422D] dark:hover:text-[#D47A63] cursor-pointer print:hidden"
+                    className="p-1 text-nova-text-muted hover:text-nova-danger cursor-pointer print:hidden"
                     aria-label="Xóa mục chuẩn bị"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -447,12 +447,12 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
                 value={newPrepItem}
                 onChange={(e) => setNewPrepItem(e.target.value)}
                 placeholder="Thêm việc chuẩn bị..."
-                className="flex-1 px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
+                className="flex-1 px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-accent"
               />
               <button
                 type="button"
                 onClick={handleAddPrepItem}
-                className="min-h-[40px] px-3 py-2 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-xs font-bold cursor-pointer"
+                className="min-h-[40px] px-3 py-2 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-bold cursor-pointer transition-colors"
                 aria-label="Thêm việc chuẩn bị"
               >
                 <Plus className="w-4 h-4" />
@@ -460,16 +460,16 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
             </div>
           </section>
 
-          <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3">
-            <h2 className="font-editorial text-[16px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-              <ClipboardList className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892]" />
+          <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3">
+            <h2 className="font-editorial text-[16px] font-bold text-nova-text flex items-center gap-2">
+              <ClipboardList className="w-4 h-4 text-nova-sage-text" />
               <span>Giỏ đồ đi sinh sẵn sàng</span>
             </h2>
             <div className="space-y-2">
               {plan.hospitalBagItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A]"
+                  className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-nova-bg border border-nova-border"
                 >
                   <label className="flex items-center gap-2.5 flex-1 cursor-pointer text-xs">
                     <input
@@ -483,9 +483,9 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
                           ),
                         })
                       }
-                      className="w-4 h-4 accent-[#4F6B56]"
+                      className="w-4 h-4 accent-nova-sage"
                     />
-                    <span className={item.checked ? 'line-through text-[#786962] dark:text-[#B5A89F]' : 'text-[#322622] dark:text-[#F4EDE6]'}>
+                    <span className={item.checked ? 'line-through text-nova-text-muted' : 'text-nova-text'}>
                       {item.label}
                     </span>
                   </label>
@@ -496,7 +496,7 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
                         hospitalBagItems: plan.hospitalBagItems.filter((p) => p.id !== item.id),
                       })
                     }
-                    className="p-1 text-[#786962] dark:text-[#B5A89F] hover:text-[#A9422D] dark:hover:text-[#D47A63] cursor-pointer print:hidden"
+                    className="p-1 text-nova-text-muted hover:text-nova-danger cursor-pointer print:hidden"
                     aria-label="Xóa món đồ đi sinh"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -510,12 +510,12 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
                 value={newBagItem}
                 onChange={(e) => setNewBagItem(e.target.value)}
                 placeholder="Thêm món vào giỏ đi sinh..."
-                className="flex-1 px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#4F6B56]"
+                className="flex-1 px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-sage"
               />
               <button
                 type="button"
                 onClick={handleAddBagItem}
-                className="min-h-[40px] px-3 py-2 rounded-xl bg-[#4F6B56] hover:bg-[#3F5745] text-white text-xs font-bold cursor-pointer"
+                className="min-h-[40px] px-3 py-2 rounded-xl bg-nova-sage hover:opacity-90 text-nova-accent-contrast text-xs font-bold cursor-pointer transition-opacity"
                 aria-label="Thêm món vào giỏ đi sinh"
               >
                 <Plus className="w-4 h-4" />
@@ -525,34 +525,34 @@ export const BirthPlanScreen: React.FC<BirthPlanScreenProps> = ({ user, onBack }
         </div>
 
         {/* Section 5: Notes & Postpartum Support */}
-        <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3">
-          <h2 className="font-editorial text-[16px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-            <FileText className="w-4 h-4 text-[#9E5B3B] dark:text-[#D7BA86]" />
-            <span>Ghi chú cá nhân & Kế hoạch hỗ trợ sau sinh</span>
+        <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3">
+          <h2 className="font-editorial text-[16px] font-bold text-nova-text flex items-center gap-2">
+            <FileText className="w-4 h-4 text-nova-warning" />
+            <span>Ghi chú cá nhân và kế hoạch hỗ trợ sau sinh</span>
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] block mb-1">
+              <label className="text-[11px] font-bold text-nova-text-muted block mb-1">
                 Lưu ý tiền sử / Dị ứng / Ghi chú cho bác sĩ
               </label>
               <textarea
                 rows={3}
                 value={plan.personalNotes}
                 onChange={(e) => setPlan({ ...plan, personalNotes: e.target.value })}
-                placeholder="VD: Dị ứng thuốc kháng sinh nhóm..., nhóm máu..."
-                className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] resize-none focus:outline-none focus:border-[#B55841]"
+                placeholder="Ví dụ: Dị ứng thuốc kháng sinh nhóm..., nhóm máu..."
+                className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text resize-none focus:outline-none focus:border-nova-accent"
               />
             </div>
             <div>
-              <label className="text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] block mb-1">
+              <label className="text-[11px] font-bold text-nova-text-muted block mb-1">
                 Kế hoạch hỗ trợ mẹ tuần đầu sau sinh
               </label>
               <textarea
                 rows={3}
                 value={plan.postpartumSupportPlan}
                 onChange={(e) => setPlan({ ...plan, postpartumSupportPlan: e.target.value })}
-                placeholder="VD: Người chăm ca đêm, chuẩn bị thực đơn ấm cho mẹ..."
-                className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] resize-none focus:outline-none focus:border-[#B55841]"
+                placeholder="Ví dụ: Người chăm ca đêm, chuẩn bị thực đơn ấm cho mẹ..."
+                className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text resize-none focus:outline-none focus:border-nova-accent"
               />
             </div>
           </div>

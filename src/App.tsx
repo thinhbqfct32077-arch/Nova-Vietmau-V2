@@ -87,6 +87,17 @@ export default function App() {
   // Apply theme & fontScale to document root on startup and updates
   useEffect(() => {
     storageService.setThemeMode(themeMode);
+    if (themeMode !== 'system' || typeof window === 'undefined' || !window.matchMedia) return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = () => {
+      storageService.applyThemeToDocument('system');
+    };
+    if (typeof mq.addEventListener === 'function') {
+      mq.addEventListener('change', handleChange);
+      return () => mq.removeEventListener('change', handleChange);
+    }
+    mq.addListener(handleChange);
+    return () => mq.removeListener(handleChange);
   }, [themeMode]);
 
   useEffect(() => {
@@ -289,7 +300,7 @@ export default function App() {
   };
 
   const handleToggleTheme = () => {
-    setThemeMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
+    setThemeMode((prev) => (prev === 'system' ? 'light' : prev === 'light' ? 'dark' : 'system'));
   };
 
   // Instant, rock-solid iOS view transitions (Zero blur lag, zero delay)
@@ -341,7 +352,7 @@ export default function App() {
       onOpenVipModal={() => setIsVipModalOpen(true)}
     >
       {/* Dynamic Screen Viewport with Reliable Apple Transitions */}
-      <div className="flex-1 relative flex flex-col overflow-hidden w-full h-full bg-[#FAF6F0] dark:bg-[#161311]">
+      <div className="flex-1 relative flex flex-col overflow-hidden w-full h-full bg-nova-bg">
         <AnimatePresence initial={false}>
           {activeScreen === 'onboarding' && (
             <motion.div
@@ -394,7 +405,7 @@ export default function App() {
               initial="initial"
               animate="animate"
               exit="exit"
-              className="absolute inset-0 flex flex-col w-full h-full bg-black"
+              className="absolute inset-0 flex flex-col w-full h-full bg-[#1C1B18]"
             >
               <VideoShortsScreen
                 user={user}
@@ -785,10 +796,10 @@ export default function App() {
           animate={{ opacity: 1, scale: 1 }}
           type="button"
           onClick={() => navigateTo('chat')}
-          className="no-print absolute bottom-[calc(4.65rem+env(safe-area-inset-bottom,0px))] right-4 z-40 bg-[#263E35] hover:bg-[#1E312A] dark:bg-[#B55841] text-[#FAF6F0] px-3.5 py-2.5 rounded-full ios-float-shadow flex items-center gap-2 border border-[#C4A46B]/40 cursor-pointer active:scale-95 md:hidden min-h-[44px]"
+          className="no-print absolute bottom-[calc(4.65rem+env(safe-area-inset-bottom,0px))] right-4 z-40 bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast px-3.5 py-2.5 rounded-full ios-float-shadow flex items-center gap-2 border border-nova-border/40 cursor-pointer active:scale-95 md:hidden min-h-[44px]"
           title="Tâm sự cùng Trợ lý Nova AI"
         >
-          <Mic className="w-4 h-4 stroke-[2.2] text-[#D7BA86] dark:text-white shrink-0" />
+          <Mic className="w-4 h-4 stroke-[2.2] shrink-0" />
           <span className="text-[11.5px] font-semibold tracking-tight whitespace-nowrap">Hỏi Nova AI</span>
         </motion.button>
       )}

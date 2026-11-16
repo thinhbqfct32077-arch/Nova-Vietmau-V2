@@ -136,41 +136,42 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
   const getCategoryIcon = (category: AppNotification['category']) => {
     switch (category) {
       case 'appointment':
-        return <Calendar className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />;
+        return <Calendar className="w-4 h-4 text-nova-accent" />;
       case 'water':
-        return <Droplet className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892]" />;
+        return <Droplet className="w-4 h-4 text-nova-sage-text" />;
       case 'milestone':
-        return <Sparkles className="w-4 h-4 text-[#9E5B3B] dark:text-[#D7BA86]" />;
+        return <Sparkles className="w-4 h-4 text-nova-warning" />;
       case 'health':
-        return <ShieldAlert className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />;
+        return <ShieldAlert className="w-4 h-4 text-nova-danger" />;
       case 'video':
-        return <Video className="w-4 h-4 text-[#9E5B3B] dark:text-[#D7BA86]" />;
+        return <Video className="w-4 h-4 text-nova-accent" />;
       case 'community':
-        return <MessageSquareHeart className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />;
+        return <MessageSquareHeart className="w-4 h-4 text-nova-accent" />;
       case 'shop':
-        return <ShoppingBag className="w-4 h-4 text-[#9E5B3B] dark:text-[#D7BA86]" />;
+        return <ShoppingBag className="w-4 h-4 text-nova-warning" />;
       case 'family':
-        return <HeartHandshake className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892]" />;
+        return <HeartHandshake className="w-4 h-4 text-nova-sage-text" />;
       default:
-        return <Info className="w-4 h-4 text-[#786962] dark:text-[#B5A89F]" />;
+        return <Info className="w-4 h-4 text-nova-icon" />;
     }
   };
 
   const getCategoryBg = (category: AppNotification['category']) => {
     switch (category) {
+      case 'health':
+        return 'bg-nova-danger-soft';
       case 'appointment':
       case 'community':
-      case 'health':
-        return 'bg-[#F7EAE5] dark:bg-[#35231E]';
+      case 'video':
+        return 'bg-nova-accent-soft';
       case 'water':
       case 'family':
-        return 'bg-[#EBF1EC] dark:bg-[#1E2922]';
+        return 'bg-nova-sage-soft';
       case 'milestone':
       case 'shop':
-      case 'video':
-        return 'bg-[#F6EFE2] dark:bg-[#2F281C]';
+        return 'bg-nova-warning-soft';
       default:
-        return 'bg-[#F2ECE3] dark:bg-[#231E1B]';
+        return 'bg-nova-bg-subtle';
     }
   };
 
@@ -182,7 +183,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="fixed inset-0 bg-[#161311]/55 backdrop-blur-xs cursor-pointer"
+          className="fixed inset-0 bg-[#1C1B18]/60 backdrop-blur-xs cursor-pointer"
         />
 
         <motion.div
@@ -190,40 +191,42 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 16 }}
           transition={{ type: 'spring', damping: 28, stiffness: 350 }}
-          className="relative w-full max-w-[560px] max-h-[86vh] bg-[#FAF6F0] dark:bg-[#1E1A17] rounded-3xl p-5 sm:p-6 shadow-2xl flex flex-col z-10 border border-[#E6DDD1] dark:border-[#362E2A]"
+          className="relative w-full max-w-[560px] max-h-[86vh] bg-nova-bg rounded-3xl p-5 sm:p-6 shadow-2xl flex flex-col z-10 border border-nova-border"
         >
-          <div className="flex items-center justify-between pb-3 border-b border-[#E6DDD1] dark:border-[#362E2A]">
+          <div className="flex items-center justify-between pb-3 border-b border-nova-border">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-2xl bg-[#F7EAE5] dark:bg-[#35231E] border border-[#EBCDC2] dark:border-[#52352D] flex items-center justify-center text-[#B55841] dark:text-[#D47A63]">
+              <div className="w-9 h-9 rounded-2xl bg-nova-accent-soft border border-nova-border flex items-center justify-center text-nova-accent">
                 <Bell className="w-4.5 h-4.5" />
               </div>
               <div>
-                <h2 className="font-editorial text-[19px] font-bold text-[#322622] dark:text-[#F4EDE6] leading-tight">
+                <h2 className="font-editorial text-[19px] font-bold text-nova-text leading-tight">
                   Trung tâm thông báo
                 </h2>
-                <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] tabular-nums">
+                <p className="text-[11px] text-nova-text-muted tabular-nums">
                   {unreadCount > 0
-                    ? `Bạn có ${unreadCount} thông báo chưa đọc`
+                    ? `Mẹ có ${unreadCount} thông báo chưa đọc`
                     : 'Không có thông báo mới chưa đọc'}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-1.5">
               <button
+                type="button"
                 onClick={() => setShowPrefs(!showPrefs)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors whitespace-nowrap ${
                   showPrefs
-                    ? 'bg-[#B55841] text-white'
-                    : 'bg-[#F2ECE3] dark:bg-[#231E1B] text-[#6B5D56] dark:text-[#C5B9B0] hover:bg-[#E6DDD1] dark:hover:bg-[#2F2824]'
+                    ? 'bg-nova-accent text-nova-accent-contrast'
+                    : 'bg-nova-bg-subtle text-nova-text-muted hover:bg-nova-accent-soft hover:text-nova-text'
                 }`}
               >
                 <SlidersHorizontal className="w-3.5 h-3.5" />
                 <span>Tùy chọn</span>
               </button>
               <button
+                type="button"
                 onClick={onClose}
                 aria-label="Đóng thông báo"
-                className="w-9 h-9 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] dark:text-[#B5A89F] flex items-center justify-center hover:bg-[#E6DDD1] dark:hover:bg-[#2F2824] transition-colors cursor-pointer"
+                className="w-9 h-9 rounded-full bg-nova-bg-subtle text-nova-text-muted flex items-center justify-center hover:bg-nova-accent-soft transition-colors cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -231,30 +234,30 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
           </div>
 
           {showPrefs && (
-            <div className="my-3 p-3.5 rounded-2xl bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] space-y-2">
-              <p className="text-xs font-bold text-[#322622] dark:text-[#F4EDE6]">
-                Kiểm soát loại thông báo nhận (Opt-in/Opt-out)
+            <div className="my-3 p-3.5 rounded-2xl bg-nova-surface border border-nova-border space-y-2">
+              <p className="text-xs font-bold text-nova-text">
+                Tùy chỉnh loại thông báo muốn nhận
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                 {[
                   { key: 'videoEnabled' as const, label: 'Video thai giáo mới' },
                   { key: 'communityEnabled' as const, label: 'Tương tác cộng đồng' },
                   { key: 'shopEnabled' as const, label: 'Đơn hàng & Vận chuyển' },
-                  { key: 'familyEnabled' as const, label: 'Chia sẻ Nova Family' },
+                  { key: 'familyEnabled' as const, label: 'Chia sẻ Gia đình Nova' },
                   { key: 'reminderSoundEnabled' as const, label: 'Âm báo nhắc lịch' },
                 ].map((item) => (
                   <label
                     key={item.key}
-                    className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] cursor-pointer"
+                    className="flex items-center justify-between gap-2 p-2.5 rounded-xl bg-nova-bg border border-nova-border cursor-pointer"
                   >
-                    <span className="text-[11.5px] font-medium text-[#6B5D56] dark:text-[#C5B9B0] truncate">
+                    <span className="text-[11.5px] font-medium text-nova-text-muted truncate">
                       {item.label}
                     </span>
                     <input
                       type="checkbox"
                       checked={Boolean(prefs[item.key])}
                       onChange={() => handleTogglePref(item.key)}
-                      className="accent-[#B55841] w-4 h-4 cursor-pointer"
+                      className="accent-nova-accent w-4 h-4 cursor-pointer"
                     />
                   </label>
                 ))}
@@ -262,7 +265,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
             </div>
           )}
 
-          <div className="flex items-center gap-1.5 py-3 border-b border-[#E6DDD1] dark:border-[#362E2A] overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1.5 py-3 border-b border-nova-border overflow-x-auto no-scrollbar">
             {[
               { id: 'all', label: `Tất cả (${notifications.length})` },
               { id: 'unread', label: `Chưa đọc (${unreadCount})` },
@@ -276,11 +279,12 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
             ].map((tab) => (
               <button
                 key={tab.id}
+                type="button"
                 onClick={() => setActiveFilter(tab.id as any)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 transition-colors cursor-pointer tabular-nums ${
                   activeFilter === tab.id
-                    ? 'bg-[#B55841] text-white shadow-xs'
-                    : 'bg-[#F2ECE3] dark:bg-[#231E1B] text-[#6B5D56] dark:text-[#C5B9B0] hover:bg-[#E6DDD1] dark:hover:bg-[#2F2824]'
+                    ? 'bg-nova-accent text-nova-accent-contrast shadow-xs'
+                    : 'bg-nova-bg-subtle text-nova-text-muted hover:bg-nova-accent-soft hover:text-nova-text'
                 }`}
               >
                 {tab.label}
@@ -290,11 +294,11 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
 
           <div className="flex-1 overflow-y-auto py-3 space-y-2.5 no-scrollbar min-h-[220px]">
             {filteredNotifs.length === 0 ? (
-              <div className="py-12 text-center flex flex-col items-center justify-center text-[#786962] dark:text-[#B5A89F]">
-                <div className="w-12 h-12 rounded-2xl bg-[#F2ECE3] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center mb-2.5">
-                  <Bell className="w-6 h-6 text-[#B5A89F] dark:text-[#786962]" />
+              <div className="py-12 text-center flex flex-col items-center justify-center text-nova-text-muted">
+                <div className="w-12 h-12 rounded-2xl bg-nova-bg-subtle border border-nova-border flex items-center justify-center mb-2.5">
+                  <Bell className="w-6 h-6 text-nova-icon" />
                 </div>
-                <p className="font-editorial text-[15px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                <p className="font-editorial text-[15px] font-semibold text-nova-text">
                   Chưa có thông báo nào trong mục này
                 </p>
               </div>
@@ -305,8 +309,8 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                   onClick={() => handleNotificationClick(n)}
                   className={`p-3.5 rounded-2xl border transition-all cursor-pointer group ${
                     n.isRead
-                      ? 'bg-white dark:bg-[#231E1B] border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#C4A46B]'
-                      : 'bg-[#F7EAE5]/55 dark:bg-[#35231E]/60 border-[#EBCDC2] dark:border-[#52352D] hover:border-[#B55841] shadow-xs'
+                      ? 'bg-nova-surface border-nova-border hover:border-nova-taupe'
+                      : 'bg-nova-accent-soft border-nova-taupe/60 hover:border-nova-accent shadow-xs'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -320,30 +324,31 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                         <h3
                           className={`text-xs ${
                             n.isRead
-                              ? 'font-semibold text-[#322622] dark:text-[#F4EDE6]'
-                              : 'font-bold text-[#B55841] dark:text-[#D47A63]'
+                              ? 'font-semibold text-nova-text'
+                              : 'font-bold text-nova-accent'
                           } truncate`}
                         >
                           {n.title}
                         </h3>
-                        <span className="text-[10px] text-[#786962] dark:text-[#B5A89F] shrink-0 tabular-nums">
+                        <span className="text-[10px] text-nova-text-muted shrink-0 tabular-nums">
                           {n.timestamp}
                         </span>
                       </div>
-                      <p className="text-[11.5px] text-[#6B5D56] dark:text-[#C5B9B0] leading-relaxed mt-1 line-clamp-2">
+                      <p className="text-[11.5px] text-nova-text-muted leading-relaxed mt-1 line-clamp-2">
                         {n.description}
                       </p>
-                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#E6DDD1]/70 dark:border-[#362E2A]">
+                      <div className="flex items-center justify-between mt-2 pt-2 border-t border-nova-border">
                         {n.actionScreen ? (
-                          <span className="text-[10.5px] font-bold text-[#B55841] dark:text-[#D47A63] flex items-center gap-0.5">
+                          <span className="text-[10.5px] font-bold text-nova-accent flex items-center gap-0.5">
                             Xem chi tiết <ChevronRight className="w-3 h-3" />
                           </span>
                         ) : (
                           <span />
                         )}
                         <button
+                          type="button"
                           onClick={(e) => handleDeleteNotif(n.id, e)}
-                          className="p-1 text-[#B5A89F] hover:text-[#B55841] dark:hover:text-[#D47A63] transition-colors cursor-pointer"
+                          className="p-1 text-nova-icon hover:text-nova-danger transition-colors cursor-pointer"
                           title="Xóa thông báo"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -356,22 +361,24 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
             )}
           </div>
 
-          <div className="pt-3 border-t border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-between gap-3">
+          <div className="pt-3 border-t border-nova-border flex items-center justify-between gap-3">
             <button
+              type="button"
               onClick={handleMarkAllRead}
               disabled={unreadCount === 0}
               className={`flex-1 min-h-[44px] py-2.5 px-3 rounded-2xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors whitespace-nowrap ${
                 unreadCount > 0
-                  ? 'bg-[#F2ECE3] dark:bg-[#231E1B] hover:bg-[#E6DDD1] dark:hover:bg-[#2F2824] text-[#322622] dark:text-[#F4EDE6] cursor-pointer'
-                  : 'bg-[#F2ECE3] dark:bg-[#231E1B] text-[#B5A89F] dark:text-[#786962] cursor-not-allowed opacity-60'
+                  ? 'bg-nova-bg-subtle hover:bg-nova-accent-soft text-nova-text cursor-pointer'
+                  : 'bg-nova-bg-subtle text-nova-text-muted cursor-not-allowed opacity-60'
               }`}
             >
-              <CheckCheck className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892]" />
+              <CheckCheck className="w-4 h-4 text-nova-sage-text" />
               <span>Đánh dấu tất cả đã đọc</span>
             </button>
             <button
+              type="button"
               onClick={onClose}
-              className="min-h-[44px] py-2.5 px-6 bg-[#322622] dark:bg-[#B55841] hover:bg-[#261D19] dark:hover:bg-[#9E4A35] text-white rounded-2xl text-xs font-bold transition-colors cursor-pointer whitespace-nowrap"
+              className="min-h-[44px] py-2.5 px-6 bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast rounded-2xl text-xs font-bold transition-colors cursor-pointer whitespace-nowrap"
             >
               Đóng
             </button>

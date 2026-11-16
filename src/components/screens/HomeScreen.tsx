@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ASSETS, NOVA_VIDEOS_DATA, PRODUCTS_DATA } from '../../data/mockData';
-import { ECOSYSTEM_BANNERS, INITIAL_LIBRARY_ARTICLES } from '../../data/ecosystemData';
+import { INITIAL_LIBRARY_ARTICLES } from '../../data/ecosystemData';
 import { UserProfile, DailyWaterRecord, HealthReminder, ScreenType } from '../../types';
 import { storageService, ThemeMode } from '../../services/storageService';
 import { getPregnancySummary } from '../../services/pregnancyCalculator';
@@ -20,6 +20,7 @@ import {
   Search,
   Sun,
   Moon,
+  Monitor,
   Compass,
   CheckSquare,
   Camera,
@@ -51,20 +52,6 @@ interface HomeScreenProps {
   isVip?: boolean;
 }
 
-function getGentleGreeting(): { title: string; subtitle: string } {
-  const hour = new Date().getHours();
-  if (hour >= 5 && hour < 11) {
-    return { title: 'Chào buổi sáng,', subtitle: 'Một ngày mới thật nhẹ nhàng cùng con nhé' };
-  }
-  if (hour >= 11 && hour < 14) {
-    return { title: 'Buổi trưa dịu dàng,', subtitle: 'Nhớ nghỉ ngơi và dùng bữa ấm bụng mẹ nhé' };
-  }
-  if (hour >= 14 && hour < 18) {
-    return { title: 'Buổi chiều an yên,', subtitle: 'Thư giãn đôi vai và hít thở chậm một chút' };
-  }
-  return { title: 'Buổi tối bình yên,', subtitle: 'Chúc hai mẹ con có một giấc ngủ êm sâu' };
-}
-
 export const HomeScreen: React.FC<HomeScreenProps> = ({
   onOpenVoiceChat,
   onNavigateToCare,
@@ -74,7 +61,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onOpenEmergency,
   onNavigateScreen,
   onOpenGlobalSearch,
-  themeMode = 'light',
+  themeMode = 'system',
   onToggleTheme,
   unreadNotificationsCount = 0,
   user,
@@ -87,7 +74,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
   const pregnancySummary = getPregnancySummary(user || {});
   const weekMilestone = getWeekMilestone(pregnancySummary.weeks);
-  const greeting = getGentleGreeting();
 
   const [todayWater, setTodayWater] = useState<DailyWaterRecord>(() =>
     storageService.getWaterRecord()
@@ -112,7 +98,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     calm: { text: 'Bình yên', emoji: '🌿' },
     happy: { text: 'Vui vẻ', emoji: '☀️' },
     excited: { text: 'Háo hức', emoji: '🤍' },
-    tired: { text: 'Hơi mệt nhẹ', emoji: '🌙' },
+    tired: { text: 'Mệt nhẹ', emoji: '🌙' },
   };
 
   const isStaff = user?.role === 'admin' || user?.role === 'moderator';
@@ -124,34 +110,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     icon: React.ComponentType<{ className?: string }>;
     tint: string;
   }[] = [
-    {
-      id: 'care',
-      title: 'Chăm sóc & Nhật ký',
-      sub: 'Uống nước, lịch nhắc',
-      icon: Heart,
-      tint: 'bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63]',
-    },
-    {
-      id: 'journey',
-      title: 'Hành trình 40 tuần',
-      sub: `Đang ở tuần ${pregnancySummary.weeks}`,
-      icon: Compass,
-      tint: 'bg-[#EBF1EC] dark:bg-[#1E2922] text-[#263E35] dark:text-[#8DA892]',
-    },
-    {
-      id: 'checklist',
-      title: 'Checklist mẹ bầu',
-      sub: 'Giỏ đồ & khám thai',
-      icon: CheckSquare,
-      tint: 'bg-[#F2ECE3] dark:bg-[#231E1B] text-[#9E5B3B] dark:text-[#D7BA86]',
-    },
-    {
-      id: 'library',
-      title: 'Thư viện y khoa',
-      sub: 'Chuẩn Bộ Y tế & WHO',
-      icon: BookOpen,
-      tint: 'bg-[#EBF1EC] dark:bg-[#1E2922] text-[#6D8572] dark:text-[#8DA892]',
-    },
+    { id: 'care', title: 'Chăm sóc', sub: 'Nước & lịch', icon: Heart, tint: 'bg-nova-accent-soft text-nova-accent' },
+    { id: 'journey', title: 'Hành trình', sub: `Tuần ${pregnancySummary.weeks}`, icon: Compass, tint: 'bg-nova-sage-soft text-nova-sage-text' },
+    { id: 'checklist', title: 'Sổ chuẩn bị', sub: 'Đồ đi sinh', icon: CheckSquare, tint: 'bg-nova-bg-subtle text-nova-accent' },
+    { id: 'library', title: 'Thư viện', sub: 'Chuẩn Bộ Y tế', icon: BookOpen, tint: 'bg-nova-sage-soft text-nova-sage-text' },
   ];
 
   const moreShortcuts: {
@@ -160,21 +122,16 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     sub: string;
     icon: React.ComponentType<{ className?: string }>;
   }[] = [
-    { id: 'weekly', title: 'Thai kỳ theo tuần', sub: `Tuần ${pregnancySummary.weeks}`, icon: Calendar },
-    { id: 'memories', title: 'Kỷ niệm & Siêu âm', sub: 'Lưu ảnh & thư cho con', icon: Camera },
-    { id: 'birth_plan', title: 'Kế hoạch đi sinh', sub: 'Mong muốn & người thân', icon: ClipboardList },
-    { id: 'family', title: 'Nova Family', sub: 'Chia sẻ cùng người thân', icon: HeartHandshake },
-    { id: 'postpartum', title: 'Sau sinh & Em bé', sub: 'Theo dõi 0–12 tháng', icon: Baby },
-    { id: 'report', title: 'Báo cáo sức khỏe', sub: 'Tổng hợp mang đi khám', icon: FileBarChart2 },
-    ...(user?.rewardsEnabled !== false
-      ? [{ id: 'rewards' as ScreenType, title: 'Ghi nhận nhẹ nhàng', sub: 'Dấu mốc yêu thương', icon: Award }]
-      : []),
-    ...(isStaff
-      ? [{ id: 'admin' as ScreenType, title: 'Quản trị & Kiểm duyệt', sub: 'Kiểm duyệt nội dung', icon: ShieldCheck }]
-      : []),
+    { id: 'weekly', title: 'Theo tuần', sub: `Tuần ${pregnancySummary.weeks}`, icon: Calendar },
+    { id: 'memories', title: 'Kỷ niệm', sub: 'Ảnh siêu âm', icon: Camera },
+    { id: 'birth_plan', title: 'Đi sinh', sub: 'Kế hoạch', icon: ClipboardList },
+    { id: 'family', title: 'Gia đình', sub: 'Kết nối', icon: HeartHandshake },
+    { id: 'postpartum', title: 'Sau sinh', sub: '0–12 tháng', icon: Baby },
+    { id: 'report', title: 'Báo cáo', sub: 'Khám thai', icon: FileBarChart2 },
+    ...(user?.rewardsEnabled !== false ? [{ id: 'rewards' as ScreenType, title: 'Dấu mốc', sub: 'Quà tặng', icon: Award }] : []),
+    ...(isStaff ? [{ id: 'admin' as ScreenType, title: 'Quản trị', sub: 'Kiểm duyệt', icon: ShieldCheck }] : []),
   ];
 
-  // Curated week-relevant Library Article
   const curatedArticle =
     INITIAL_LIBRARY_ARTICLES.find(
       (a) =>
@@ -192,18 +149,20 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     Math.round(((todayWater.currentMl || 0) / (todayWater.targetMl || 2200)) * 100)
   );
 
+  const themeTitle =
+    themeMode === 'light' ? 'Sáng' : themeMode === 'dark' ? 'Tối' : 'Hệ thống';
+
   return (
-    <div className="flex-1 flex flex-col px-4 sm:px-6 pt-3 pb-8 overflow-y-auto no-scrollbar select-none bg-[#FAF6F0] dark:bg-[#161311]">
-      {/* Warm Personal Top Bar */}
+    <div className="flex-1 flex flex-col px-4 sm:px-6 pt-3 pb-8 overflow-y-auto no-scrollbar select-none bg-nova-bg">
+      {/* Top Header */}
       <header className="flex items-center justify-between py-2 mb-3 gap-2">
         <button
           type="button"
           onClick={onOpenProfile}
           className="flex items-center gap-3 cursor-pointer group min-w-0 text-left focus:outline-none"
-          title="Chạm để xem hồ sơ cá nhân"
         >
           <div className="relative shrink-0">
-            <div className="w-11 h-11 rounded-full overflow-hidden border border-[#E6DDD1] dark:border-[#362E2A] bg-[#F2ECE3] dark:bg-[#231E1B]">
+            <div className="w-10 h-10 rounded-full overflow-hidden border border-nova-border bg-nova-bg-subtle">
               <NovaImage
                 src={user?.avatar || ASSETS.motherAvatar}
                 alt={user?.name || 'Khánh Băng'}
@@ -212,37 +171,26 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
               />
             </div>
             {isVip && (
-              <div className="absolute -top-1 -right-1 w-4.5 h-4.5 bg-[#C4A46B] rounded-full border border-[#FAF6F0] dark:border-[#161311] flex items-center justify-center text-white">
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-nova-accent rounded-full border border-nova-bg flex items-center justify-center text-nova-accent-contrast">
                 <Crown className="w-2.5 h-2.5 fill-current" />
               </div>
             )}
           </div>
-
           <div className="flex flex-col min-w-0">
-            <span className="text-[11.5px] font-medium text-[#786962] dark:text-[#B5A89F] leading-tight">
-              {greeting.title}
+            <span className="text-[10px] font-medium text-nova-text-muted leading-tight">Chào mẹ</span>
+            <span className="font-editorial text-[16px] font-semibold text-nova-text leading-tight group-hover:text-nova-accent truncate">
+              {user?.name || 'Khánh Băng'}
             </span>
-            <div className="flex items-center gap-1.5 min-w-0">
-              <span className="font-editorial text-[18px] font-semibold text-[#322622] dark:text-[#F4EDE6] leading-tight group-hover:text-[#B55841] dark:group-hover:text-[#D47A63] transition-colors truncate">
-                {user?.name || 'Khánh Băng'}
-              </span>
-              {isVip && (
-                <span className="text-[10px] font-semibold text-[#9E7B3B] dark:text-[#D7BA86] shrink-0">
-                  · VIP
-                </span>
-              )}
-            </div>
           </div>
         </button>
 
-        {/* Quiet Utility Controls */}
         <div className="flex items-center gap-1.5 shrink-0">
           {onOpenGlobalSearch && (
             <button
               type="button"
               onClick={onOpenGlobalSearch}
               aria-label="Tìm kiếm"
-              className="w-10 h-10 rounded-full bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-[#322622] dark:text-[#F4EDE6] hover:border-[#B55841]/50 transition-colors cursor-pointer"
+              className="w-9 h-9 rounded-full bg-nova-surface border border-nova-border flex items-center justify-center text-nova-text hover:border-nova-taupe transition-colors cursor-pointer"
             >
               <Search className="w-4 h-4" />
             </button>
@@ -251,13 +199,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <button
               type="button"
               onClick={onToggleTheme}
-              aria-label="Đổi chế độ Sáng/Tối"
-              className="lg:hidden w-10 h-10 rounded-full bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-[#322622] dark:text-[#F4EDE6] cursor-pointer"
+              aria-label={themeTitle}
+              className="lg:hidden w-9 h-9 rounded-full bg-nova-surface border border-nova-border flex items-center justify-center text-nova-text hover:border-nova-taupe transition-colors cursor-pointer"
             >
               {themeMode === 'dark' ? (
-                <Sun className="w-4 h-4 text-[#D7BA86]" />
+                <Moon className="w-4 h-4 text-nova-taupe" />
+              ) : themeMode === 'light' ? (
+                <Sun className="w-4 h-4 text-nova-taupe" />
               ) : (
-                <Moon className="w-4 h-4" />
+                <Monitor className="w-4 h-4 text-nova-icon" />
               )}
             </button>
           )}
@@ -265,8 +215,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <button
               type="button"
               onClick={onOpenEmergency}
-              className="flex items-center gap-1 px-3 py-2 rounded-full bg-[#F7EAE5] dark:bg-[#35231E] border border-[#E6DDD1] dark:border-[#4A3630] text-[#A2402E] dark:text-[#E08975] text-[11px] font-semibold cursor-pointer hover:bg-[#EFE0D9] transition-colors whitespace-nowrap min-h-[40px]"
-              title="Liên hệ khẩn cấp & 115"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-nova-danger-soft border border-nova-danger-border text-nova-danger text-[11px] font-bold cursor-pointer hover:opacity-90"
             >
               <PhoneCall className="w-3.5 h-3.5" />
               <span>SOS</span>
@@ -275,12 +224,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           <button
             type="button"
             onClick={onOpenNotifications}
-            className="w-10 h-10 rounded-full bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-[#322622] dark:text-[#F4EDE6] relative hover:border-[#B55841]/50 transition-colors cursor-pointer"
-            aria-label="Thông báo thai kỳ"
+            aria-label="Thông báo"
+            className="w-9 h-9 rounded-full bg-nova-surface border border-nova-border flex items-center justify-center text-nova-text relative hover:border-nova-taupe transition-colors cursor-pointer"
           >
             <Bell className="w-4 h-4 stroke-[1.8]" />
             {unreadNotificationsCount > 0 && (
-              <span className="absolute -top-0.5 -right-0.5 min-w-[16px] h-4 px-1 rounded-full bg-[#B55841] dark:bg-[#D47A63] text-white text-[9px] font-bold flex items-center justify-center tabular-nums">
+              <span className="absolute -top-0.5 -right-0.5 min-w-[15px] h-3.5 px-0.5 rounded-full bg-nova-accent text-nova-accent-contrast text-[9px] font-bold flex items-center justify-center tabular-nums">
                 {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
               </span>
             )}
@@ -288,99 +237,67 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
       </header>
 
-      <div className="flex flex-col gap-5">
-        {/* ======================================================= */}
-        {/* 1. EDITORIAL HERO — WARM WELCOME & PREGNANCY MILESTONE   */}
-        {/* ======================================================= */}
-        <section className="rounded-[24px] bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] p-4 sm:p-5 nova-card-shadow">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
-            {/* Editorial Morning-Light Photograph */}
-            <div className="md:col-span-5 relative rounded-[18px] overflow-hidden aspect-[4/3] bg-[#F2ECE3] dark:bg-[#231E1B]">
+      <div className="flex flex-col gap-4">
+        {/* 1. HERO CARD */}
+        <section className="rounded-[22px] bg-nova-surface border border-nova-border p-4 nova-card-shadow">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-3.5 items-center">
+            <div className="md:col-span-4 relative rounded-2xl overflow-hidden aspect-[4/3] bg-nova-bg-subtle">
               <NovaImage
                 src={ASSETS.homeHeroImg}
-                alt="Không gian sáng sớm bình yên của mẹ bầu Việt Nam"
+                alt="Không gian sáng sớm"
                 className="w-full h-full object-cover"
                 loading="eager"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#322622]/45 via-transparent to-transparent pointer-events-none" />
-              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[#FAF6F0]">
-                <span className="text-[11.5px] font-medium drop-shadow-xs">
-                  {greeting.subtitle}
-                </span>
-              </div>
             </div>
 
-            {/* Warm Milestone Narrative */}
-            <div className="md:col-span-7 flex flex-col justify-between gap-3">
+            <div className="md:col-span-8 flex flex-col justify-between gap-2.5">
               <div>
-                <p className="text-[11.5px] font-semibold tracking-wide text-[#B55841] dark:text-[#D47A63] uppercase">
-                  {user?.pregnancyStatus === 'postpartum'
-                    ? 'Sau sinh & Đồng hành cùng bé'
-                    : `Tam cá nguyệt ${pregnancySummary.trimester} · ${
-                        pregnancySummary.daysRemaining > 0
-                          ? `Còn ${pregnancySummary.daysRemaining} ngày`
-                          : 'Ngày dự sinh cận kề'
-                      }`}
-                </p>
-
-                <div className="flex items-start justify-between gap-3 mt-1.5">
-                  <div className="min-w-0">
-                    <h1 className="font-editorial text-[26px] sm:text-[30px] font-semibold text-[#322622] dark:text-[#F4EDE6] leading-tight tabular-nums">
-                      {user?.pregnancyStatus === 'postpartum' ? (
-                        <>Chăm sóc {user.babyNickname || 'Bé Bơ'}</>
-                      ) : (
-                        <>
-                          Tuần {pregnancySummary.weeks}
-                          {pregnancySummary.days > 0 && (
-                            <span className="text-[17px] font-normal text-[#786962] dark:text-[#B5A89F] ml-1.5">
-                              ngày {pregnancySummary.days}
-                            </span>
-                          )}
-                        </>
-                      )}
-                    </h1>
-                    <p className="text-[13px] text-[#786962] dark:text-[#B5A89F] mt-0.5">
-                      {user?.babyNickname ? `Cùng ${user.babyNickname}` : 'Cùng thiên thần nhỏ'} ·{' '}
-                      <span className="text-[#263E35] dark:text-[#8DA892] font-medium">
-                        Kích thước như {pregnancySummary.fruitComparison.fruitName}
-                      </span>
-                    </p>
-                  </div>
-
+                <div className="flex items-center justify-between gap-2">
+                  <span className="text-[11px] font-bold text-nova-sage-text uppercase tracking-wider">
+                    {user?.pregnancyStatus === 'postpartum'
+                      ? 'Sau sinh'
+                      : `Trimester ${pregnancySummary.trimester} · Còn ${pregnancySummary.daysRemaining} ngày`}
+                  </span>
                   <button
                     type="button"
                     onClick={() => setShowMilestoneDetail(!showMilestoneDetail)}
-                    className="w-14 h-14 rounded-2xl bg-[#F2ECE3] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-3xl shrink-0 cursor-pointer hover:border-[#C4A46B] transition-colors"
-                    title="Chạm để xem chi tiết phát triển tuần này"
+                    className="w-11 h-11 rounded-xl bg-nova-bg-subtle border border-nova-border flex items-center justify-center text-2xl shrink-0 cursor-pointer"
                   >
                     {pregnancySummary.fruitComparison.fruitEmoji}
                   </button>
                 </div>
 
-                <p className="text-[13px] text-[#5A4C46] dark:text-[#CFC4BC] leading-relaxed mt-2.5 line-clamp-2">
-                  {weekMilestone.babyDevelopment}
-                </p>
+                <div className="mt-1">
+                  <h1 className="font-editorial text-[24px] font-bold text-nova-text leading-tight tabular-nums">
+                    {user?.pregnancyStatus === 'postpartum' ? (
+                      <>{user.babyNickname || 'Bé Bơ'}</>
+                    ) : (
+                      <>Tuần {pregnancySummary.weeks} {pregnancySummary.days > 0 ? `+ ${pregnancySummary.days}d` : ''}</>
+                    )}
+                  </h1>
+                  <p className="text-xs text-nova-text-muted mt-0.5">
+                    Kích thước: <strong className="text-nova-text">{pregnancySummary.fruitComparison.fruitName}</strong>
+                  </p>
+                </div>
               </div>
 
               {onNavigateScreen && (
-                <div className="flex items-center flex-wrap gap-3 pt-1">
+                <div className="flex items-center gap-2 pt-1">
                   <button
                     type="button"
                     onClick={() =>
                       onNavigateScreen(user?.pregnancyStatus === 'postpartum' ? 'postpartum' : 'weekly')
                     }
-                    className="px-4 py-2.5 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] dark:bg-[#D47A63] dark:hover:bg-[#C36A53] text-white text-xs sm:text-[13px] font-semibold transition-colors cursor-pointer min-h-[44px] whitespace-nowrap"
+                    className="px-3.5 py-2 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-semibold cursor-pointer transition-colors"
                   >
-                    {user?.pregnancyStatus === 'postpartum'
-                      ? 'Mở nhật ký sau sinh'
-                      : `Khám phá tuần ${pregnancySummary.weeks}`}
+                    {user?.pregnancyStatus === 'postpartum' ? 'Nhật ký bé' : `Xem tuần ${pregnancySummary.weeks}`}
                   </button>
                   <button
                     type="button"
                     onClick={() => onNavigateScreen('journey')}
-                    className="text-xs sm:text-[13px] font-semibold text-[#263E35] dark:text-[#8DA892] hover:text-[#B55841] dark:hover:text-[#D47A63] transition-colors cursor-pointer py-2 whitespace-nowrap flex items-center gap-1"
+                    className="text-xs font-semibold text-nova-sage-text hover:text-nova-accent cursor-pointer px-2 py-2 flex items-center gap-1"
                   >
-                    <span>Hành trình 40 tuần</span>
+                    <span>Hành trình</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -388,160 +305,124 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </div>
           </div>
 
-          {/* Expandable Baby Development Details */}
           <AnimatePresence>
             {showMilestoneDetail && (
               <motion.div
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="mt-4 pt-3.5 border-t border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#5A4C46] dark:text-[#CFC4BC] space-y-2 overflow-hidden"
+                className="mt-3 pt-3 border-t border-nova-border text-xs text-nova-text-muted space-y-1.5 overflow-hidden"
               >
-                <div className="flex items-center justify-between font-medium">
-                  <span className="tabular-nums">
-                    Kích thước ước tính: {pregnancySummary.fruitComparison.lengthDescription} ·{' '}
-                    {pregnancySummary.fruitComparison.weightDescription}
-                  </span>
+                <div className="flex items-center justify-between font-bold text-nova-text">
+                  <span>{pregnancySummary.fruitComparison.lengthDescription} · {pregnancySummary.fruitComparison.weightDescription}</span>
                   <button
                     type="button"
                     onClick={() => setShowMilestoneDetail(false)}
-                    className="text-[11.5px] font-semibold text-[#B55841] dark:text-[#D47A63] cursor-pointer"
+                    className="text-xs text-nova-accent cursor-pointer"
                   >
-                    Thu gọn
+                    Đóng
                   </button>
                 </div>
-                <div className="bg-[#FAF6F0] dark:bg-[#231E1B] p-3 rounded-xl space-y-1.5">
-                  <p className="text-[12px] leading-relaxed">
-                    <strong className="text-[#322622] dark:text-[#F4EDE6]">Thay đổi ở mẹ:</strong>{' '}
-                    {weekMilestone.motherChanges}
-                  </p>
-                  <p className="text-[12px] leading-relaxed">
-                    <strong className="text-[#322622] dark:text-[#F4EDE6]">Gợi ý dinh dưỡng:</strong>{' '}
-                    {weekMilestone.nutritionAdvice}
-                  </p>
-                </div>
-                <p className="text-[10.5px] text-[#786962] dark:text-[#B5A89F]">
-                  Nguồn tham khảo: {weekMilestone.medicalSource}
-                </p>
+                <p className="text-[11.5kpx] leading-relaxed">{weekMilestone.babyDevelopment}</p>
               </motion.div>
             )}
           </AnimatePresence>
         </section>
 
-        <NovaLotusDivider label="Nhịp sống hôm nay" />
+        <NovaLotusDivider label="Hôm nay" />
 
-        {/* ======================================================= */}
-        {/* 2. CURATED DAILY RHYTHM — GENTLE CARE WITHOUT PRESSURE  */}
-        {/* ======================================================= */}
-        <section className="space-y-3">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            {/* Mood Check-in */}
+        {/* 2. DAILY RHYTHM */}
+        <section className="space-y-2.5">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
             <button
               type="button"
               onClick={() => setShowMoodPicker(!showMoodPicker)}
-              className="bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl p-4 border border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#C4A46B] transition-colors flex flex-col justify-between text-left cursor-pointer"
+              className="bg-nova-surface rounded-2xl p-3.5 border border-nova-border hover:border-nova-taupe flex items-center justify-between text-left cursor-pointer"
             >
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-9 h-9 rounded-xl bg-[#F2ECE3] dark:bg-[#231E1B] flex items-center justify-center text-[#9E5B3B] dark:text-[#D7BA86]">
-                  <Smile className="w-4.5 h-4.5" />
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-nova-bg-subtle flex items-center justify-center text-nova-accent">
+                  <Smile className="w-4 h-4" />
                 </div>
-                <span className="text-lg">{moodLabels[selectedMood].emoji}</span>
+                <div>
+                  <p className="text-[10px] font-bold text-nova-text-muted">Cảm xúc</p>
+                  <p className="text-xs font-bold text-nova-text">{moodLabels[selectedMood].text}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">Cảm xúc hôm nay</p>
-                <h3 className="text-[14.5px] font-semibold text-[#322622] dark:text-[#F4EDE6] mt-0.5">
-                  {moodLabels[selectedMood].text}
-                </h3>
-              </div>
+              <span className="text-xl">{moodLabels[selectedMood].emoji}</span>
             </button>
 
-            {/* Next Reminder */}
             <button
               type="button"
               onClick={onNavigateToCare}
-              className="bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl p-4 border border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#B55841]/60 transition-colors flex flex-col justify-between text-left cursor-pointer"
+              className="bg-nova-surface rounded-2xl p-3.5 border border-nova-border hover:border-nova-taupe flex items-center justify-between text-left cursor-pointer"
             >
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-9 h-9 rounded-xl bg-[#F7EAE5] dark:bg-[#35231E] flex items-center justify-center text-[#B55841] dark:text-[#D47A63]">
-                  <Calendar className="w-4.5 h-4.5" />
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-nova-accent-soft flex items-center justify-center text-nova-accent shrink-0">
+                  <Calendar className="w-4 h-4" />
                 </div>
-                <span className="text-[11.5px] font-semibold text-[#B55841] dark:text-[#D47A63] tabular-nums">
-                  {nextReminder ? nextReminder.time : 'Nhẹ nhàng'}
-                </span>
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold text-nova-text-muted">Nhắc nhở</p>
+                  <p className="text-xs font-bold text-nova-text truncate">
+                    {nextReminder ? nextReminder.title : 'Thêm lịch'}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">Nhắc nhở sắp tới</p>
-                <h3 className="text-[14.5px] font-semibold text-[#322622] dark:text-[#F4EDE6] mt-0.5 line-clamp-1">
-                  {nextReminder ? nextReminder.title : 'Tự tạo lời nhắc riêng'}
-                </h3>
-              </div>
+              <span className="text-[11px] font-bold text-nova-accent tabular-nums shrink-0">
+                {nextReminder ? nextReminder.time : '—'}
+              </span>
             </button>
 
-            {/* Daily Warm Water */}
             <button
               type="button"
               onClick={onNavigateToCare}
-              className="bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl p-4 border border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#6D8572]/60 transition-colors flex flex-col justify-between text-left cursor-pointer"
+              className="bg-nova-surface rounded-2xl p-3.5 border border-nova-border hover:border-nova-sage flex items-center justify-between text-left cursor-pointer"
             >
-              <div className="flex items-center justify-between mb-2">
-                <div className="w-9 h-9 rounded-xl bg-[#EBF1EC] dark:bg-[#1E2922] flex items-center justify-center text-[#263E35] dark:text-[#8DA892]">
-                  <Droplet className="w-4.5 h-4.5" />
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-nova-sage-soft flex items-center justify-center text-nova-sage-text shrink-0">
+                  <Droplet className="w-4 h-4" />
                 </div>
-                <span className="text-[11.5px] font-semibold text-[#6D8572] dark:text-[#8DA892] tabular-nums">
-                  {todayWater.currentMl} / {todayWater.targetMl} ml
-                </span>
-              </div>
-              <div>
-                <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">Nước ấm hôm nay</p>
-                <div className="w-full h-1.5 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] mt-2 overflow-hidden">
-                  <div
-                    className="h-full rounded-full bg-[#6D8572] dark:bg-[#8DA892] transition-all"
-                    style={{ width: `${waterPercent}%` }}
-                  />
+                <div className="min-w-0">
+                  <p className="text-[10px] font-bold text-nova-text-muted">Nước ấm</p>
+                  <p className="text-xs font-bold text-nova-text tabular-nums">{todayWater.currentMl}ml</p>
                 </div>
               </div>
+              <span className="text-xs font-bold text-nova-sage-text tabular-nums shrink-0">
+                {waterPercent}%
+              </span>
             </button>
           </div>
 
           <AnimatePresence>
             {showMoodPicker && (
               <motion.div
-                initial={{ opacity: 0, y: -6 }}
+                initial={{ opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                className="bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl p-2.5 border border-[#E6DDD1] dark:border-[#362E2A] grid grid-cols-4 gap-2"
+                exit={{ opacity: 0, y: -4 }}
+                className="bg-nova-surface rounded-2xl p-2 border border-nova-border grid grid-cols-4 gap-1.5"
               >
-                {(Object.keys(moodLabels) as (keyof typeof moodLabels)[]).map((key) => {
-                  const isCurrent = selectedMood === key;
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      onClick={() => {
-                        setSelectedMood(key);
-                        setShowMoodPicker(false);
-                      }}
-                      className={`flex flex-col items-center py-2 px-1 rounded-xl cursor-pointer transition-colors ${
-                        isCurrent
-                          ? 'bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63]'
-                          : 'hover:bg-[#FAF6F0] dark:hover:bg-[#231E1B] text-[#786962] dark:text-[#B5A89F]'
-                      }`}
-                    >
-                      <span className="text-xl mb-1">{moodLabels[key].emoji}</span>
-                      <span className="text-[11px] font-medium whitespace-nowrap">
-                        {moodLabels[key].text}
-                      </span>
-                    </button>
-                  );
-                })}
+                {(Object.keys(moodLabels) as (keyof typeof moodLabels)[]).map((key) => (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => {
+                      setSelectedMood(key);
+                      setShowMoodPicker(false);
+                    }}
+                    className={`flex flex-col items-center py-2 rounded-xl cursor-pointer ${
+                      selectedMood === key ? 'bg-nova-accent-soft text-nova-accent' : 'hover:bg-nova-bg-subtle text-nova-text-muted'
+                    }`}
+                  >
+                    <span className="text-lg">{moodLabels[key].emoji}</span>
+                    <span className="text-[10px] font-bold mt-0.5">{moodLabels[key].text}</span>
+                  </button>
+                ))}
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* 4 Curated Primary Shortcuts + Expandable Ecosystem Drawer */}
           {onNavigateScreen && (
-            <div className="space-y-2.5">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {coreShortcuts.map((item) => {
                   const Icon = item.icon;
                   return (
@@ -549,20 +430,14 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                       key={item.id}
                       type="button"
                       onClick={() => onNavigateScreen(item.id)}
-                      className="p-3 rounded-2xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#B55841]/50 flex items-center gap-2.5 text-left transition-colors cursor-pointer min-h-[58px]"
+                      className="p-3 rounded-2xl bg-nova-surface border border-nova-border hover:border-nova-taupe flex items-center gap-2.5 text-left cursor-pointer"
                     >
-                      <div
-                        className={`w-9 h-9 rounded-xl ${item.tint} flex items-center justify-center shrink-0`}
-                      >
+                      <div className={`w-8 h-8 rounded-xl ${item.tint} flex items-center justify-center shrink-0`}>
                         <Icon className="w-4 h-4" />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-[12.5px] font-semibold text-[#322622] dark:text-[#F4EDE6] truncate">
-                          {item.title}
-                        </p>
-                        <p className="text-[10.5px] text-[#786962] dark:text-[#B5A89F] truncate">
-                          {item.sub}
-                        </p>
+                        <p className="text-xs font-bold text-nova-text truncate">{item.title}</p>
+                        <p className="text-[10px] text-nova-text-muted truncate">{item.sub}</p>
                       </div>
                     </button>
                   );
@@ -573,12 +448,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowAllTools(!showAllTools)}
-                  className="inline-flex items-center gap-1.5 text-xs font-medium text-[#786962] dark:text-[#B5A89F] hover:text-[#B55841] dark:hover:text-[#D47A63] py-1.5 px-3 cursor-pointer transition-colors"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-nova-text-muted hover:text-nova-accent py-1 cursor-pointer"
                 >
-                  <span>{showAllTools ? 'Thu gọn công cụ' : 'Mở tất cả công cụ thai kỳ & gia đình'}</span>
-                  <ChevronDown
-                    className={`w-3.5 h-3.5 transition-transform ${showAllTools ? 'rotate-180' : ''}`}
-                  />
+                  <span>{showAllTools ? 'Thu gọn' : 'Xem thêm công cụ'}</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showAllTools ? 'rotate-180' : ''}`} />
                 </button>
               </div>
 
@@ -588,7 +461,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 overflow-hidden pt-1"
+                    className="grid grid-cols-2 sm:grid-cols-4 gap-2 overflow-hidden"
                   >
                     {moreShortcuts.map((item) => {
                       const Icon = item.icon;
@@ -597,16 +470,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                           key={item.id}
                           type="button"
                           onClick={() => onNavigateScreen(item.id)}
-                          className="p-3 rounded-2xl bg-[#F2ECE3]/65 dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#B55841]/50 flex items-center gap-2.5 text-left transition-colors cursor-pointer"
+                          className="p-2.5 rounded-xl bg-nova-bg-subtle border border-nova-border hover:border-nova-taupe flex items-center gap-2 text-left cursor-pointer"
                         >
-                          <Icon className="w-4 h-4 text-[#B55841] dark:text-[#D47A63] shrink-0" />
+                          <Icon className="w-3.5 h-3.5 text-nova-accent shrink-0" />
                           <div className="min-w-0">
-                            <p className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] truncate">
-                              {item.title}
-                            </p>
-                            <p className="text-[10.5px] text-[#786962] dark:text-[#B5A89F] truncate">
-                              {item.sub}
-                            </p>
+                            <p className="text-xs font-bold text-nova-text truncate">{item.title}</p>
+                            <p className="text-[10px] text-nova-text-muted truncate">{item.sub}</p>
                           </div>
                         </button>
                       );
@@ -618,192 +487,115 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           )}
         </section>
 
-        <NovaLotusDivider label="Dành riêng cho mẹ tuần này" />
+        <NovaLotusDivider label="Khám phá" />
 
-        {/* ======================================================= */}
-        {/* 3. GENTLE DISCOVERY — KNOWLEDGE, VIDEO, MEMORIES & SHOP */}
-        {/* ======================================================= */}
-        <section className="space-y-3">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
-            {/* Curated Library Read */}
+        {/* 3. DISCOVERY */}
+        <section className="space-y-2.5">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
             {onNavigateScreen && (
               <button
                 type="button"
                 onClick={() => onNavigateScreen('library')}
-                className="p-4 rounded-2xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#6D8572]/60 text-left transition-colors cursor-pointer flex flex-col justify-between gap-2"
+                className="p-3.5 rounded-2xl bg-nova-surface border border-nova-border hover:border-nova-sage text-left cursor-pointer flex flex-col justify-between gap-2"
               >
                 <div>
-                  <p className="text-[11px] font-semibold text-[#6D8572] dark:text-[#8DA892] uppercase tracking-wide">
-                    Góc đọc chậm · {curatedArticle.readTimeMinutes} phút đọc
-                  </p>
-                  <h3 className="font-editorial text-[17px] font-semibold text-[#322622] dark:text-[#F4EDE6] mt-1 leading-snug">
-                    {curatedArticle.title}
-                  </h3>
-                  <p className="text-[12.5px] text-[#786962] dark:text-[#B5A89F] mt-1.5 line-clamp-2 leading-relaxed">
-                    {curatedArticle.summary}
-                  </p>
+                  <span className="text-[10px] font-bold text-nova-sage-text uppercase">Góc đọc · {curatedArticle.readTimeMinutes}p</span>
+                  <h3 className="font-editorial text-[15px] font-bold text-nova-text mt-0.5 line-clamp-1">{curatedArticle.title}</h3>
                 </div>
-                <div className="flex items-center justify-between pt-2 border-t border-[#E6DDD1] dark:border-[#362E2A] text-[11.5px]">
-                  <span className="text-[#786962] dark:text-[#B5A89F] truncate">
-                    {curatedArticle.medicalSource}
-                  </span>
-                  <span className="font-semibold text-[#B55841] dark:text-[#D47A63] shrink-0 whitespace-nowrap ml-2">
-                    Đọc ngay →
-                  </span>
-                </div>
+                <span className="text-xs font-bold text-nova-accent">Đọc ngay →</span>
               </button>
             )}
 
-            {/* Curated Video Thai Giáo */}
             {onNavigateScreen && curatedVideo && (
               <button
                 type="button"
                 onClick={() => onNavigateScreen('video')}
-                className="p-4 rounded-2xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#B55841]/50 text-left transition-colors cursor-pointer flex items-center gap-3.5"
+                className="p-3 rounded-2xl bg-nova-surface border border-nova-border hover:border-nova-taupe text-left cursor-pointer flex items-center gap-3"
               >
-                <div className="relative w-24 h-24 rounded-xl overflow-hidden bg-[#F2ECE3] dark:bg-[#231E1B] shrink-0">
-                  <NovaImage
-                    src={ASSETS.wellnessRitualImg}
-                    alt={curatedVideo.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-[#322622]/25 flex items-center justify-center">
-                    <div className="w-9 h-9 rounded-full bg-[#FAF6F0]/90 text-[#B55841] flex items-center justify-center">
-                      <Play className="w-4 h-4 fill-current ml-0.5" />
-                    </div>
+                <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-nova-bg-subtle shrink-0">
+                  <NovaImage src={ASSETS.wellnessRitualImg} alt="Video" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-[#1C1B18]/30 flex items-center justify-center text-white">
+                    <Play className="w-3.5 h-3.5 fill-current" />
                   </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[11px] font-semibold text-[#B55841] dark:text-[#D47A63] uppercase tracking-wide">
-                    Video thai giáo nhẹ nhàng
-                  </p>
-                  <h3 className="font-editorial text-[16px] font-semibold text-[#322622] dark:text-[#F4EDE6] mt-0.5 line-clamp-2 leading-snug">
-                    {curatedVideo.title}
-                  </h3>
-                  <p className="text-[11.5px] text-[#786962] dark:text-[#B5A89F] mt-1 truncate">
-                    {curatedVideo.channelName}
-                  </p>
+                <div className="min-w-0">
+                  <span className="text-[10px] font-bold text-nova-sage-text uppercase">Video thai giáo</span>
+                  <h3 className="font-editorial text-xs font-bold text-nova-text truncate mt-0.5">{curatedVideo.title}</h3>
                 </div>
               </button>
             )}
           </div>
 
-          {/* Memories Vignette + Curated Gentle Shop */}
-          {onNavigateScreen && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
+            {onNavigateScreen && (
               <button
                 type="button"
                 onClick={() => onNavigateScreen('memories')}
-                className="rounded-2xl overflow-hidden bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#C4A46B] text-left transition-colors cursor-pointer flex items-center gap-3.5 p-3.5"
+                className="p-3.5 rounded-2xl bg-nova-surface border border-nova-border hover:border-nova-taupe text-left cursor-pointer flex items-center gap-3"
               >
-                <div className="w-20 h-20 rounded-xl overflow-hidden bg-[#F2ECE3] dark:bg-[#231E1B] shrink-0">
-                  <NovaImage
-                    src={ECOSYSTEM_BANNERS.memoriesBanner}
-                    alt="Kỷ niệm thai kỳ"
-                    className="w-full h-full object-cover"
-                  />
+                <div className="w-14 h-14 rounded-xl overflow-hidden bg-nova-bg-subtle shrink-0">
+                  <NovaImage src={ASSETS.journalImg || ASSETS.motherAvatar} alt="Kỷ niệm" className="w-full h-full object-cover" />
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[11px] font-semibold text-[#9E7B3B] dark:text-[#D7BA86] uppercase tracking-wide">
-                    Nhật ký hình ảnh & thư gửi con
-                  </p>
-                  <h4 className="font-editorial text-[15.5px] font-semibold text-[#322622] dark:text-[#F4EDE6] mt-0.5 truncate">
-                    Lưu giữ khoảnh khắc bên {user?.babyNickname || 'Bé Bơ'}
-                  </h4>
-                  <p className="text-[12px] text-[#786962] dark:text-[#B5A89F] mt-0.5 line-clamp-1">
-                    Ảnh siêu âm, nhật ký thai máy và những dòng thư đầu đời.
-                  </p>
+                <div className="min-w-0">
+                  <span className="text-[10px] font-bold text-nova-taupe uppercase">Kỷ niệm</span>
+                  <h4 className="font-editorial text-xs font-bold text-nova-text truncate mt-0.5">Thư & ảnh siêu âm</h4>
                 </div>
               </button>
+            )}
 
-              <div className="rounded-2xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] p-3.5 flex flex-col justify-between gap-2.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <ShoppingBag className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />
-                    <span className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6]">
-                      Chăm sóc lành tính được tuyển chọn
-                    </span>
+            {onNavigateScreen && (
+              <button
+                type="button"
+                onClick={() => onNavigateScreen('shop')}
+                className="p-3.5 rounded-2xl bg-nova-surface border border-nova-border hover:border-nova-taupe text-left cursor-pointer flex items-center justify-between"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-10 h-10 rounded-xl bg-nova-bg-subtle flex items-center justify-center text-nova-accent shrink-0">
+                    <ShoppingBag className="w-4.5 h-4.5" />
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => onNavigateScreen('shop')}
-                    className="text-[11.5px] font-semibold text-[#B55841] dark:text-[#D47A63] cursor-pointer whitespace-nowrap"
-                  >
-                    Ghé cửa hàng →
-                  </button>
+                  <div className="min-w-0">
+                    <span className="text-[10px] font-bold text-nova-accent uppercase">Cửa hàng mẹ & bé</span>
+                    <h4 className="font-editorial text-xs font-bold text-nova-text truncate mt-0.5">Sản phẩm tuyển chọn</h4>
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {curatedProducts.map((p) => (
-                    <button
-                      key={p.id}
-                      type="button"
-                      onClick={() => onNavigateScreen('shop')}
-                      className="flex items-center gap-2 p-2 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] hover:bg-[#F2ECE3] dark:hover:bg-[#2A2420] text-left transition-colors cursor-pointer"
-                    >
-                      <NovaImage
-                        src={p.image}
-                        alt={p.name}
-                        className="w-10 h-10 rounded-lg object-cover shrink-0"
-                      />
-                      <div className="min-w-0">
-                        <p className="text-[11.5px] font-semibold text-[#322622] dark:text-[#F4EDE6] truncate">
-                          {p.name}
-                        </p>
-                        <p className="text-[10.5px] text-[#786962] dark:text-[#B5A89F] tabular-nums">
-                          {p.price.toLocaleString('vi-VN')}đ
-                        </p>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
+                <span className="text-xs font-bold text-nova-accent shrink-0 ml-2">Ghé shop →</span>
+              </button>
+            )}
+          </div>
 
-          {/* Warm Nova AI Companion & VIP Quiet Invitation */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-2.5">
             <button
               type="button"
               onClick={onOpenVoiceChat}
-              className="bg-[#F2ECE3] dark:bg-[#231E1B] rounded-2xl p-4 border border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#B55841]/50 flex items-center justify-between cursor-pointer text-left transition-colors"
+              className="p-3.5 rounded-2xl bg-nova-bg-subtle border border-nova-border hover:border-nova-taupe flex items-center justify-between cursor-pointer text-left"
             >
-              <div className="flex items-center gap-3.5 min-w-0">
-                <div className="w-11 h-11 rounded-2xl bg-[#B55841] dark:bg-[#D47A63] text-white flex items-center justify-center shrink-0">
-                  <Mic className="w-5 h-5" />
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-nova-accent text-nova-accent-contrast flex items-center justify-center shrink-0">
+                  <Mic className="w-4 h-4" />
                 </div>
-                <div className="min-w-0">
-                  <h3 className="font-editorial text-[16px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
-                    Tâm sự cùng Nova AI
-                  </h3>
-                  <p className="text-[12px] text-[#786962] dark:text-[#B5A89F] truncate">
-                    Giải đáp nhẹ nhàng bất cứ lúc nào mẹ thấy băn khoăn
-                  </p>
+                <div>
+                  <h3 className="font-editorial text-xs font-bold text-nova-text">Tâm sự Nova AI</h3>
+                  <p className="text-[10px] text-nova-text-muted">Hỏi đáp 24/7</p>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#786962] dark:text-[#B5A89F] shrink-0" />
+              <ChevronRight className="w-4 h-4 text-nova-icon" />
             </button>
 
             <button
               type="button"
               onClick={onOpenVipModal}
-              className="rounded-2xl p-4 bg-[#263E35] hover:bg-[#1E312A] text-[#FAF6F0] border border-[#C4A46B]/40 flex items-center justify-between cursor-pointer text-left transition-colors"
+              className="p-3.5 rounded-2xl bg-nova-accent text-nova-accent-contrast border border-nova-border flex items-center justify-between cursor-pointer text-left"
             >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="w-11 h-11 rounded-2xl bg-[#C4A46B]/20 border border-[#C4A46B]/40 flex items-center justify-center text-[#D7BA86] shrink-0">
-                  <Crown className="w-5 h-5 fill-current" />
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-nova-accent-contrast/2format flex items-center justify-center text-nova-accent-contrast shrink-0">
+                  <Crown className="w-4 h-4 fill-current" />
                 </div>
-                <div className="min-w-0">
-                  <h4 className="font-editorial text-[15.5px] font-semibold text-[#FAF6F0]">
-                    {isVip ? 'Đặc quyền Nova VIP đang mở' : 'Đồng hành sâu hơn cùng Nova VIP'}
-                  </h4>
-                  <p className="text-[11.5px] text-[#FAF6F0]/80 truncate">
-                    {isVip
-                      ? 'Trọn bộ tư vấn & ưu đãi 10% tại cửa hàng'
-                      : 'Mở khóa chuyên mục y khoa & ưu đãi 10%'}
-                  </p>
+                <div>
+                  <h4 className="font-editorial text-xs font-bold">Gói Nova VIP</h4>
+                  <p className="text-[10px] opacity-85">Ưu đãi 10% & y khoa</p>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#D7BA86] shrink-0" />
+              <ChevronRight className="w-4 h-4 opacity-80" />
             </button>
           </div>
         </section>

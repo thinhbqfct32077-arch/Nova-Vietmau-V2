@@ -386,7 +386,7 @@ export const PREGNANCY_MILESTONES: Record<number, WeekMilestone> = {
     week: 37,
     title: 'Chính thức đạt mốc thai ĐỦ THÁNG (Full Term)',
     babyDevelopment: 'Tất cả các hệ cơ quan của con đã sẵn sàng 100% cho cuộc sống bên ngoài bụng mẹ!',
-    babySizeDesc: 'Bằng củ củ đậu lớn (48.6 cm, ~2.9 kg)',
+    babySizeDesc: 'Bằng củ đậu lớn (48.6 cm, ~2.9 kg)',
     motherChanges: 'Cổ tử cung bắt đầu mềm và mỏng dần (xóa mở cổ tử cung). Tiết dịch nhầy âm đạo nhiều hơn.',
     nutritionAdvice: 'Nghỉ ngơi tối đa, nghe nhạc thư giãn 432Hz, tắm nước ấm để giữ tâm lý nhẹ nhõm an bình.',
     doctorQuestions: ['Cổ tử cung đã mở phân nào chưa?', 'Nút nhầy cổ tử cung bong ra có hình dạng ra sao?'],

@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
   Bell,
-  Clock,
   Plus,
   Trash2,
   Edit3,
@@ -41,12 +40,12 @@ export const REMINDER_TYPE_OPTIONS: {
   label: string;
   hint: string;
 }[] = [
-  { id: 'water', label: 'Uống nước', hint: 'VD: Uống 250ml nước ấm' },
-  { id: 'pill', label: 'Uống vitamin / thuốc theo chỉ định', hint: 'VD: Uống viên sắt sau ăn trưa' },
-  { id: 'checkup', label: 'Lịch khám thai', hint: 'VD: Siêu âm mốc 22 tuần' },
-  { id: 'rest', label: 'Nghỉ ngơi', hint: 'VD: Nằm nghiêng trái thư giãn 20 phút' },
-  { id: 'walk', label: 'Vận động nhẹ', hint: 'VD: Đi bộ hoặc Yoga bầu 15 phút' },
-  { id: 'custom', label: 'Tự tạo nhắc nhở khác', hint: 'VD: Nghe nhạc thai giáo, chuẩn bị đồ đi sinh' },
+  { id: 'water', label: 'Uống nước', hint: 'Ví dụ: Uống 250ml nước ấm' },
+  { id: 'pill', label: 'Uống vitamin / thuốc theo chỉ định', hint: 'Ví dụ: Uống viên sắt sau ăn trưa' },
+  { id: 'checkup', label: 'Lịch khám thai', hint: 'Ví dụ: Siêu âm mốc 22 tuần' },
+  { id: 'rest', label: 'Nghỉ ngơi', hint: 'Ví dụ: Nằm nghiêng trái thư giãn 20 phút' },
+  { id: 'walk', label: 'Vận động nhẹ', hint: 'Ví dụ: Đi bộ hoặc Yoga bầu 15 phút' },
+  { id: 'custom', label: 'Tự tạo nhắc nhở khác', hint: 'Ví dụ: Nghe nhạc thai giáo, chuẩn bị đồ đi sinh' },
 ];
 
 export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
@@ -213,20 +212,20 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
   const getCategoryIcon = (cat: ActivityCategory) => {
     switch (cat) {
       case 'water':
-        return <Droplet className="w-4 h-4 text-[#6D8572] dark:text-[#8DA892]" />;
+        return <Droplet className="w-4 h-4 text-nova-sage-text" />;
       case 'pill':
-        return <Pill className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />;
+        return <Pill className="w-4 h-4 text-nova-accent" />;
       case 'checkup':
-        return <Stethoscope className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />;
+        return <Stethoscope className="w-4 h-4 text-nova-accent" />;
       case 'rest':
-        return <Moon className="w-4 h-4 text-[#9E5B3B] dark:text-[#D7BA86]" />;
+        return <Moon className="w-4 h-4 text-nova-taupe" />;
       case 'walk':
       case 'yoga':
-        return <Footprints className="w-4 h-4 text-[#263E35] dark:text-[#8DA892]" />;
+        return <Footprints className="w-4 h-4 text-nova-sage-text" />;
       case 'music':
-        return <Music className="w-4 h-4 text-[#9E5B3B] dark:text-[#D7BA86]" />;
+        return <Music className="w-4 h-4 text-nova-taupe" />;
       default:
-        return <Activity className="w-4 h-4 text-[#786962] dark:text-[#B5A89F]" />;
+        return <Activity className="w-4 h-4 text-nova-icon" />;
     }
   };
 
@@ -238,32 +237,32 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-[#322622]/45 backdrop-blur-xs p-0 md:p-4">
+    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-[#1C1B18]/60 backdrop-blur-xs p-0 md:p-4">
       <motion.div
         initial={{ y: '100%', opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         exit={{ y: '100%', opacity: 0 }}
         transition={{ type: 'spring', damping: 28, stiffness: 350 }}
-        className="w-full max-w-[480px] max-h-[92vh] bg-[#FAF6F0] dark:bg-[#161311] rounded-t-[28px] md:rounded-[28px] border border-[#E6DDD1] dark:border-[#362E2A] ios-float-shadow flex flex-col overflow-hidden text-[#322622] dark:text-[#F4EDE6]"
+        className="w-full max-w-[480px] max-h-[92vh] bg-nova-bg rounded-t-[28px] md:rounded-[28px] border border-nova-border ios-float-shadow flex flex-col overflow-hidden text-nova-text"
       >
         {toastMsg && (
-          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-[#263E35] text-[#FAF6F0] text-xs font-semibold px-4 py-2 rounded-full shadow-lg flex items-center gap-1.5 whitespace-nowrap">
-            <Sparkles className="w-3.5 h-3.5 text-[#D7BA86]" />
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-nova-accent text-nova-accent-contrast text-xs font-semibold px-4 py-2 rounded-full shadow-lg flex items-center gap-1.5 whitespace-nowrap">
+            <Sparkles className="w-3.5 h-3.5" />
             <span>{toastMsg}</span>
           </div>
         )}
 
         {/* Header */}
-        <div className="px-5 pt-4 pb-3 border-b border-[#E6DDD1] dark:border-[#362E2A] bg-[#FFFFFF] dark:bg-[#1E1A17] flex items-center justify-between shrink-0">
+        <div className="px-5 pt-4 pb-3 border-b border-nova-border bg-nova-surface flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-nova-accent-soft text-nova-accent flex items-center justify-center">
               <Bell className="w-5 h-5 stroke-[2]" />
             </div>
             <div>
-              <h2 className="font-editorial text-[17px] font-semibold text-[#322622] dark:text-[#F4EDE6] leading-tight">
+              <h2 className="font-editorial text-[17px] font-semibold text-nova-text leading-tight">
                 Quản lý nhắc nhở
               </h2>
-              <p className="text-[11px] font-medium text-[#786962] dark:text-[#B5A89F] mt-0.5">
+              <p className="text-[11px] font-medium text-nova-text-muted mt-0.5">
                 Lưu riêng theo tài khoản của mẹ
               </p>
             </div>
@@ -272,7 +271,7 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-[#FAF6F0] dark:bg-[#231E1B] hover:bg-[#F2ECE3] text-[#786962] dark:text-[#B5A89F] flex items-center justify-center cursor-pointer transition-colors"
+            className="w-8 h-8 rounded-full bg-nova-bg-subtle hover:bg-nova-accent-soft text-nova-icon flex items-center justify-center cursor-pointer transition-colors"
             aria-label="Đóng"
           >
             <X className="w-4 h-4 stroke-[2.2]" />
@@ -285,19 +284,19 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
           <div
             className={`p-3.5 rounded-2xl border transition-colors ${
               permissionStatus === 'granted'
-                ? 'bg-[#EBF1EC] dark:bg-[#1E2922] border-[#D4E2D7] dark:border-[#2E3F34] text-[#263E35] dark:text-[#A7C2AC]'
-                : 'bg-[#F2ECE3] dark:bg-[#231E1B] border-[#E6DDD1] dark:border-[#362E2A] text-[#786962] dark:text-[#D7BA86]'
+                ? 'bg-nova-sage-soft border-nova-success-border text-nova-sage-text'
+                : 'bg-nova-bg-subtle border-nova-border text-nova-text-muted'
             }`}
           >
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2.5">
                 {permissionStatus === 'granted' ? (
-                  <ShieldCheck className="w-5 h-5 text-[#6D8572] dark:text-[#8DA892] shrink-0" />
+                  <ShieldCheck className="w-5 h-5 text-nova-sage-text shrink-0" />
                 ) : (
-                  <AlertCircle className="w-5 h-5 text-[#9E5B3B] dark:text-[#D7BA86] shrink-0" />
+                  <AlertCircle className="w-5 h-5 text-nova-warning shrink-0" />
                 )}
                 <div>
-                  <p className="text-xs font-semibold leading-tight text-[#322622] dark:text-[#F4EDE6]">
+                  <p className="text-xs font-semibold leading-tight text-nova-text">
                     {permissionStatus === 'granted'
                       ? 'Thông báo thiết bị: Đã bật'
                       : permissionStatus === 'denied'
@@ -319,7 +318,7 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
                   <button
                     type="button"
                     onClick={handleRequestPermission}
-                    className="px-3 py-1.5 bg-[#B55841] hover:bg-[#9E4A35] text-white rounded-xl text-[11px] font-semibold cursor-pointer transition-colors"
+                    className="px-3 py-1.5 bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast rounded-xl text-[11px] font-semibold cursor-pointer transition-colors"
                   >
                     Bật quyền
                   </button>
@@ -328,8 +327,9 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
                   <button
                     type="button"
                     onClick={() => setShowGuide((v) => !v)}
-                    className="p-1.5 rounded-xl bg-[#FFFFFF] dark:bg-[#1E1A17] text-[#9E5B3B] dark:text-[#D7BA86] cursor-pointer"
+                    className="p-1.5 rounded-xl bg-nova-surface text-nova-accent cursor-pointer"
                     title="Hướng dẫn bật thông báo"
+                    aria-label="Hướng dẫn bật thông báo"
                   >
                     <HelpCircle className="w-4 h-4" />
                   </button>
@@ -338,8 +338,8 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
             </div>
 
             {showGuide && permissionStatus !== 'granted' && (
-              <div className="mt-3 pt-2.5 border-t border-[#E6DDD1] dark:border-[#362E2A] text-[11px] space-y-1">
-                <p className="font-semibold text-[#322622] dark:text-[#F4EDE6]">
+              <div className="mt-3 pt-2.5 border-t border-nova-border text-[11px] space-y-1">
+                <p className="font-semibold text-nova-text">
                   {platformGuide.title} ({platformGuide.platformLabel}):
                 </p>
                 <ol className="list-decimal list-inside space-y-0.5">
@@ -352,15 +352,15 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
           </div>
 
           {/* Test Chime Button */}
-          <div className="p-3 bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-between">
-            <div className="flex items-center gap-2 text-xs font-medium text-[#786962] dark:text-[#B5A89F]">
-              <Volume2 className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />
+          <div className="p-3 bg-nova-surface rounded-2xl border border-nova-border flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-medium text-nova-text-muted">
+              <Volume2 className="w-4 h-4 text-nova-accent" />
               <span>Thử âm thanh chuông & cảnh báo</span>
             </div>
             <button
               type="button"
               onClick={handleTestChimeAndNotification}
-              className="px-3 py-1.5 bg-[#F7EAE5] dark:bg-[#35231E] border border-[#E6DDD1] dark:border-[#4A3630] text-[#B55841] dark:text-[#D47A63] rounded-xl text-[11px] font-semibold hover:bg-[#EFE0D9] cursor-pointer transition-colors"
+              className="px-3 py-1.5 bg-nova-accent-soft border border-nova-border text-nova-accent rounded-xl text-[11px] font-semibold hover:opacity-90 cursor-pointer transition-opacity"
             >
               Thử ngay
             </button>
@@ -368,7 +368,7 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
 
           {/* Header & Add Button */}
           <div className="flex items-center justify-between">
-            <h3 className="text-xs font-semibold text-[#786962] dark:text-[#B5A89F] uppercase tracking-wider">
+            <h3 className="text-xs font-semibold text-nova-text-muted uppercase tracking-wider">
               Nhắc nhở của mẹ ({reminders.length})
             </h3>
             <button
@@ -382,14 +382,13 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
                   setShowAddForm(true);
                 }
               }}
-              className="px-3 py-1.5 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] dark:bg-[#D47A63] text-white text-xs font-semibold flex items-center gap-1 cursor-pointer"
+              className="px-3 py-1.5 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-semibold flex items-center gap-1 cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>{showAddForm ? 'Đóng biểu mẫu' : 'THÊM'}</span>
             </button>
           </div>
 
-          {/* Create / Edit Reminder Form */}
           <AnimatePresence>
             {showAddForm && (
               <motion.form
@@ -397,20 +396,20 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 onSubmit={handleSubmitReminder}
-                className="p-4 bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3 overflow-hidden"
+                className="p-4 bg-nova-surface rounded-2xl border border-nova-border space-y-3 overflow-hidden"
               >
-                <h4 className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                <h4 className="text-xs font-semibold text-nova-text">
                   {editingId ? 'Chỉnh sửa nhắc nhở' : 'Tạo nhắc nhở mới'}
                 </h4>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-[#786962] dark:text-[#B5A89F] block mb-1">
+                  <label className="text-[11px] font-semibold text-nova-text-muted block mb-1">
                     Loại nhắc nhở:
                   </label>
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value as ActivityCategory)}
-                    className="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs font-semibold text-[#322622] dark:text-[#F4EDE6]"
+                    className="w-full px-3 py-2 bg-nova-bg-subtle border border-nova-border rounded-xl text-xs font-semibold text-nova-text"
                   >
                     {REMINDER_TYPE_OPTIONS.map((opt) => (
                       <option key={opt.id} value={opt.id}>
@@ -421,7 +420,7 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-[#786962] dark:text-[#B5A89F] block mb-1">
+                  <label className="text-[11px] font-semibold text-nova-text-muted block mb-1">
                     Tên nhắc nhở:
                   </label>
                   <input
@@ -433,12 +432,12 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
                       REMINDER_TYPE_OPTIONS.find((o) => o.id === category)?.hint ||
                       'Nhập tên nhắc nhở...'
                     }
-                    className="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs text-[#322622] dark:text-[#F4EDE6]"
+                    className="w-full px-3 py-2 bg-nova-bg-subtle border border-nova-border rounded-xl text-xs text-nova-text"
                   />
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-[#786962] dark:text-[#B5A89F] block mb-1">
+                  <label className="text-[11px] font-semibold text-nova-text-muted block mb-1">
                     Nội dung chi tiết:
                   </label>
                   <textarea
@@ -446,24 +445,24 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
                     value={notes}
                     onChange={(e) => setNotes(e.target.value)}
                     placeholder="Ghi chú liều lượng, lưu ý của bác sĩ hoặc lời nhắn..."
-                    className="w-full px-3 py-2 bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs text-[#322622] dark:text-[#F4EDE6] resize-none"
+                    className="w-full px-3 py-2 bg-nova-bg-subtle border border-nova-border rounded-xl text-xs text-nova-text resize-none"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-2.5">
                   <div>
-                    <label className="text-[11px] font-semibold text-[#786962] dark:text-[#B5A89F] block mb-1">
+                    <label className="text-[11px] font-semibold text-nova-text-muted block mb-1">
                       Ngày bắt đầu / hẹn:
                     </label>
                     <input
                       type="date"
                       value={date}
                       onChange={(e) => setDate(e.target.value)}
-                      className="w-full px-2.5 py-2 bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs text-[#322622] dark:text-[#F4EDE6] font-semibold"
+                      className="w-full px-2.5 py-2 bg-nova-bg-subtle border border-nova-border rounded-xl text-xs text-nova-text font-semibold"
                     />
                   </div>
                   <div>
-                    <label className="text-[11px] font-semibold text-[#786962] dark:text-[#B5A89F] block mb-1">
+                    <label className="text-[11px] font-semibold text-nova-text-muted block mb-1">
                       Giờ nhắc:
                     </label>
                     <input
@@ -471,13 +470,13 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
                       required
                       value={time}
                       onChange={(e) => setTime(e.target.value)}
-                      className="w-full px-2.5 py-2 bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs text-[#322622] dark:text-[#F4EDE6] font-semibold"
+                      className="w-full px-2.5 py-2 bg-nova-bg-subtle border border-nova-border rounded-xl text-xs text-nova-text font-semibold"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-[#786962] dark:text-[#B5A89F] block mb-1">
+                  <label className="text-[11px] font-semibold text-nova-text-muted block mb-1">
                     Tần suất lặp:
                   </label>
                   <div className="grid grid-cols-4 gap-1.5">
@@ -493,8 +492,8 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
                         onClick={() => setFrequency(f.id as ReminderFrequency)}
                         className={`py-1.5 rounded-xl text-[11px] font-semibold border cursor-pointer transition-colors ${
                           frequency === f.id
-                            ? 'bg-[#B55841] dark:bg-[#D47A63] text-white border-[#B55841]'
-                            : 'bg-[#FAF6F0] dark:bg-[#231E1B] text-[#786962] dark:text-[#B5A89F] border-[#E6DDD1] dark:border-[#362E2A]'
+                            ? 'bg-nova-accent text-nova-accent-contrast border-nova-accent'
+                            : 'bg-nova-bg-subtle text-nova-text-muted border-nova-border'
                         }`}
                       >
                         {f.label}
@@ -505,7 +504,7 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
 
                 {frequency === 'custom_days' && (
                   <div>
-                    <label className="text-[10.5px] font-semibold text-[#786962] dark:text-[#B5A89F] block mb-1">
+                    <label className="text-[10.5px] font-semibold text-nova-text-muted block mb-1">
                       Chọn các ngày trong tuần:
                     </label>
                     <div className="flex gap-1 justify-between">
@@ -518,8 +517,8 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
                             onClick={() => handleDayToggle(d.num)}
                             className={`w-9 h-8 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                               isSel
-                                ? 'bg-[#B55841] dark:bg-[#D47A63] text-white'
-                                : 'bg-[#FAF6F0] dark:bg-[#231E1B] text-[#786962] dark:text-[#B5A89F] border border-[#E6DDD1] dark:border-[#362E2A]'
+                                ? 'bg-nova-accent text-nova-accent-contrast'
+                                : 'bg-nova-bg-subtle text-nova-text-muted border border-nova-border'
                             }`}
                           >
                             {d.label}
@@ -537,13 +536,13 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
                       resetForm();
                       setShowAddForm(false);
                     }}
-                    className="flex-1 py-2 rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] text-xs font-semibold text-[#786962] dark:text-[#B5A89F] cursor-pointer"
+                    className="flex-1 py-2 rounded-xl border border-nova-border text-xs font-semibold text-nova-text-muted cursor-pointer"
                   >
                     Hủy
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-2 bg-[#B55841] hover:bg-[#9E4A35] text-white rounded-xl text-xs font-semibold cursor-pointer"
+                    className="flex-1 py-2 bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast rounded-xl text-xs font-semibold cursor-pointer"
                   >
                     {editingId ? 'Cập nhật nhắc nhở' : 'Lưu nhắc nhở'}
                   </button>
@@ -555,7 +554,7 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
           {/* Reminder Cards List */}
           <div className="space-y-2.5">
             {reminders.length === 0 ? (
-              <div className="p-6 bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl border border-dashed border-[#E6DDD1] dark:border-[#362E2A] text-center text-xs text-[#786962] dark:text-[#B5A89F]">
+              <div className="p-6 bg-nova-surface rounded-2xl border border-dashed border-nova-border text-center text-xs text-nova-text-muted">
                 Tài khoản này chưa có nhắc nhở nào. Nhấn nút "THÊM" để tạo nhắc nhở uống nước, vitamin hoặc lịch khám thai nhé!
               </div>
             ) : (
@@ -564,49 +563,48 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
                   key={rem.id}
                   className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-2 ${
                     rem.isEnabled
-                      ? 'bg-[#FFFFFF] dark:bg-[#1E1A17] border-[#E6DDD1] dark:border-[#362E2A]'
-                      : 'bg-[#F2ECE3]/60 dark:bg-[#1A1614] border-[#E6DDD1] dark:border-[#362E2A] opacity-65'
+                      ? 'bg-nova-surface border-nova-border'
+                      : 'bg-nova-bg-subtle/60 border-nova-border opacity-65'
                   }`}
                 >
                   <div className="flex items-start gap-3 min-w-0">
-                    <div className="w-9 h-9 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center shrink-0 mt-0.5">
+                    <div className="w-9 h-9 rounded-xl bg-nova-bg-subtle border border-nova-border flex items-center justify-center shrink-0 mt-0.5">
                       {getCategoryIcon(rem.category)}
                     </div>
 
                     <div className="min-w-0">
                       <div className="flex items-center gap-1.5 flex-wrap">
-                        <span className="text-[15px] font-semibold text-[#322622] dark:text-[#F4EDE6] tracking-tight tabular-nums">
+                        <span className="text-[15px] font-semibold text-nova-text tracking-tight tabular-nums">
                           {rem.time}
                         </span>
-                        <span className="text-[11px] font-medium text-[#786962] dark:text-[#B5A89F]">
+                        <span className="text-[11px] font-medium text-nova-text-muted">
                           · {getFrequencyLabel(rem)}
                         </span>
                         {!rem.isEnabled && (
-                          <span className="text-[10.5px] font-medium text-[#786962] dark:text-[#B5A89F]">
+                          <span className="text-[10.5px] font-medium text-nova-text-muted">
                             (Đang tạm tắt)
                           </span>
                         )}
                       </div>
 
-                      <h4 className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] mt-0.5 break-words">
+                      <h4 className="text-xs font-semibold text-nova-text mt-0.5 break-words">
                         {rem.title}
                       </h4>
 
                       {rem.notes && (
-                        <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] mt-0.5 line-clamp-2">
+                        <p className="text-[11px] text-nova-text-muted mt-0.5 line-clamp-2">
                           {rem.notes}
                         </p>
                       )}
                     </div>
                   </div>
 
-                  {/* Actions: Toggle, Edit, Delete */}
                   <div className="flex items-center gap-1.5 shrink-0">
                     <button
                       type="button"
                       onClick={() => onToggleReminder(rem.id)}
                       className={`w-10 h-5.5 rounded-full transition-colors relative cursor-pointer p-0.5 ${
-                        rem.isEnabled ? 'bg-[#6D8572]' : 'bg-[#D6CBC0] dark:bg-[#362E2A]'
+                        rem.isEnabled ? 'bg-nova-sage' : 'bg-nova-border'
                       }`}
                       title={rem.isEnabled ? 'Tạm tắt nhắc nhở' : 'Bật lại nhắc nhở'}
                       aria-label={rem.isEnabled ? 'Tạm tắt nhắc nhở' : 'Bật lại nhắc nhở'}
@@ -614,15 +612,16 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
                       <motion.div
                         animate={{ x: rem.isEnabled ? 18 : 0 }}
                         transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                        className="w-4.5 h-4.5 rounded-full bg-white shadow-xs"
+                        className="w-4.5 h-4.5 rounded-full bg-nova-surface shadow-xs"
                       />
                     </button>
 
                     <button
                       type="button"
                       onClick={() => handleStartEdit(rem)}
-                      className="w-7 h-7 rounded-lg text-[#786962] dark:text-[#B5A89F] hover:text-[#322622] hover:bg-[#FAF6F0] flex items-center justify-center transition-colors cursor-pointer"
+                      className="w-7 h-7 rounded-lg text-nova-icon hover:text-nova-text hover:bg-nova-bg-subtle flex items-center justify-center transition-colors cursor-pointer"
                       title="Chỉnh sửa"
+                      aria-label="Chỉnh sửa nhắc nhở"
                     >
                       <Edit3 className="w-3.5 h-3.5" />
                     </button>
@@ -630,8 +629,9 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
                     <button
                       type="button"
                       onClick={() => onDeleteReminder(rem.id)}
-                      className="w-7 h-7 rounded-lg text-[#786962] dark:text-[#B5A89F] hover:text-[#B55841] hover:bg-[#F7EAE5] flex items-center justify-center transition-colors cursor-pointer"
+                      className="w-7 h-7 rounded-lg text-nova-icon hover:text-nova-danger hover:bg-nova-danger-soft flex items-center justify-center transition-colors cursor-pointer"
                       title="Xóa nhắc nhở"
+                      aria-label="Xóa nhắc nhở"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -642,13 +642,12 @@ export const ReminderManagerModal: React.FC<ReminderManagerModalProps> = ({
           </div>
         </div>
 
-        {/* Bottom Button */}
-        <div className="p-4 border-t border-[#E6DDD1] dark:border-[#362E2A] bg-[#FFFFFF] dark:bg-[#1E1A17]">
+        <div className="p-4 border-t border-nova-border bg-nova-surface">
           <motion.button
             whileTap={{ scale: 0.985 }}
             type="button"
             onClick={onClose}
-            className="w-full py-3 bg-[#B55841] hover:bg-[#9E4A35] dark:bg-[#D47A63] text-white font-semibold rounded-2xl text-sm cursor-pointer transition-colors"
+            className="w-full py-3 bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast font-semibold rounded-2xl text-sm cursor-pointer transition-colors"
           >
             Hoàn tất
           </motion.button>

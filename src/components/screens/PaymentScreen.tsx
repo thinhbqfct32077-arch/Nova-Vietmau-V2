@@ -67,9 +67,9 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
   };
 
   const planPrices = {
-    monthly: { price: 99000, label: 'Gói 1 Tháng', desc: 'Thanh toán theo tháng' },
-    yearly: { price: 699000, label: 'Gói 1 Năm VIP (Khuyên dùng)', desc: 'Tiết kiệm 40% + Tặng trọn bộ cẩm nang' },
-    lifetime: { price: 1490000, label: 'Gói Trọn Đời', desc: 'Sử dụng vĩnh viễn suốt thai kỳ & nuôi con' },
+    monthly: { price: 99000, label: 'Gói 1 tháng', desc: 'Thanh toán linh hoạt theo tháng' },
+    yearly: { price: 699000, label: 'Gói 1 năm VIP (Khuyên dùng)', desc: 'Tiết kiệm 40% và tặng trọn bộ cẩm nang' },
+    lifetime: { price: 1490000, label: 'Gói trọn đời', desc: 'Đồng hành suốt thai kỳ và hành trình nuôi con' },
   };
 
   const rawSubtotal = isCartCheckout
@@ -113,32 +113,32 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
 
   if (isAwaitingVerification) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-6 bg-[#FAF6F0] dark:bg-[#161311] text-center select-none">
-        <div className="w-20 h-20 rounded-full bg-[#F6EFE2] dark:bg-[#2F281C] border border-[#E5D4B3] dark:border-[#4A3F2B] text-[#9E5B3B] dark:text-[#D7BA86] flex items-center justify-center mb-4">
+      <div className="flex-1 flex flex-col items-center justify-center p-6 bg-nova-bg text-center select-none">
+        <div className="w-20 h-20 rounded-full bg-nova-warning-soft border border-nova-warning-border text-nova-warning flex items-center justify-center mb-4">
           <Clock className="w-10 h-10 stroke-[2]" />
         </div>
-        <h2 className="font-editorial text-[22px] font-semibold text-[#322622] dark:text-[#F4EDE6] mb-1.5">
+        <h2 className="font-editorial text-[22px] font-semibold text-nova-text mb-1.5">
           Đã ghi nhận thông báo chuyển khoản
         </h2>
-        <p className="text-[12.5px] text-[#6B5D56] dark:text-[#C5B9B0] mb-5 max-w-[340px] leading-relaxed">
+        <p className="text-[12.5px] text-nova-text-muted mb-5 max-w-[340px] leading-relaxed">
           Giao dịch VietQR với mã <strong>{referenceCode}</strong> đang ở trạng thái{' '}
-          <strong>Chờ xác minh đối soát</strong>. Gói VIP sẽ chỉ được kích hoạt sau khi giao dịch được xác nhận thực tế.
+          <strong>Chờ xác minh đối soát</strong>. Gói VIP sẽ được kích hoạt ngay sau khi giao dịch được xác nhận.
         </p>
 
-        <div className="w-full max-w-[340px] bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] p-4 text-left nova-card-shadow mb-6 space-y-2 text-xs">
-          <div className="flex justify-between text-[#786962] dark:text-[#B5A89F]">
-            <span>Mã tham chiếu CK:</span>
-            <span className="font-mono font-bold text-[#322622] dark:text-[#F4EDE6]">{referenceCode}</span>
+        <div className="w-full max-w-[340px] bg-nova-surface rounded-2xl border border-nova-border p-4 text-left nova-card-shadow mb-6 space-y-2 text-xs">
+          <div className="flex justify-between text-nova-text-muted">
+            <span>Mã tham chiếu chuyển khoản:</span>
+            <span className="font-mono font-bold text-nova-text">{referenceCode}</span>
           </div>
-          <div className="flex justify-between text-[#786962] dark:text-[#B5A89F]">
+          <div className="flex justify-between text-nova-text-muted">
             <span>Trạng thái:</span>
-            <span className="font-semibold text-[#9E5B3B] dark:text-[#D7BA86]">
-              Đang chờ đối soát (awaiting_verification)
+            <span className="font-semibold text-nova-warning">
+              Đang chờ đối soát giao dịch
             </span>
           </div>
-          <div className="pt-2 border-t border-[#E6DDD1] dark:border-[#362E2A] flex justify-between font-semibold text-[#322622] dark:text-[#F4EDE6]">
-            <span>Số tiền cần CK:</span>
-            <span className="text-[#B55841] dark:text-[#D47A63] font-bold tabular-nums">
+          <div className="pt-2 border-t border-nova-border flex justify-between font-semibold text-nova-text">
+            <span>Số tiền cần chuyển:</span>
+            <span className="text-nova-accent font-bold tabular-nums">
               {formatCurrency(totalAmount)}
             </span>
           </div>
@@ -146,7 +146,7 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
 
         <button
           onClick={onBack}
-          className="w-full max-w-[340px] min-h-[48px] py-3.5 bg-[#B55841] hover:bg-[#9E4A35] text-white rounded-2xl text-[14px] font-semibold shadow-sm cursor-pointer transition-colors"
+          className="w-full max-w-[340px] min-h-[48px] py-3.5 bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast rounded-2xl text-[14px] font-semibold shadow-sm cursor-pointer transition-colors"
         >
           Quay lại ứng dụng
         </button>
@@ -155,26 +155,26 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-[#FAF6F0] dark:bg-[#161311] overflow-y-auto no-scrollbar select-none">
+    <div className="flex-1 flex flex-col bg-nova-bg overflow-y-auto no-scrollbar select-none">
       {copyToast && (
-        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-[#322622] dark:bg-[#F4EDE6] text-white dark:text-[#161311] text-xs font-semibold px-4 py-2 rounded-full shadow-xl flex items-center gap-2">
-          <Check className="w-3.5 h-3.5 text-[#8DA892] dark:text-[#4F6B56]" />
+        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-nova-accent text-nova-accent-contrast text-xs font-semibold px-4 py-2 rounded-full shadow-xl flex items-center gap-2">
+          <Check className="w-3.5 h-3.5 text-nova-sage" />
           <span>{copyToast}</span>
         </div>
       )}
 
-      <div className="px-5 pt-3 pb-2.5 flex items-center justify-between border-b border-[#E6DDD1] dark:border-[#362E2A] sticky top-0 bg-[#FAF6F0]/92 dark:bg-[#161311]/92 backdrop-blur-md z-20">
+      <div className="px-5 pt-3 pb-2.5 flex items-center justify-between border-b border-nova-border sticky top-0 bg-nova-bg/92 backdrop-blur-md z-20">
         <button
           onClick={onBack}
           aria-label="Quay lại"
-          className="w-9 h-9 rounded-full bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] shadow-xs flex items-center justify-center text-[#6B5D56] dark:text-[#C5B9B0] cursor-pointer hover:border-[#B55841] transition-colors"
+          className="w-9 h-9 rounded-full bg-nova-surface border border-nova-border shadow-xs flex items-center justify-center text-nova-text-muted cursor-pointer hover:border-nova-accent transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
-        <span className="font-editorial text-[16px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
-          Chuyển khoản & Thanh toán
+        <span className="font-editorial text-[16px] font-semibold text-nova-text">
+          Chuyển khoản và thanh toán
         </span>
-        <div className="flex items-center gap-1 text-[11px] font-semibold text-[#4F6B56] dark:text-[#8DA892]">
+        <div className="flex items-center gap-1 text-[11px] font-semibold text-nova-sage-text">
           <ShieldCheck className="w-4 h-4" />
           <span>Minh bạch</span>
         </div>
@@ -182,11 +182,11 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
 
       <div className="px-5 pt-4 pb-10 space-y-4 max-w-2xl mx-auto w-full">
         {isCartCheckout && onNavigateToOrderInfo && (
-          <div className="p-3.5 rounded-2xl bg-[#F7EAE5] dark:bg-[#35231E] border border-[#EBCDC2] dark:border-[#52352D] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-[#322622] dark:text-[#F4EDE6]">
+          <div className="p-3.5 rounded-2xl bg-nova-accent-soft border border-nova-border flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-nova-text">
             <span>Để ghi nhận đơn hàng giao tận nhà kèm kiểm tra tồn kho, vui lòng xác nhận tại trang Đặt hàng.</span>
             <button
               onClick={onNavigateToOrderInfo}
-              className="px-3.5 min-h-[40px] py-2 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white font-semibold whitespace-nowrap cursor-pointer shrink-0 transition-colors"
+              className="px-3.5 min-h-[40px] py-2 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast font-semibold whitespace-nowrap cursor-pointer shrink-0 transition-colors"
             >
               Mở trang Đặt hàng
             </button>
@@ -195,8 +195,8 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
 
         {!isCartCheckout && (
           <div>
-            <span className="font-editorial text-[14px] font-semibold text-[#322622] dark:text-[#F4EDE6] block mb-2.5">
-              Chọn gói Hội viên Nova Care VIP
+            <span className="font-editorial text-[14px] font-semibold text-nova-text block mb-2.5">
+              Chọn gói hội viên Nova Care VIP
             </span>
             <div className="space-y-2.5">
               {(['yearly', 'monthly', 'lifetime'] as const).map((planKey) => {
@@ -209,18 +209,18 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
                     onClick={() => setSelectedPlan(planKey)}
                     className={`p-3.5 rounded-2xl border cursor-pointer relative transition-colors ${
                       isSelected
-                        ? 'border-[#B55841] bg-[#F7EAE5]/70 dark:bg-[#35231E] ring-1 ring-[#B55841]'
-                        : 'border-[#E6DDD1] dark:border-[#362E2A] bg-[#FFFFFF] dark:bg-[#1E1A17] hover:border-[#D47A63]'
+                        ? 'border-nova-accent bg-nova-accent-soft ring-1 ring-nova-accent'
+                        : 'border-nova-border bg-nova-surface hover:border-nova-taupe'
                     }`}
                   >
                     <div className="flex items-center justify-between gap-2">
                       <div>
-                        <h4 className="text-[13px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                        <h4 className="text-[13px] font-semibold text-nova-text">
                           {info.label}
                         </h4>
-                        <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">{info.desc}</p>
+                        <p className="text-[11px] text-nova-text-muted">{info.desc}</p>
                       </div>
-                      <span className="text-[14px] font-bold text-[#B55841] dark:text-[#D47A63] tabular-nums shrink-0">
+                      <span className="text-[14px] font-bold text-nova-accent tabular-nums shrink-0">
                         {formatCurrency(info.price)}
                       </span>
                     </div>
@@ -232,10 +232,10 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
         )}
 
         {/* Voucher Code */}
-        <div className="p-4 bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A]">
+        <div className="p-4 bg-nova-surface rounded-2xl border border-nova-border">
           <div className="flex items-center gap-2 mb-2.5">
-            <Tag className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />
-            <span className="text-[12.5px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+            <Tag className="w-4 h-4 text-nova-accent" />
+            <span className="text-[12.5px] font-semibold text-nova-text">
               Mã giảm giá (MEBAU2026 / NOVAVIP)
             </span>
           </div>
@@ -245,28 +245,28 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
               value={voucherCode}
               onChange={(e) => setVoucherCode(e.target.value.toUpperCase())}
               placeholder="Nhập mã ưu đãi..."
-              className="flex-1 min-h-[44px] px-3 py-2 bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-[12.5px] font-semibold uppercase text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] focus:outline-none focus:ring-2 focus:ring-[#B55841]/25"
+              className="flex-1 min-h-[44px] px-3 py-2 bg-nova-bg-subtle border border-nova-border rounded-xl text-[12.5px] font-semibold uppercase text-nova-text placeholder:text-nova-text-muted focus:outline-none focus:ring-2 focus:ring-nova-accent/25"
             />
             <button
               onClick={handleApplyVoucher}
-              className="px-4 min-h-[44px] py-2 bg-[#322622] dark:bg-[#B55841] hover:opacity-90 text-white text-[12px] font-semibold rounded-xl cursor-pointer transition-opacity whitespace-nowrap"
+              className="px-4 min-h-[44px] py-2 bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-[12px] font-semibold rounded-xl cursor-pointer transition-colors whitespace-nowrap"
             >
               Áp dụng
             </button>
           </div>
           {voucherApplied && (
-            <p className="mt-2 text-[11px] font-semibold text-[#4F6B56] dark:text-[#8DA892] tabular-nums">
+            <p className="mt-2 text-[11px] font-semibold text-nova-success tabular-nums">
               Đã giảm {formatCurrency(discountAmount)}!
             </p>
           )}
           {voucherError && (
-            <p className="text-[11px] text-[#B55841] dark:text-[#D47A63] mt-1.5">{voucherError}</p>
+            <p className="text-[11px] text-nova-danger mt-1.5">{voucherError}</p>
           )}
         </div>
 
         {/* Payment Methods */}
         <div>
-          <span className="font-editorial text-[14px] font-semibold text-[#322622] dark:text-[#F4EDE6] block mb-2.5">
+          <span className="font-editorial text-[14px] font-semibold text-nova-text block mb-2.5">
             Phương thức thanh toán
           </span>
           <div className="grid grid-cols-2 gap-2.5">
@@ -275,41 +275,41 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
               onClick={() => setPaymentMethod('vietqr')}
               className={`p-3.5 rounded-2xl border text-left cursor-pointer transition-colors ${
                 paymentMethod === 'vietqr'
-                  ? 'border-[#B55841] bg-[#F7EAE5]/70 dark:bg-[#35231E] ring-1 ring-[#B55841]'
-                  : 'border-[#E6DDD1] dark:border-[#362E2A] bg-[#FFFFFF] dark:bg-[#1E1A17]'
+                  ? 'border-nova-accent bg-nova-accent-soft ring-1 ring-nova-accent'
+                  : 'border-nova-border bg-nova-surface'
               }`}
             >
-              <span className="font-semibold text-[11.5px] text-[#263E35] dark:text-[#8DA892] bg-[#EBF1EC] dark:bg-[#1E2922] px-2 py-0.5 rounded-md inline-block mb-1.5">
+              <span className="font-semibold text-[11.5px] text-nova-sage-text bg-nova-sage-soft px-2 py-0.5 rounded-md inline-block mb-1.5">
                 VietQR
               </span>
-              <span className="text-[12.5px] font-semibold text-[#322622] dark:text-[#F4EDE6] block">
+              <span className="text-[12.5px] font-semibold text-nova-text block">
                 Chuyển khoản 24/7
               </span>
-              <span className="text-[10px] text-[#786962] dark:text-[#B5A89F]">
-                Đối soát thủ công / Quản trị viên
+              <span className="text-[10px] text-nova-text-muted">
+                Đối soát bởi quản trị viên
               </span>
             </button>
 
             {[
               { id: 'momo', label: 'Ví MoMo' },
-              { id: 'applepay', label: 'Apple / ZaloPay' },
-              { id: 'card', label: 'Thẻ Visa / Master' },
+              { id: 'applepay', label: 'Ví ZaloPay' },
+              { id: 'card', label: 'Thẻ thanh toán quốc tế' },
             ].map((gw) => (
               <div
                 key={gw.id}
-                className="p-3.5 rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] bg-[#F2ECE3]/70 dark:bg-[#231E1B] opacity-70 text-left"
+                className="p-3.5 rounded-2xl border border-nova-border bg-nova-bg-subtle opacity-75 text-left"
               >
                 <div className="flex items-center justify-between mb-1.5">
-                  <CreditCard className="w-4 h-4 text-[#786962] dark:text-[#B5A89F]" />
-                  <span className="text-[9.5px] font-semibold text-[#B55841] dark:text-[#D47A63]">
-                    Chưa bật
+                  <CreditCard className="w-4 h-4 text-nova-text-muted" />
+                  <span className="text-[9.5px] font-semibold text-nova-text-muted">
+                    Tạm ngưng
                   </span>
                 </div>
-                <span className="text-[12px] font-semibold text-[#322622] dark:text-[#F4EDE6] block">
+                <span className="text-[12px] font-semibold text-nova-text block">
                   {gw.label}
                 </span>
-                <span className="text-[9.5px] text-[#786962] dark:text-[#B5A89F] break-all">
-                  Thiếu PAYMENT_GATEWAY_SECRET_KEY
+                <span className="text-[9.5px] text-nova-text-muted">
+                  Hiện chưa mở thanh toán trực tuyến
                 </span>
               </div>
             ))}
@@ -318,22 +318,22 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
 
         {/* VietQR Details */}
         {paymentMethod === 'vietqr' && (
-          <div className="p-4 bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3.5 nova-card-shadow">
-            <div className="flex items-center justify-between border-b border-[#E6DDD1] dark:border-[#362E2A] pb-2.5">
+          <div className="p-4 bg-nova-surface rounded-3xl border border-nova-border space-y-3.5 nova-card-shadow">
+            <div className="flex items-center justify-between border-b border-nova-border pb-2.5">
               <div className="flex items-center gap-2">
-                <QrCode className="w-5 h-5 text-[#B55841] dark:text-[#D47A63]" />
-                <span className="font-editorial text-[14px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
-                  Mã VietQR Chuyển khoản
+                <QrCode className="w-5 h-5 text-nova-accent" />
+                <span className="font-editorial text-[14px] font-semibold text-nova-text">
+                  Mã VietQR chuyển khoản
                 </span>
               </div>
-              <div className="flex items-center gap-1 text-[11.5px] font-semibold text-[#B55841] dark:text-[#D47A63] tabular-nums">
+              <div className="flex items-center gap-1 text-[11.5px] font-semibold text-nova-accent tabular-nums">
                 <Clock className="w-3.5 h-3.5" />
                 <span>{formatTimer(timeLeft)}</span>
               </div>
             </div>
 
             <div className="flex flex-col items-center">
-              <div className="p-2.5 bg-white border border-[#E6DDD1] rounded-2xl shadow-xs max-w-[260px]">
+              <div className="p-2.5 bg-[#FAF9F6] border border-nova-border rounded-2xl shadow-xs max-w-[260px]">
                 <NovaImage
                   src={BANK_TRANSFER_CONFIG.qrImageUrl}
                   alt="Mã VietQR Agribank"
@@ -341,57 +341,57 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
                   className="w-56 h-auto object-contain rounded-xl"
                 />
               </div>
-              <span className="text-[11px] text-[#786962] dark:text-[#B5A89F] mt-2 text-center">
+              <span className="text-[11px] text-nova-text-muted mt-2 text-center">
                 {BANK_TRANSFER_CONFIG.supportApps}
               </span>
             </div>
 
-            <div className="space-y-2 bg-[#FAF6F0] dark:bg-[#231E1B] p-3.5 rounded-2xl text-[12px] border border-[#E6DDD1] dark:border-[#362E2A]">
+            <div className="space-y-2 bg-nova-bg-subtle p-3.5 rounded-2xl text-[12px] border border-nova-border">
               <div className="flex items-center justify-between">
-                <span className="text-[#786962] dark:text-[#B5A89F]">Ngân hàng:</span>
-                <span className="font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                <span className="text-nova-text-muted">Ngân hàng:</span>
+                <span className="font-semibold text-nova-text">
                   {BANK_TRANSFER_CONFIG.bankShortName}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[#786962] dark:text-[#B5A89F]">Chủ tài khoản:</span>
-                <span className="font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                <span className="text-nova-text-muted">Chủ tài khoản:</span>
+                <span className="font-semibold text-nova-text">
                   {BANK_TRANSFER_CONFIG.accountHolder}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[#786962] dark:text-[#B5A89F]">Số tài khoản:</span>
+                <span className="text-nova-text-muted">Số tài khoản:</span>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-mono font-bold text-[#B55841] dark:text-[#D47A63] text-[15px] tabular-nums">
+                  <span className="font-mono font-bold text-nova-accent text-[15px] tabular-nums">
                     {BANK_TRANSFER_CONFIG.accountNumber}
                   </span>
                   <button
                     onClick={() => handleCopy(BANK_TRANSFER_CONFIG.accountNumber, 'Số tài khoản')}
-                    className="p-1.5 rounded-lg bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] cursor-pointer"
+                    className="p-1.5 rounded-lg bg-nova-surface border border-nova-border cursor-pointer"
                     aria-label="Sao chép số tài khoản"
                   >
-                    <Copy className="w-3.5 h-3.5 text-[#B55841] dark:text-[#D47A63]" />
+                    <Copy className="w-3.5 h-3.5 text-nova-accent" />
                   </button>
                 </div>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-[#786962] dark:text-[#B5A89F]">Nội dung CK:</span>
+                <span className="text-nova-text-muted">Nội dung chuyển khoản:</span>
                 <div className="flex items-center gap-1.5">
-                  <span className="font-mono font-bold text-[#322622] dark:text-[#F4EDE6]">
+                  <span className="font-mono font-bold text-nova-text">
                     {referenceCode}
                   </span>
                   <button
-                    onClick={() => handleCopy(referenceCode, 'Nội dung CK')}
-                    className="p-1.5 rounded-lg bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] cursor-pointer text-[#6B5D56] dark:text-[#C5B9B0]"
+                    onClick={() => handleCopy(referenceCode, 'Nội dung chuyển khoản')}
+                    className="p-1.5 rounded-lg bg-nova-surface border border-nova-border cursor-pointer text-nova-text-muted"
                     aria-label="Sao chép nội dung chuyển khoản"
                   >
                     <Copy className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
-              <div className="flex items-center justify-between border-t border-[#E6DDD1] dark:border-[#362E2A] pt-2">
-                <span className="text-[#786962] dark:text-[#B5A89F]">Số tiền:</span>
-                <span className="font-bold text-[#B55841] dark:text-[#D47A63] text-[15px] tabular-nums">
+              <div className="flex items-center justify-between border-t border-nova-border pt-2">
+                <span className="text-nova-text-muted">Số tiền:</span>
+                <span className="font-bold text-nova-accent text-[15px] tabular-nums">
                   {formatCurrency(totalAmount)}
                 </span>
               </div>
@@ -399,10 +399,10 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
           </div>
         )}
 
-        <div className="p-3.5 rounded-2xl bg-[#F2ECE3] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] flex items-start gap-2 text-[11px] text-[#6B5D56] dark:text-[#C5B9B0]">
-          <AlertCircle className="w-4 h-4 text-[#B55841] dark:text-[#D47A63] shrink-0 mt-0.5" />
+        <div className="p-3.5 rounded-2xl bg-nova-bg-subtle border border-nova-border flex items-start gap-2 text-[11px] text-nova-text-muted">
+          <AlertCircle className="w-4 h-4 text-nova-accent shrink-0 mt-0.5" />
           <span>
-            Không tự động kích hoạt thanh toán khi chưa cấu hình webhook ngân hàng hoặc cổng thanh toán thật. Mọi giao dịch VietQR sẽ chờ đối soát minh bạch.
+            Mọi giao dịch chuyển khoản VietQR sẽ được đối soát minh bạch bởi quản trị viên trước khi kích hoạt gói hội viên.
           </span>
         </div>
 
@@ -414,12 +414,12 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
               setIsAwaitingVerification(true);
             }
           }}
-          className="w-full min-h-[48px] py-3.5 bg-[#B55841] hover:bg-[#9E4A35] text-white rounded-2xl text-[14.5px] font-semibold shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-colors"
+          className="w-full min-h-[48px] py-3.5 bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast rounded-2xl text-[14.5px] font-semibold shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-colors"
         >
           <Lock className="w-4 h-4" />
           <span className="tabular-nums">
             {isCartCheckout
-              ? 'Tiếp tục tạo đơn tại Trang Đặt Hàng'
+              ? 'Tiếp tục tạo đơn tại trang Đặt hàng'
               : `Gửi thông báo đã chuyển khoản (${formatCurrency(totalAmount)})`}
           </span>
         </button>
@@ -427,4 +427,3 @@ export const PaymentScreen: React.FC<PaymentScreenProps> = ({
     </div>
   );
 };
-

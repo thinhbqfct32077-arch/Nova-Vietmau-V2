@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#FAF6F0" />
+    <meta name="theme-color" content="#F5F2EB" />
     <meta name="mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
@@ -13,13 +13,34 @@
     <meta property="og:description" content="Không gian chăm sóc mẹ bầu, thai kỳ và em bé cao cấp mang bản sắc Việt Nam với lộ trình 40 tuần, nhật ký sức khỏe, thư viện y khoa và trợ lý đồng hành Nova." />
     <meta property="og:type" content="website" />
     <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      (function () {
+        try {
+          var mode = localStorage.getItem('nova_mom_theme_mode_v1');
+          var resolvedMode = mode === 'light' || mode === 'dark' || mode === 'system' ? mode : 'system';
+          var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          var effective = resolvedMode === 'system' ? (prefersDark ? 'dark' : 'light') : resolvedMode;
+          var root = document.documentElement;
+          root.classList.toggle('dark', effective === 'dark');
+          root.setAttribute('data-theme', effective);
+          root.style.colorScheme = effective;
+          var metaTheme = document.querySelector('meta[name="theme-color"]');
+          if (metaTheme) {
+            metaTheme.setAttribute('content', effective === 'dark' ? '#1C1B18' : '#F5F2EB');
+          }
+          var fontScale = localStorage.getItem('nova_mom_font_scale_v1');
+          if (fontScale === 'small' || fontScale === 'normal' || fontScale === 'large') {
+            root.setAttribute('data-font-scale', fontScale);
+          }
+        } catch (e) {}
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;1,400&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&display=swap" rel="stylesheet">
   </head>
-  <body class="bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] antialiased selection:bg-[#F2ECE3] selection:text-[#B55841]">
+  <body class="bg-nova-bg text-nova-text antialiased selection:bg-nova-accent-soft selection:text-nova-accent">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

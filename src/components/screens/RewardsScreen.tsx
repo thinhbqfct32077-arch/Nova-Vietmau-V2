@@ -53,7 +53,7 @@ export const RewardsScreen: React.FC<RewardsScreenProps> = ({
         particleCount: 45,
         spread: 60,
         origin: { y: 0.65 },
-        colors: ['#B55841', '#C4A46B', '#6D8572', '#F6EFE2'],
+        colors: ['#51483F', '#A3A795', '#B8AA98', '#EDE7DE'],
       });
     } catch {}
   };
@@ -61,51 +61,51 @@ export const RewardsScreen: React.FC<RewardsScreenProps> = ({
   const unlockedCount = badges.filter((b) => b.unlocked).length;
 
   return (
-    <div className="flex-1 flex flex-col bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] overflow-y-auto no-scrollbar pb-16">
+    <div className="flex-1 flex flex-col bg-nova-bg text-nova-text overflow-y-auto no-scrollbar pb-16">
       {toast && (
-        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-[#322622] dark:bg-[#F4EDE6] text-white dark:text-[#161311] text-xs font-bold px-4 py-2 rounded-full shadow-xl">
+        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-nova-text text-nova-bg text-xs font-bold px-4 py-2 rounded-full shadow-xl">
           {toast}
         </div>
       )}
 
-      <header className="px-4 sm:px-6 pt-3 pb-3 flex items-center justify-between border-b border-[#E6DDD1] dark:border-[#362E2A] bg-[#FAF6F0]/95 dark:bg-[#161311]/95 backdrop-blur-md sticky top-0 z-20">
+      <header className="px-4 sm:px-6 pt-3 pb-3 flex items-center justify-between border-b border-nova-border bg-nova-bg/95 backdrop-blur-md sticky top-0 z-20">
         <div className="flex items-center gap-2.5 min-w-0">
           <button
             onClick={onBack}
-            className="w-10 h-10 rounded-full bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-[#6B5D56] dark:text-[#C5B9B0] cursor-pointer shrink-0 hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B]"
+            className="w-10 h-10 rounded-full bg-nova-surface border border-nova-border flex items-center justify-center text-nova-text-muted cursor-pointer shrink-0 hover:bg-nova-bg-subtle"
             aria-label="Quay lại"
           >
             <ArrowLeft className="w-4.5 h-4.5" />
           </button>
           <div className="min-w-0">
-            <h1 className="font-editorial text-[17px] font-bold text-[#322622] dark:text-[#F4EDE6] leading-tight flex items-center gap-1.5 truncate">
-              <Award className="w-4.5 h-4.5 text-[#C4A46B] shrink-0" />
+            <h1 className="font-editorial text-[17px] font-bold text-nova-text leading-tight flex items-center gap-1.5 truncate">
+              <Award className="w-4.5 h-4.5 text-nova-warning shrink-0" />
               <span>Huy hiệu nhẹ nhàng</span>
             </h1>
-            <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] truncate">Ghi nhận từng bước chăm sóc mẹ bầu đầy yêu thương</p>
+            <p className="text-[11px] text-nova-text-muted truncate">Ghi nhận từng bước chăm sóc mẹ bầu đầy yêu thương</p>
           </div>
         </div>
       </header>
 
       <div className="px-4 sm:px-6 pt-4 space-y-4 max-w-4xl mx-auto w-full">
         {/* Opt-out / Control Card */}
-        <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h2 className="font-editorial text-[16px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5">
-              <Heart className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />
+            <h2 className="font-editorial text-[16px] font-bold text-nova-text flex items-center gap-1.5">
+              <Heart className="w-4 h-4 text-nova-accent" />
               <span>Không áp lực thành tích</span>
             </h2>
-            <p className="text-xs text-[#6B5D56] dark:text-[#C5B9B0] mt-0.5 leading-relaxed">
+            <p className="text-xs text-nova-text-muted mt-0.5 leading-relaxed">
               Huy hiệu chỉ là lời động viên dịu dàng — mẹ có thể tắt hoàn toàn bất cứ lúc nào mà không ảnh hưởng dữ liệu thai kỳ.
             </p>
           </div>
           <button
             type="button"
             onClick={handleToggleOptOut}
-            className={`min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer shrink-0 ${
+            className={`min-h-[40px] px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer shrink-0 transition-colors ${
               rewardsEnabled
-                ? 'bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] border border-[#EBCDC2] dark:border-[#52352D]'
-                : 'bg-[#322622] dark:bg-[#F4EDE6] text-white dark:text-[#161311]'
+                ? 'bg-nova-accent-soft text-nova-accent border border-nova-border'
+                : 'bg-nova-text text-nova-bg'
             }`}
           >
             {rewardsEnabled ? 'Tạm tắt huy hiệu' : 'Bật lại huy hiệu'}
@@ -113,27 +113,27 @@ export const RewardsScreen: React.FC<RewardsScreenProps> = ({
         </section>
 
         {!rewardsEnabled ? (
-          <div className="p-8 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] text-center space-y-2">
-            <p className="font-editorial text-base font-bold text-[#322622] dark:text-[#F4EDE6]">
+          <div className="p-8 bg-nova-surface rounded-3xl border border-nova-border text-center space-y-2">
+            <p className="font-editorial text-base font-bold text-nova-text">
               Tính năng huy hiệu đang được tạm ẩn theo lựa chọn của mẹ
             </p>
-            <p className="text-xs text-[#786962] dark:text-[#B5A89F]">
-              Mẹ vẫn có thể sử dụng đầy đủ nhật ký, lịch khám, checklist và mọi tiện ích thai kỳ bình thường.
+            <p className="text-xs text-nova-text-muted">
+              Mẹ vẫn có thể sử dụng đầy đủ nhật ký, lịch khám, sổ chuẩn bị và mọi tiện ích thai kỳ bình thường.
             </p>
           </div>
         ) : (
           <>
-            <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-[#F6EFE2] to-[#F7EAE5] dark:from-[#2F281C] dark:to-[#35231E] border border-[#E5D4B3] dark:border-[#4A3F2B] flex items-center justify-between gap-3">
+            <div className="p-4 sm:p-5 rounded-3xl bg-nova-accent-soft border border-nova-border flex items-center justify-between gap-3">
               <div>
-                <p className="text-xs font-bold text-[#786962] dark:text-[#B5A89F]">Dấu ấn đã ghi nhận</p>
-                <p className="text-xl font-extrabold text-[#322622] dark:text-[#F4EDE6] mt-0.5 tabular-nums">
+                <p className="text-xs font-bold text-nova-text-muted">Dấu ấn đã ghi nhận</p>
+                <p className="text-xl font-extrabold text-nova-text mt-0.5 tabular-nums">
                   {unlockedCount} / {badges.length} huy hiệu
                 </p>
               </div>
               {unlockedCount > 0 && (
                 <button
                   onClick={handleCelebrate}
-                  className="min-h-[40px] px-3.5 py-2 rounded-xl bg-[#9E5B3B] hover:bg-[#8A4E32] text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-xs whitespace-nowrap"
+                  className="min-h-[40px] px-3.5 py-2 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-xs whitespace-nowrap transition-colors"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>Gửi lời chúc nhẹ</span>
@@ -147,16 +147,16 @@ export const RewardsScreen: React.FC<RewardsScreenProps> = ({
                   key={badge.id}
                   className={`p-4 rounded-3xl border transition-colors ${
                     badge.unlocked
-                      ? 'bg-white dark:bg-[#1E1A17] border-[#E5D4B3] dark:border-[#4A3F2B] shadow-xs'
-                      : 'bg-[#FAF6F0]/80 dark:bg-[#1B1715] border-[#E6DDD1] dark:border-[#362E2A] opacity-80'
+                      ? 'bg-nova-surface border-nova-warning-border shadow-xs'
+                      : 'bg-nova-bg-subtle border-nova-border opacity-80'
                   }`}
                 >
                   <div className="flex items-start gap-3">
                     <div
                       className={`w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 ${
                         badge.unlocked
-                          ? 'bg-[#F6EFE2] dark:bg-[#2F281C] text-[#9E5B3B] dark:text-[#D7BA86] border border-[#E5D4B3] dark:border-[#4A3F2B]'
-                          : 'bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] dark:text-[#B5A89F]'
+                          ? 'bg-nova-warning-soft text-nova-warning border border-nova-warning-border'
+                          : 'bg-nova-surface text-nova-text-muted border border-nova-border'
                       }`}
                     >
                       {badge.unlocked ? (
@@ -166,13 +166,13 @@ export const RewardsScreen: React.FC<RewardsScreenProps> = ({
                       )}
                     </div>
                     <div className="min-w-0">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#786962] dark:text-[#B5A89F]">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-nova-text-muted">
                         {badge.unlocked ? 'Đã mở khóa' : 'Chưa mở khóa'}
                       </span>
-                      <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] mt-0.5">
+                      <h3 className="font-editorial text-[15px] font-bold text-nova-text mt-0.5">
                         {badge.title}
                       </h3>
-                      <p className="text-xs text-[#6B5D56] dark:text-[#C5B9B0] mt-1 leading-relaxed">{badge.description}</p>
+                      <p className="text-xs text-nova-text-muted mt-1 leading-relaxed">{badge.description}</p>
                     </div>
                   </div>
                 </div>

@@ -28,7 +28,8 @@ import {
   INITIAL_CHAT_MESSAGES,
 } from '../data/mockData';
 
-export type ThemeMode = 'light' | 'dark';
+export type ThemeMode = 'light' | 'dark' | 'system';
+export type EffectiveTheme = 'light' | 'dark';
 export type FontScale = 'small' | 'normal' | 'large';
 
 const STORAGE_KEYS = {
@@ -1128,20 +1129,46 @@ export const storageService = {
   getThemeMode(): ThemeMode {
     try {
       const val = localStorage.getItem(STORAGE_KEYS.THEME_MODE);
-      return val === 'dark' ? 'dark' : 'light';
+      if (val === 'light' || val === 'dark' || val === 'system') return val;
+      return 'system';
     } catch {
-      return 'light';
+      return 'system';
     }
+  },
+
+  resolveEffectiveTheme(mode?: ThemeMode): EffectiveTheme {
+    const targetMode = mode ?? this.getThemeMode();
+    if (targetMode === 'dark' || targetMode === 'light') return targetMode;
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    return 'light';
+  },
+
+  applyThemeToDocument(mode?: ThemeMode): EffectiveTheme {
+    const targetMode = mode ?? this.getThemeMode();
+    const effective = this.resolveEffectiveTheme(targetMode);
+    if (typeof document !== 'undefined') {
+      const root = document.documentElement;
+      root.classList.toggle('dark', effective === 'dark');
+      root.setAttribute('data-theme', effective);
+      root.style.colorScheme = effective;
+      const metaTheme = document.querySelector('meta[name="theme-color"]');
+      if (metaTheme) {
+        metaTheme.setAttribute('content', effective === 'dark' ? '#1C1B18' : '#F5F2EB');
+      }
+    }
+    return effective;
   },
 
   setThemeMode(theme: ThemeMode): void {
     try {
       localStorage.setItem(STORAGE_KEYS.THEME_MODE, theme);
-      if (typeof document !== 'undefined') {
-        document.documentElement.classList.toggle('dark', theme === 'dark');
-      }
+      const effective = this.applyThemeToDocument(theme);
       if (typeof window !== 'undefined') {
-        window.dispatchEvent(new CustomEvent('nova_theme_change', { detail: { theme } }));
+        window.dispatchEvent(
+          new CustomEvent('nova_theme_change', { detail: { theme, effective } })
+        );
       }
     } catch {}
   },

@@ -33,6 +33,55 @@ interface AdminDashboardScreenProps {
   onBack: () => void;
 }
 
+const ROLE_LABELS: Record<string, string> = {
+  user: 'Thành viên',
+  moderator: 'Điều phối viên',
+  admin: 'Quản trị viên',
+};
+
+const CONTENT_STATUS_LABELS: Record<string, string> = {
+  approved: 'Đã duyệt',
+  pending: 'Chờ duyệt',
+  rejected: 'Từ chối',
+  hidden: 'Đã ẩn',
+};
+
+const REPORT_TARGET_LABELS: Record<string, string> = {
+  post: 'Bài viết',
+  video: 'Video',
+  comment: 'Bình luận',
+};
+
+const REPORT_STATUS_LABELS: Record<string, string> = {
+  open: 'Đang mở',
+  resolved_removed: 'Đã gỡ nội dung',
+  dismissed: 'Đã bỏ qua',
+};
+
+const ORDER_STATUS_LABELS: Record<string, string> = {
+  pending: 'Chờ xác nhận',
+  awaiting_verification: 'Chờ xác minh chuyển khoản',
+  confirmed: 'Đã xác nhận',
+  shipping: 'Đang giao',
+  delivered: 'Đã giao',
+  cancelled: 'Đã hủy',
+};
+
+const PAYMENT_STATUS_LABELS: Record<string, string> = {
+  unpaid: 'Chưa thanh toán',
+  awaiting_verification: 'Chờ xác minh',
+  verified: 'Đã xác minh',
+  paid: 'Đã thanh toán',
+  failed: 'Thất bại',
+};
+
+const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  cod: 'Thanh toán khi nhận hàng',
+  vietqr: 'Chuyển khoản VietQR',
+  momo: 'Ví MoMo',
+  zalopay: 'Ví ZaloPay',
+};
+
 export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user, onBack }) => {
   const isStaff = user.role === 'admin' || user.role === 'moderator';
   const isAdmin = user.role === 'admin';
@@ -103,17 +152,17 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
 
   if (!isStaff) {
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-6 bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] text-center">
-        <ShieldAlert className="w-12 h-12 text-[#B55841] dark:text-[#D47A63] mb-3" />
-        <h2 className="font-editorial text-lg font-bold text-[#322622] dark:text-[#F4EDE6]">
-          Không có quyền truy cập (403)
+      <div className="flex-1 flex flex-col items-center justify-center p-6 bg-nova-bg text-nova-text text-center">
+        <ShieldAlert className="w-12 h-12 text-nova-accent mb-3" />
+        <h2 className="font-editorial text-lg font-bold text-nova-text">
+          Không có quyền truy cập
         </h2>
-        <p className="text-xs text-[#786962] dark:text-[#B5A89F] mt-1.5 max-w-xs leading-relaxed">
-          Bảng điều khiển này chỉ dành cho Quản trị viên hoặc Kiểm duyệt viên nội dung.
+        <p className="text-xs text-nova-text-muted mt-1.5 max-w-xs leading-relaxed">
+          Bảng điều khiển này chỉ dành cho Quản trị viên hoặc Điều phối viên kiểm duyệt nội dung.
         </p>
         <button
           onClick={onBack}
-          className="mt-4 min-h-[44px] px-5 py-2.5 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-xs font-bold cursor-pointer transition-colors"
+          className="mt-4 min-h-[44px] px-5 py-2.5 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-bold cursor-pointer transition-colors"
         >
           Quay lại
         </button>
@@ -122,44 +171,44 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
   }
 
   return (
-    <div className="flex-1 flex flex-col bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] overflow-y-auto no-scrollbar pb-16">
+    <div className="flex-1 flex flex-col bg-nova-bg text-nova-text overflow-y-auto no-scrollbar pb-16">
       {toast && (
-        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-[#322622] dark:bg-[#F4EDE6] text-white dark:text-[#161311] text-xs font-bold px-4 py-2.5 rounded-full shadow-xl">
+        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-nova-text text-nova-bg text-xs font-bold px-4 py-2.5 rounded-full shadow-xl">
           {toast}
         </div>
       )}
 
-      <header className="px-4 sm:px-6 pt-3 pb-3 flex items-center justify-between gap-3 border-b border-[#E6DDD1] dark:border-[#362E2A] bg-[#FAF6F0]/95 dark:bg-[#161311]/95 backdrop-blur-md sticky top-0 z-20">
+      <header className="px-4 sm:px-6 pt-3 pb-3 flex items-center justify-between gap-3 border-b border-nova-border bg-nova-bg/95 backdrop-blur-md sticky top-0 z-20">
         <div className="flex items-center gap-2.5 min-w-0">
           <button
             onClick={onBack}
-            className="w-10 h-10 rounded-full bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-[#6B5D56] dark:text-[#C5B9B0] hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B] cursor-pointer shrink-0 transition-colors"
+            className="w-10 h-10 rounded-full bg-nova-surface border border-nova-border flex items-center justify-center text-nova-text-muted hover:bg-nova-bg-subtle cursor-pointer shrink-0 transition-colors"
             aria-label="Quay lại"
           >
             <ArrowLeft className="w-4.5 h-4.5" />
           </button>
           <div className="min-w-0">
-            <h1 className="font-editorial text-[17px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5 truncate">
-              <ShieldCheck className="w-4.5 h-4.5 text-[#B55841] dark:text-[#D47A63] shrink-0" />
-              <span>Quản trị & Kiểm duyệt</span>
+            <h1 className="font-editorial text-[17px] font-bold text-nova-text flex items-center gap-1.5 truncate">
+              <ShieldCheck className="w-4.5 h-4.5 text-nova-accent shrink-0" />
+              <span>Quản trị và kiểm duyệt</span>
             </h1>
-            <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] truncate">
-              Vai trò: {user.role === 'admin' ? 'Quản trị viên (Admin)' : 'Kiểm duyệt viên (Moderator)'}
+            <p className="text-[11px] text-nova-text-muted truncate">
+              Vai trò: {ROLE_LABELS[user.role || 'moderator'] || 'Điều phối viên'}
             </p>
           </div>
         </div>
         <button
           onClick={loadOverview}
-          className="min-h-[40px] px-3.5 py-2 rounded-xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-xs font-bold text-[#322622] dark:text-[#F4EDE6] hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B] inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 transition-colors"
+          className="min-h-[40px] px-3.5 py-2 rounded-xl bg-nova-surface border border-nova-border text-xs font-bold text-nova-text hover:bg-nova-bg-subtle inline-flex items-center gap-1.5 cursor-pointer whitespace-nowrap shrink-0 transition-colors"
         >
-          <RefreshCw className={`w-3.5 h-3.5 text-[#B55841] dark:text-[#D47A63] ${loading ? 'animate-spin' : ''}`} />
+          <RefreshCw className={`w-3.5 h-3.5 text-nova-accent ${loading ? 'animate-spin' : ''}`} />
           <span>Làm mới</span>
         </button>
       </header>
 
       <div className="px-4 sm:px-6 pt-4 space-y-4 max-w-6xl mx-auto w-full">
         {error && (
-          <div className="p-3.5 rounded-2xl bg-[#F7EAE5] dark:bg-[#35231E] border border-[#EBCDC2] dark:border-[#52352D] text-xs text-[#A9422D] dark:text-[#E5927D]">
+          <div className="p-3.5 rounded-2xl bg-nova-danger-soft border border-nova-danger-border text-xs text-nova-danger">
             {error}
           </div>
         )}
@@ -167,22 +216,22 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
         {/* Stats Strip */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            { label: 'Thành viên', value: stats.usersCount, icon: Users, accent: 'text-[#4F6B56] dark:text-[#8DA892]' },
-            { label: 'Video chờ duyệt', value: stats.pendingVideosCount, icon: Video, accent: 'text-[#9E5B3B] dark:text-[#D7BA86]' },
-            { label: 'Báo cáo đang mở', value: stats.openReportsCount, icon: Flag, accent: 'text-[#B55841] dark:text-[#D47A63]' },
-            { label: 'Đơn hàng chờ xử lý', value: stats.pendingOrdersCount, icon: ShoppingBag, accent: 'text-[#B55841] dark:text-[#D47A63]' },
+            { label: 'Thành viên', value: stats.usersCount, icon: Users, accent: 'text-nova-sage-text' },
+            { label: 'Video chờ duyệt', value: stats.pendingVideosCount, icon: Video, accent: 'text-nova-warning' },
+            { label: 'Báo cáo đang mở', value: stats.openReportsCount, icon: Flag, accent: 'text-nova-accent' },
+            { label: 'Đơn hàng chờ xử lý', value: stats.pendingOrdersCount, icon: ShoppingBag, accent: 'text-nova-accent' },
           ].map((s) => {
             const Icon = s.icon;
             return (
               <div
                 key={s.label}
-                className="p-3.5 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] shadow-xs"
+                className="p-3.5 rounded-2xl bg-nova-surface border border-nova-border shadow-xs"
               >
-                <div className="flex items-center justify-between text-xs text-[#786962] dark:text-[#B5A89F]">
+                <div className="flex items-center justify-between text-xs text-nova-text-muted">
                   <span>{s.label}</span>
                   <Icon className={`w-4 h-4 shrink-0 ${s.accent}`} />
                 </div>
-                <p className="font-editorial text-2xl font-bold text-[#322622] dark:text-[#F4EDE6] mt-1 tabular-nums">
+                <p className="font-editorial text-2xl font-bold text-nova-text mt-1 tabular-nums">
                   {s.value}
                 </p>
               </div>
@@ -193,18 +242,18 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
         {/* Navigation Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
           {[
-            { id: 'moderation' as const, label: 'Kiểm duyệt & Báo cáo' },
-            { id: 'shop' as const, label: `Đơn hàng & Kho (${orders.length})` },
+            { id: 'moderation' as const, label: 'Kiểm duyệt và báo cáo' },
+            { id: 'shop' as const, label: `Đơn hàng và kho (${orders.length})` },
             ...(isAdmin ? [{ id: 'users' as const, label: `Phân quyền (${usersList.length})` }] : []),
-            { id: 'broadcast' as const, label: 'Thông báo & Nhật ký' },
+            { id: 'broadcast' as const, label: 'Thông báo và nhật ký' },
           ].map((t) => (
             <button
               key={t.id}
               onClick={() => setActiveTab(t.id)}
               className={`min-h-[40px] px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer border transition-colors ${
                 activeTab === t.id
-                  ? 'bg-[#B55841] text-white border-[#B55841]'
-                  : 'bg-white dark:bg-[#1E1A17] text-[#6B5D56] dark:text-[#C5B9B0] border-[#E6DDD1] dark:border-[#362E2A] hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B]'
+                  ? 'bg-nova-accent text-nova-accent-contrast border-nova-accent'
+                  : 'bg-nova-surface text-nova-text-muted border-nova-border hover:bg-nova-bg-subtle'
               }`}
             >
               {t.label}
@@ -216,26 +265,26 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
         {activeTab === 'moderation' && (
           <div className="space-y-4">
             {/* Reports Queue */}
-            <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3 shadow-xs">
-              <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-                <Flag className="w-4 h-4 text-[#B55841] dark:text-[#D47A63] shrink-0" />
-                <span className="tabular-nums">Báo cáo vi phạm cộng đồng / video ({reports.filter((r) => r.status === 'open').length} đang mở)</span>
+            <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3 shadow-xs">
+              <h3 className="font-editorial text-[15px] font-bold text-nova-text flex items-center gap-2">
+                <Flag className="w-4 h-4 text-nova-accent shrink-0" />
+                <span className="tabular-nums">Báo cáo vi phạm cộng đồng và video ({reports.filter((r) => r.status === 'open').length} đang mở)</span>
               </h3>
               {reports.length === 0 ? (
-                <p className="text-xs text-[#786962] dark:text-[#B5A89F]">Chưa có báo cáo vi phạm nào.</p>
+                <p className="text-xs text-nova-text-muted">Chưa có báo cáo vi phạm nào.</p>
               ) : (
                 <div className="space-y-2.5">
                   {reports.map((rep) => (
                     <div
                       key={rep.id}
-                      className="p-3.5 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
+                      className="p-3.5 rounded-2xl bg-nova-bg border border-nova-border flex flex-col sm:flex-row sm:items-center justify-between gap-2.5"
                     >
                       <div className="min-w-0">
-                        <span className="text-[10.5px] font-bold uppercase tracking-wide text-[#B55841] dark:text-[#D47A63]">
-                          {rep.targetType} · {rep.status}
+                        <span className="text-[10.5px] font-bold uppercase tracking-wide text-nova-accent">
+                          {REPORT_TARGET_LABELS[rep.targetType] || rep.targetType} · {REPORT_STATUS_LABELS[rep.status] || rep.status}
                         </span>
-                        <p className="text-xs font-bold text-[#322622] dark:text-[#F4EDE6] truncate mt-0.5">{rep.targetTitle}</p>
-                        <p className="text-[11px] text-[#6B5D56] dark:text-[#C5B9B0]">
+                        <p className="text-xs font-bold text-nova-text truncate mt-0.5">{rep.targetTitle}</p>
+                        <p className="text-[11px] text-nova-text-muted">
                           Lý do: {rep.reason} · Báo bởi {rep.reporterName}
                         </p>
                       </div>
@@ -247,7 +296,7 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                               notify('Đã gỡ nội dung vi phạm.');
                               loadOverview();
                             }}
-                            className="min-h-[36px] px-3 py-1.5 rounded-xl bg-[#A9422D] hover:bg-[#933825] text-white text-[11px] font-bold cursor-pointer whitespace-nowrap transition-colors"
+                            className="min-h-[36px] px-3 py-1.5 rounded-xl bg-nova-danger hover:opacity-90 text-[#FAF9F6] text-[11px] font-bold cursor-pointer whitespace-nowrap transition-opacity"
                           >
                             Gỡ nội dung
                           </button>
@@ -257,7 +306,7 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                               notify('Đã bỏ qua báo cáo.');
                               loadOverview();
                             }}
-                            className="min-h-[36px] px-3 py-1.5 rounded-xl bg-[#4F6B56] hover:bg-[#3F5745] text-white text-[11px] font-bold cursor-pointer whitespace-nowrap transition-colors"
+                            className="min-h-[36px] px-3 py-1.5 rounded-xl bg-nova-sage hover:opacity-90 text-nova-accent-contrast text-[11px] font-bold cursor-pointer whitespace-nowrap transition-opacity"
                           >
                             Bỏ qua
                           </button>
@@ -270,21 +319,21 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
             </section>
 
             {/* Videos Moderation */}
-            <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3 shadow-xs">
-              <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2">
-                <Video className="w-4 h-4 text-[#9E5B3B] dark:text-[#D7BA86] shrink-0" />
-                <span className="tabular-nums">Kiểm duyệt Video thai giáo ({videos.length})</span>
+            <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3 shadow-xs">
+              <h3 className="font-editorial text-[15px] font-bold text-nova-text flex items-center gap-2">
+                <Video className="w-4 h-4 text-nova-warning shrink-0" />
+                <span className="tabular-nums">Kiểm duyệt video thai giáo ({videos.length})</span>
               </h3>
               <div className="space-y-2 max-h-72 overflow-y-auto no-scrollbar">
                 {videos.map((v) => (
                   <div
                     key={v.id}
-                    className="p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-between gap-2 text-xs"
+                    className="p-3 rounded-2xl bg-nova-bg border border-nova-border flex items-center justify-between gap-2 text-xs"
                   >
                     <div className="min-w-0">
-                      <p className="font-bold text-[#322622] dark:text-[#F4EDE6] truncate">{v.title}</p>
-                      <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">
-                        {v.channelName} · Trạng thái: <strong className="text-[#322622] dark:text-[#F4EDE6]">{v.status}</strong>
+                      <p className="font-bold text-nova-text truncate">{v.title}</p>
+                      <p className="text-[11px] text-nova-text-muted">
+                        {v.channelName} · Trạng thái: <strong className="text-nova-text">{CONTENT_STATUS_LABELS[v.status || 'approved'] || v.status}</strong>
                       </p>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
@@ -295,7 +344,7 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                             notify('Đã duyệt video.');
                             loadOverview();
                           }}
-                          className="w-9 h-9 rounded-xl bg-[#4F6B56] hover:bg-[#3F5745] text-white flex items-center justify-center cursor-pointer transition-colors"
+                          className="w-9 h-9 rounded-xl bg-nova-sage hover:opacity-90 text-nova-accent-contrast flex items-center justify-center cursor-pointer transition-opacity"
                           title="Duyệt"
                           aria-label="Duyệt video"
                         >
@@ -309,7 +358,7 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                             notify('Đã từ chối video.');
                             loadOverview();
                           }}
-                          className="w-9 h-9 rounded-xl bg-[#A9422D] hover:bg-[#933825] text-white flex items-center justify-center cursor-pointer transition-colors"
+                          className="w-9 h-9 rounded-xl bg-nova-danger hover:opacity-90 text-[#FAF9F6] flex items-center justify-center cursor-pointer transition-opacity"
                           title="Từ chối"
                           aria-label="Từ chối video"
                         >
@@ -324,19 +373,21 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
 
             {/* Posts & Library Moderation */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-2.5 shadow-xs">
-                <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] tabular-nums">
+              <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-2.5 shadow-xs">
+                <h3 className="font-editorial text-[15px] font-bold text-nova-text tabular-nums">
                   Bài viết cộng đồng ({posts.length})
                 </h3>
                 <div className="space-y-2 max-h-60 overflow-y-auto no-scrollbar">
                   {posts.slice(0, 10).map((p) => (
                     <div
                       key={p.id}
-                      className="p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs flex justify-between items-center gap-2"
+                      className="p-3 rounded-2xl bg-nova-bg border border-nova-border text-xs flex justify-between items-center gap-2"
                     >
                       <div className="min-w-0">
-                        <p className="font-bold text-[#322622] dark:text-[#F4EDE6] truncate">{p.title}</p>
-                        <p className="text-[10.5px] text-[#786962] dark:text-[#B5A89F]">{p.author} · {p.status || 'approved'}</p>
+                        <p className="font-bold text-nova-text truncate">{p.title}</p>
+                        <p className="text-[10.5px] text-nova-text-muted">
+                          {p.author} · {CONTENT_STATUS_LABELS[p.status || 'approved'] || p.status}
+                        </p>
                       </div>
                       <button
                         onClick={async () => {
@@ -346,8 +397,8 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                         }}
                         className={`min-h-[34px] px-2.5 py-1 rounded-xl text-[10.5px] font-bold cursor-pointer shrink-0 whitespace-nowrap transition-colors ${
                           p.isFeatured
-                            ? 'bg-[#F6EFE2] dark:bg-[#2F281C] text-[#9E5B3B] dark:text-[#D7BA86] border border-[#E5D4B3] dark:border-[#4A3F2B]'
-                            : 'bg-[#322622] dark:bg-[#F4EDE6] text-white dark:text-[#161311]'
+                            ? 'bg-nova-warning-soft text-nova-warning border border-nova-warning-border'
+                            : 'bg-nova-text text-nova-bg'
                         }`}
                       >
                         {p.isFeatured ? 'Bỏ ghim' : 'Ghim nổi bật'}
@@ -357,20 +408,22 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                 </div>
               </section>
 
-              <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-2.5 shadow-xs">
-                <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5">
-                  <BookOpen className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892] shrink-0" />
+              <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-2.5 shadow-xs">
+                <h3 className="font-editorial text-[15px] font-bold text-nova-text flex items-center gap-1.5">
+                  <BookOpen className="w-4 h-4 text-nova-sage-text shrink-0" />
                   <span className="tabular-nums">Bài thư viện y khoa ({articles.length})</span>
                 </h3>
                 <div className="space-y-2 max-h-60 overflow-y-auto no-scrollbar">
                   {articles.map((a) => (
                     <div
                       key={a.id}
-                      className="p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs flex justify-between items-center gap-2"
+                      className="p-3 rounded-2xl bg-nova-bg border border-nova-border text-xs flex justify-between items-center gap-2"
                     >
                       <div className="min-w-0">
-                        <p className="font-bold text-[#322622] dark:text-[#F4EDE6] truncate">{a.title}</p>
-                        <p className="text-[10.5px] text-[#786962] dark:text-[#B5A89F]">Trạng thái: {a.status}</p>
+                        <p className="font-bold text-nova-text truncate">{a.title}</p>
+                        <p className="text-[10.5px] text-nova-text-muted">
+                          Trạng thái: {CONTENT_STATUS_LABELS[a.status || 'approved'] || a.status}
+                        </p>
                       </div>
                       {a.status !== 'approved' && (
                         <button
@@ -379,7 +432,7 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                             notify('Đã duyệt bài thư viện.');
                             loadOverview();
                           }}
-                          className="min-h-[34px] px-2.5 py-1 rounded-xl bg-[#4F6B56] hover:bg-[#3F5745] text-white text-[10.5px] font-bold cursor-pointer shrink-0 whitespace-nowrap transition-colors"
+                          className="min-h-[34px] px-2.5 py-1 rounded-xl bg-nova-sage hover:opacity-90 text-nova-accent-contrast text-[10.5px] font-bold cursor-pointer shrink-0 whitespace-nowrap transition-opacity"
                         >
                           Duyệt
                         </button>
@@ -395,25 +448,25 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
         {/* TAB 2: SHOP & ORDERS */}
         {activeTab === 'shop' && (
           <div className="space-y-4">
-            <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3 shadow-xs">
-              <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] tabular-nums">
+            <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3 shadow-xs">
+              <h3 className="font-editorial text-[15px] font-bold text-nova-text tabular-nums">
                 Quản lý đơn hàng ({orders.length})
               </h3>
               {orders.length === 0 ? (
-                <p className="text-xs text-[#786962] dark:text-[#B5A89F]">Chưa có đơn hàng nào được tạo trên hệ thống.</p>
+                <p className="text-xs text-nova-text-muted">Chưa có đơn hàng nào được tạo trên hệ thống.</p>
               ) : (
                 <div className="space-y-2.5">
                   {orders.map((ord) => (
                     <div
                       key={ord.orderId}
-                      className="p-3.5 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs"
+                      className="p-3.5 rounded-2xl bg-nova-bg border border-nova-border flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs"
                     >
                       <div className="min-w-0">
-                        <p className="font-bold text-[#322622] dark:text-[#F4EDE6] tabular-nums">
-                          {ord.orderId} · <span className="text-[#B55841] dark:text-[#D47A63]">{ord.totalAmount.toLocaleString('vi-VN')}đ</span>
+                        <p className="font-bold text-nova-text tabular-nums">
+                          {ord.orderId} · <span className="text-nova-accent">{ord.totalAmount.toLocaleString('vi-VN')}đ</span>
                         </p>
-                        <p className="text-[11px] text-[#6B5D56] dark:text-[#C5B9B0]">
-                          Khách: {ord.shippingAddress.fullName} · PT: {ord.paymentMethod.toUpperCase()} · TT: {ord.status} ({ord.paymentStatus || 'unpaid'})
+                        <p className="text-[11px] text-nova-text-muted">
+                          Khách: {ord.shippingAddress.fullName} · Phương thức: {PAYMENT_METHOD_LABELS[ord.paymentMethod] || ord.paymentMethod} · Trạng thái: {ORDER_STATUS_LABELS[ord.status] || ord.status} ({PAYMENT_STATUS_LABELS[ord.paymentStatus || 'unpaid'] || ord.paymentStatus})
                         </p>
                       </div>
                       {isAdmin && (
@@ -422,10 +475,10 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                             <button
                               onClick={async () => {
                                 await apiService.updateOrderStatus(ord.orderId, 'confirmed', 'verified', user);
-                                notify('Đã xác minh chuyển khoản VietQR & xác nhận đơn.');
+                                notify('Đã xác minh chuyển khoản VietQR và xác nhận đơn.');
                                 loadOverview();
                               }}
-                              className="min-h-[36px] px-3 py-1.5 rounded-xl bg-[#4F6B56] hover:bg-[#3F5745] text-white text-[11px] font-bold cursor-pointer whitespace-nowrap transition-colors"
+                              className="min-h-[36px] px-3 py-1.5 rounded-xl bg-nova-sage hover:opacity-90 text-nova-accent-contrast text-[11px] font-bold cursor-pointer whitespace-nowrap transition-opacity"
                             >
                               Xác minh VietQR
                             </button>
@@ -437,10 +490,10 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                               notify(`Đã cập nhật trạng thái đơn ${ord.orderId}.`);
                               loadOverview();
                             }}
-                            className="min-h-[36px] px-2.5 py-1.5 rounded-xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-[11px] font-bold text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
+                            className="min-h-[36px] px-2.5 py-1.5 rounded-xl bg-nova-surface border border-nova-border text-[11px] font-bold text-nova-text focus:outline-none focus:border-nova-accent"
                           >
                             <option value="pending">Chờ xác nhận</option>
-                            <option value="awaiting_verification">Chờ xác minh CK</option>
+                            <option value="awaiting_verification">Chờ xác minh chuyển khoản</option>
                             <option value="confirmed">Đã xác nhận</option>
                             <option value="shipping">Đang giao</option>
                             <option value="delivered">Đã giao</option>
@@ -455,8 +508,8 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
             </section>
 
             {isAdmin && (
-              <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3 shadow-xs">
-                <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] tabular-nums">
+              <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3 shadow-xs">
+                <h3 className="font-editorial text-[15px] font-bold text-nova-text tabular-nums">
                   Quản lý kho sản phẩm ({products.length})
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-2">
@@ -465,14 +518,14 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                     value={newProdName}
                     onChange={(e) => setNewProdName(e.target.value)}
                     placeholder="Tên sản phẩm mới..."
-                    className="sm:col-span-2 px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] dark:placeholder:text-[#B5A89F] focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
+                    className="sm:col-span-2 px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text placeholder:text-nova-text-muted focus:outline-none focus:border-nova-accent"
                   />
                   <input
                     type="number"
                     value={newProdPrice}
                     onChange={(e) => setNewProdPrice(e.target.value)}
-                    placeholder="Giá (VND)"
-                    className="px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] dark:placeholder:text-[#B5A89F] tabular-nums focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
+                    placeholder="Giá (đồng)"
+                    className="px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text placeholder:text-nova-text-muted tabular-nums focus:outline-none focus:border-nova-accent"
                   />
                   <button
                     onClick={async () => {
@@ -485,7 +538,7 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                       notify('Đã thêm sản phẩm mới vào kho.');
                       loadOverview();
                     }}
-                    className="min-h-[40px] px-3 py-2 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-xs font-bold cursor-pointer inline-flex items-center justify-center gap-1 whitespace-nowrap transition-colors"
+                    className="min-h-[40px] px-3 py-2 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-bold cursor-pointer inline-flex items-center justify-center gap-1 whitespace-nowrap transition-colors"
                   >
                     <Plus className="w-4 h-4" /> Thêm sản phẩm
                   </button>
@@ -495,11 +548,11 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                   {products.map((p) => (
                     <div
                       key={p.id}
-                      className="p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-between gap-2 text-xs"
+                      className="p-3 rounded-2xl bg-nova-bg border border-nova-border flex items-center justify-between gap-2 text-xs"
                     >
                       <div className="min-w-0">
-                        <p className="font-bold text-[#322622] dark:text-[#F4EDE6] truncate">{p.name}</p>
-                        <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] tabular-nums">
+                        <p className="font-bold text-nova-text truncate">{p.name}</p>
+                        <p className="text-[11px] text-nova-text-muted tabular-nums">
                           {p.formattedPrice} · Kho: {p.stockCount ?? (p.inStock ? 'Còn' : 'Hết')}
                         </p>
                       </div>
@@ -514,8 +567,8 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                         }}
                         className={`min-h-[34px] px-2.5 py-1 rounded-xl text-[10.5px] font-bold cursor-pointer shrink-0 whitespace-nowrap transition-colors ${
                           p.inStock
-                            ? 'bg-[#EBF1EC] dark:bg-[#1E2922] text-[#4F6B56] dark:text-[#8DA892] border border-[#C8D9CB] dark:border-[#33483A]'
-                            : 'bg-[#F7EAE5] dark:bg-[#35231E] text-[#A9422D] dark:text-[#E5927D] border border-[#EBCDC2] dark:border-[#52352D]'
+                            ? 'bg-nova-sage-soft text-nova-sage-text border border-nova-border'
+                            : 'bg-nova-danger-soft text-nova-danger border border-nova-danger-border'
                         }`}
                       >
                         {p.inStock ? 'Đang bán' : 'Hết hàng'}
@@ -530,33 +583,34 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
 
         {/* TAB 3: USERS & ROLES */}
         {activeTab === 'users' && isAdmin && (
-          <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3 shadow-xs">
-            <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6]">
-              Danh sách tài khoản & Phân quyền
+          <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3 shadow-xs">
+            <h3 className="font-editorial text-[15px] font-bold text-nova-text">
+              Danh sách tài khoản và phân quyền
             </h3>
             <div className="space-y-2.5">
               {usersList.map((u) => (
                 <div
                   key={u.id}
-                  className="p-3.5 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-between gap-2 text-xs"
+                  className="p-3.5 rounded-2xl bg-nova-bg border border-nova-border flex items-center justify-between gap-2 text-xs"
                 >
                   <div className="min-w-0">
-                    <p className="font-bold text-[#322622] dark:text-[#F4EDE6] truncate">{u.name} ({u.id})</p>
-                    <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] truncate tabular-nums">{u.email || u.phone}</p>
+                    <p className="font-bold text-nova-text truncate">{u.name}</p>
+                    <p className="text-[11px] text-nova-text-muted truncate tabular-nums">{u.email || u.phone}</p>
                   </div>
                   <select
                     value={u.role || 'user'}
                     disabled={u.id === user.id}
                     onChange={async (e) => {
-                      await apiService.updateUserRole(u.id, e.target.value as UserRole, user);
-                      notify(`Đã đổi quyền ${u.name} thành ${e.target.value}.`);
+                      const nextRole = e.target.value as UserRole;
+                      await apiService.updateUserRole(u.id, nextRole, user);
+                      notify(`Đã đổi quyền ${u.name} thành ${ROLE_LABELS[nextRole] || nextRole}.`);
                       loadOverview();
                     }}
-                    className="min-h-[38px] px-3 py-1.5 rounded-xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-xs font-bold text-[#322622] dark:text-[#F4EDE6] disabled:opacity-60 focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
+                    className="min-h-[38px] px-3 py-1.5 rounded-xl bg-nova-surface border border-nova-border text-xs font-bold text-nova-text disabled:opacity-60 focus:outline-none focus:border-nova-accent"
                   >
-                    <option value="user">user</option>
-                    <option value="moderator">moderator</option>
-                    <option value="admin">admin</option>
+                    <option value="user">Thành viên</option>
+                    <option value="moderator">Điều phối viên</option>
+                    <option value="admin">Quản trị viên</option>
                   </select>
                 </div>
               ))}
@@ -568,9 +622,9 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
         {activeTab === 'broadcast' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {isAdmin && (
-              <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3 shadow-xs">
-                <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5">
-                  <BellRing className="w-4 h-4 text-[#B55841] dark:text-[#D47A63] shrink-0" />
+              <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3 shadow-xs">
+                <h3 className="font-editorial text-[15px] font-bold text-nova-text flex items-center gap-1.5">
+                  <BellRing className="w-4 h-4 text-nova-accent shrink-0" />
                   <span>Gửi thông báo toàn hệ thống</span>
                 </h3>
                 <input
@@ -578,14 +632,14 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                   value={bcTitle}
                   onChange={(e) => setBcTitle(e.target.value)}
                   placeholder="Tiêu đề thông báo..."
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] dark:placeholder:text-[#B5A89F] focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text placeholder:text-nova-text-muted focus:outline-none focus:border-nova-accent"
                 />
                 <textarea
                   rows={3}
                   value={bcDesc}
                   onChange={(e) => setBcDesc(e.target.value)}
                   placeholder="Nội dung thông báo gửi tới các mẹ bầu..."
-                  className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] dark:placeholder:text-[#B5A89F] resize-none focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
+                  className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text placeholder:text-nova-text-muted resize-none focus:outline-none focus:border-nova-accent"
                 />
                 <button
                   onClick={async () => {
@@ -596,31 +650,31 @@ export const AdminDashboardScreen: React.FC<AdminDashboardScreenProps> = ({ user
                     notify(`Đã gửi tới ${res.sentCount} tài khoản.`);
                     loadOverview();
                   }}
-                  className="w-full min-h-[44px] py-2.5 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-xs font-bold cursor-pointer transition-colors"
+                  className="w-full min-h-[44px] py-2.5 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-bold cursor-pointer transition-colors"
                 >
                   Gửi thông báo hệ thống
                 </button>
               </section>
             )}
 
-            <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] space-y-3 shadow-xs">
-              <h3 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5">
-                <History className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892] shrink-0" />
-                <span className="tabular-nums">Nhật ký kiểm duyệt & quản trị ({auditLogs.length})</span>
+            <section className="p-4 sm:p-5 bg-nova-surface rounded-3xl border border-nova-border space-y-3 shadow-xs">
+              <h3 className="font-editorial text-[15px] font-bold text-nova-text flex items-center gap-1.5">
+                <History className="w-4 h-4 text-nova-sage-text shrink-0" />
+                <span className="tabular-nums">Nhật ký kiểm duyệt và quản trị ({auditLogs.length})</span>
               </h3>
               <div className="space-y-2 max-h-72 overflow-y-auto no-scrollbar">
                 {auditLogs.length === 0 ? (
-                  <p className="text-xs text-[#786962] dark:text-[#B5A89F]">Chưa có nhật ký hoạt động quản trị.</p>
+                  <p className="text-xs text-nova-text-muted">Chưa có nhật ký hoạt động quản trị.</p>
                 ) : (
                   auditLogs.slice(0, 20).map((log) => (
                     <div
                       key={log.id}
-                      className="p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs"
+                      className="p-3 rounded-2xl bg-nova-bg border border-nova-border text-xs"
                     >
-                      <p className="font-bold text-[#322622] dark:text-[#F4EDE6]">
-                        {log.actorName} ({log.actorRole}) · {log.action}
+                      <p className="font-bold text-nova-text">
+                        {log.actorName} ({ROLE_LABELS[log.actorRole] || log.actorRole}) · {log.action}
                       </p>
-                      <p className="text-[11px] text-[#6B5D56] dark:text-[#C5B9B0] mt-0.5 leading-relaxed">{log.details}</p>
+                      <p className="text-[11px] text-nova-text-muted mt-0.5 leading-relaxed">{log.details}</p>
                     </div>
                   ))
                 )}

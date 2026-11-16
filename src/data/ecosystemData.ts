@@ -7,9 +7,9 @@ import {
 } from '../types';
 
 export const ECOSYSTEM_BANNERS = {
-  memoriesBanner: '/src/assets/images/memories_scrapbook_banner_1794815308143.jpg',
-  babyBanner: '/src/assets/images/baby_postpartum_banner_1794815308148.jpg',
-  familyBanner: '/src/assets/images/family_journey_banner_1794815313120.jpg',
+  memoriesBanner: '/images/memories_scrapbook_banner_1794815308143.jpg',
+  babyBanner: '/images/baby_postpartum_banner_1794815308148.jpg',
+  familyBanner: '/images/family_journey_banner_1794815313120.jpg',
 };
 
 export const INITIAL_LIBRARY_ARTICLES: LibraryArticle[] = [
@@ -258,7 +258,7 @@ export const BABY_MILESTONES_BY_MONTH: {
     month: 1,
     title: 'Tháng thứ 1–2: Nụ cười xã hội đầu tiên',
     description: 'Bé bắt đầu giao tiếp bằng ánh mắt ở khoảng cách 20–30cm, mỉm cười đáp lại giọng nói ấm áp và ngóc đầu nhẹ khi nằm sấp.',
-    careFocus: 'Thực hành Tummy Time (nằm sấp khi bé thức có người giám sát) 2–3 phút mỗi lần.',
+    careFocus: 'Thực hành tập nằm sấp khi bé thức (có người giám sát) 2–3 phút mỗi lần.',
   },
   {
     id: 'bm-3',
@@ -294,7 +294,7 @@ export const POSTPARTUM_BABY_CHECKLIST_ITEMS = [
   { id: 'pb-1', title: 'Theo dõi cữ bú và lượng tã ướt (tối thiểu 6 tã/ngày sau tuần đầu)' },
   { id: 'pb-2', title: 'Giữ rốn khô thoáng và kiểm tra vàng da sinh lý dưới ánh sáng tự nhiên' },
   { id: 'pb-3', title: 'Cập nhật lịch tiêm chủng mở rộng & khám định kỳ tháng đầu cho bé' },
-  { id: 'pb-4', title: 'Thực hành Tummy Time ngắn mỗi ngày khi bé tỉnh táo và có mẹ bên cạnh' },
+  { id: 'pb-4', title: 'Thực hành tập nằm sấp ngắn mỗi ngày khi bé tỉnh táo và có mẹ bên cạnh' },
 ];
 
 export const POSTPARTUM_KNOWLEDGE_GUIDES = [
@@ -306,7 +306,7 @@ export const POSTPARTUM_KNOWLEDGE_GUIDES = [
   },
   {
     id: 'ppg-2',
-    title: 'Nguyên tắc ngủ an toàn cho trẻ sơ sinh (Safe Sleep)',
+    title: 'Nguyên tắc ngủ an toàn cho trẻ sơ sinh',
     summary: 'Đặt bé nằm ngửa trên nệm phẳng vừa vặn, không đặt gối mềm hay chăn dày quanh mặt bé để phòng ngừa ngạt thở.',
     source: 'AAP & UNICEF Newborn Safety',
   },
@@ -330,7 +330,7 @@ export const COMMUNITY_GUIDELINES = [
   'Tôn trọng trải nghiệm riêng của từng mẹ bầu — không phán xét cách sinh thường hay sinh mổ, nuôi sữa mẹ hay sữa công thức.',
   'Không tự ý kê đơn thuốc, không quảng cáo thực phẩm chức năng chưa kiểm chứng hoặc thuốc truyền miệng.',
   'Bảo mật thông tin cá nhân, không đăng ảnh nhạy cảm hoặc thông tin bệnh án của người khác khi chưa được đồng ý.',
-  'Sử dụng nút "Báo cáo" nếu phát hiện nội dung quấy rối, lừa đảo hoặc tư vấn y tế nguy hiểm để Moderator kịp thời xử lý.',
+  'Sử dụng nút "Báo cáo" nếu phát hiện nội dung quấy rối, lừa đảo hoặc tư vấn y tế nguy hiểm để đội ngũ kiểm duyệt kịp thời xử lý.',
 ];
 
 export const REWARD_BADGE_DEFINITIONS = [
@@ -349,7 +349,7 @@ export const REWARD_BADGE_DEFINITIONS = [
   {
     id: 'badge-checklist-5',
     title: 'Mẹ bầu chu đáo',
-    description: 'Hoàn thành từ 5 mục trở lên trong Checklist chuẩn bị cho mẹ và bé.',
+    description: 'Hoàn thành từ 5 mục trở lên trong sổ chuẩn bị cho mẹ và bé.',
     category: 'checklist' as const,
   },
   {
@@ -370,18 +370,18 @@ export const SHOP_COMBOS: ProductCombo[] = [
   {
     id: 'combo-tam-ca-2',
     title: 'Combo An Tâm Tam Cá Nguyệt 2',
-    subtitle: 'Viên uống tổng hợp + Dầu massage rạn da + Gối ôm chữ U',
-    productIds: ['prod-1', 'prod-2', 'prod-3'],
-    comboPrice: 1290000,
-    savingsAmount: 190000,
-    badgeText: 'Tiết kiệm 190.000đ',
+    subtitle: 'Tinh dầu ngừa rạn da + Viên uống tổng hợp DHA + Gối ôm chữ U',
+    productIds: ['prod-1', 'prod-3', 'prod-5'],
+    comboPrice: 790000,
+    savingsAmount: 135000,
+    badgeText: 'Tiết kiệm 135.000đ',
   },
   {
     id: 'combo-di-sinh-me-be',
     title: 'Combo Giỏ Đồ Đi Sinh Gọn Nhẹ',
-    subtitle: 'Combo túi đi sinh mẹ & bé + Quấn chũn sơ sinh + Dung dịch vệ sinh sau sinh',
-    productIds: ['prod-4', 'prod-8', 'prod-15'],
-    comboPrice: 1090000,
+    subtitle: 'Bộ nhộng chũn & khăn xô + Giỏ đồ đi sinh 10 món + Túi chườm thảo dược sau sinh',
+    productIds: ['prod-7', 'prod-8', 'prod-14'],
+    comboPrice: 1035000,
     savingsAmount: 150000,
     badgeText: 'Tiết kiệm 150.000đ',
   },

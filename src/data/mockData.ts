@@ -11,25 +11,25 @@ import {
   DetailedPost,
 } from '../types';
 
-const onboardingArt = '/src/assets/images/onboarding_art_1790926203382.jpg';
-const motherAvatar = '/src/assets/images/mother_avatar_1790926298307.jpg';
-const journalImg = '/src/assets/images/journal_book_1790926220651.jpg';
-const braceletImg = '/src/assets/images/quartz_bracelet_1790926260400.jpg';
-const oilImg = '/src/assets/images/stretch_oil_1790926274279.jpg';
-const pillowImg = '/src/assets/images/u_pillow_1790926286791.jpg';
-const hospitalBagImg = '/src/assets/images/hospital_bag_1790926782533.jpg';
-const vitaminsImg = '/src/assets/images/shop_maternal_vitamins_1794814184824.jpg';
-const swaddleImg = '/src/assets/images/shop_newborn_swaddle_1794814184572.jpg';
-const apparelImg = '/src/assets/images/shop_maternity_apparel_1794814184710.jpg';
-const hygieneImg = '/src/assets/images/shop_baby_hygiene_1794814185165.jpg';
-const toysImg = '/src/assets/images/shop_baby_toys_1794814186144.jpg';
-const postpartumImg = '/src/assets/images/shop_postpartum_care_1794814186422.jpg';
+const onboardingArt = '/images/onboarding_art_1790926203382.jpg';
+const motherAvatar = '/images/mother_avatar_1790926298307.jpg';
+const journalImg = '/images/journal_book_1790926220651.jpg';
+const braceletImg = '/images/quartz_bracelet_1790926260400.jpg';
+const oilImg = '/images/stretch_oil_1790926274279.jpg';
+const pillowImg = '/images/u_pillow_1790926286791.jpg';
+const hospitalBagImg = '/images/hospital_bag_1790926782533.jpg';
+const vitaminsImg = '/images/shop_maternal_vitamins_1794814184824.jpg';
+const swaddleImg = '/images/shop_newborn_swaddle_1794814184572.jpg';
+const apparelImg = '/images/shop_maternity_apparel_1794814184710.jpg';
+const hygieneImg = '/images/shop_baby_hygiene_1794814185165.jpg';
+const toysImg = '/images/shop_baby_toys_1794814186144.jpg';
+const postpartumImg = '/images/shop_postpartum_care_1794814186422.jpg';
 
-const homeHeroImg = '/src/assets/images/home_editorial_hero_1794817234051.jpg';
-const familyMorningImg = '/src/assets/images/welcome_family_morning_1794817235066.jpg';
-const wellnessRitualImg = '/src/assets/images/wellness_care_ritual_1794817235184.jpg';
-const momPortraitImg = '/src/assets/images/avatar_vietnamese_mom_1794817236211.jpg';
-const doctorPortraitImg = '/src/assets/images/avatar_vietnamese_doctor_1794817235964.jpg';
+const homeHeroImg = '/images/home_editorial_hero_1794817234051.jpg';
+const familyMorningImg = '/images/welcome_family_morning_1794817235066.jpg';
+const wellnessRitualImg = '/images/wellness_care_ritual_1794817235184.jpg';
+const momPortraitImg = '/images/avatar_vietnamese_mom_1794817236211.jpg';
+const doctorPortraitImg = '/images/avatar_vietnamese_doctor_1794817235964.jpg';
 
 export const ASSETS = {
   onboardingArt,
@@ -70,8 +70,8 @@ export const INITIAL_ACTIVITIES: ActivityItem[] = [
     category: 'water',
     completed: true,
     timeTarget: 'Mỗi 1 giờ',
-    iconBg: 'bg-[#EBF1EC]',
-    iconColor: 'text-[#263E35]',
+    iconBg: 'bg-nova-sage-soft',
+    iconColor: 'text-nova-sage-text',
   },
   {
     id: 'act-2',
@@ -80,8 +80,8 @@ export const INITIAL_ACTIVITIES: ActivityItem[] = [
     category: 'yoga',
     completed: false,
     timeTarget: 'Sáng 07:30',
-    iconBg: 'bg-[#F2ECE3]',
-    iconColor: 'text-[#9E5B3B]',
+    iconBg: 'bg-nova-bg-subtle',
+    iconColor: 'text-nova-accent',
   },
   {
     id: 'act-3',
@@ -90,8 +90,8 @@ export const INITIAL_ACTIVITIES: ActivityItem[] = [
     category: 'music',
     completed: false,
     timeTarget: 'Tối 21:00',
-    iconBg: 'bg-[#F7EAE5]',
-    iconColor: 'text-[#B55841]',
+    iconBg: 'bg-nova-accent-soft',
+    iconColor: 'text-nova-accent',
   },
   {
     id: 'act-4',
@@ -100,8 +100,8 @@ export const INITIAL_ACTIVITIES: ActivityItem[] = [
     category: 'checkup',
     completed: false,
     timeTarget: '15:00 Ngày mai',
-    iconBg: 'bg-[#F2ECE3]',
-    iconColor: 'text-[#263E35]',
+    iconBg: 'bg-nova-bg-subtle',
+    iconColor: 'text-nova-sage-text',
   },
 ];
 
@@ -122,7 +122,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-1',
     name: 'Tinh dầu hữu cơ ngừa rạn da mẹ bầu',
-    brand: 'Nova Botanicals (Demo)',
+    brand: 'Nova Botanicals (Sản phẩm mẫu)',
     price: 250000,
     formattedPrice: '250.000đ',
     originalPrice: 310000,
@@ -144,7 +144,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-2',
     name: 'Vòng thạch anh hồng thư giãn tinh thần',
-    brand: 'Nova Wellness (Demo)',
+    brand: 'Nova Wellness (Sản phẩm mẫu)',
     price: 490000,
     formattedPrice: '490.000đ',
     reviewsCount: 0,
@@ -166,7 +166,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-3',
     name: 'Viên uống Vitamin tổng hợp & DHA Prenatal',
-    brand: 'Nova Nutrition (Demo)',
+    brand: 'Nova Nutrition (Sản phẩm mẫu)',
     price: 385000,
     formattedPrice: '385.000đ',
     originalPrice: 440000,
@@ -188,7 +188,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-4',
     name: 'Ngũ cốc hạt dinh dưỡng không đường cho mẹ bầu',
-    brand: 'Nova Kitchen (Demo)',
+    brand: 'Nova Kitchen (Sản phẩm mẫu)',
     price: 215000,
     formattedPrice: '215.000đ',
     reviewsCount: 0,
@@ -210,7 +210,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-5',
     name: 'Gối ôm chữ U công thái học nâng đỡ toàn thân',
-    brand: 'Nova Sleep (Demo)',
+    brand: 'Nova Sleep (Sản phẩm mẫu)',
     price: 290000,
     formattedPrice: '290.000đ',
     originalPrice: 360000,
@@ -232,7 +232,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-6',
     name: 'Sổ tay Nhật ký Mẹ và Bé 40 tuần thai kỳ',
-    brand: 'Nova Studio (Demo)',
+    brand: 'Nova Studio (Sản phẩm mẫu)',
     price: 85000,
     formattedPrice: '85.000đ',
     originalPrice: 110000,
@@ -256,7 +256,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-7',
     name: 'Bộ nhộng chũn Swaddle & khăn xô sợi tre sơ sinh',
-    brand: 'Nova Baby (Demo)',
+    brand: 'Nova Baby (Sản phẩm mẫu)',
     price: 265000,
     formattedPrice: '265.000đ',
     originalPrice: 320000,
@@ -278,7 +278,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-8',
     name: 'Giỏ đồ đi sinh gọn nhẹ 10 món thiết yếu',
-    brand: 'Nova Baby (Demo)',
+    brand: 'Nova Baby (Sản phẩm mẫu)',
     price: 680000,
     formattedPrice: '680.000đ',
     originalPrice: 790000,
@@ -287,7 +287,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
     category: 'newborn_essentials',
     image: hospitalBagImg,
     description:
-      'Bộ giỏ chuẩn bị sẵn quần áo sơ sinh, bao tay chân, mũ thóp, khăn sữa và tã lót theo đúng checklist đi sinh cơ bản.',
+      'Bộ giỏ chuẩn bị sẵn quần áo sơ sinh, bao tay chân, mũ thóp, khăn sữa và tã lót theo đúng danh sách đồ đi sinh cơ bản.',
     benefits: [
       'Đóng túi zip phân loại sạch sẽ từng nhóm đồ dùng',
       'Sẵn sàng xách đi viện ngay khi có dấu hiệu chuyển dạ',
@@ -302,7 +302,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-9',
     name: 'Váy bầu cotton thoáng mát thiết kế mở cho con bú',
-    brand: 'Nova Wear (Demo)',
+    brand: 'Nova Wear (Sản phẩm mẫu)',
     price: 320000,
     formattedPrice: '320.000đ',
     originalPrice: 390000,
@@ -324,7 +324,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-10',
     name: 'Set 2 bộ body liền thân cotton hữu cơ cho bé',
-    brand: 'Nova Wear (Demo)',
+    brand: 'Nova Wear (Sản phẩm mẫu)',
     price: 195000,
     formattedPrice: '195.000đ',
     reviewsCount: 0,
@@ -346,7 +346,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-11',
     name: 'Bộ chăm sóc vệ sinh bé & nhiệt kế đo nước tắm',
-    brand: 'Nova Hygiene (Demo)',
+    brand: 'Nova Hygiene (Sản phẩm mẫu)',
     price: 175000,
     formattedPrice: '175.000đ',
     originalPrice: 210000,
@@ -368,7 +368,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-12',
     name: 'Set 3 khăn tắm sợi tre 6 lớp siêu thấm cho bé',
-    brand: 'Nova Hygiene (Demo)',
+    brand: 'Nova Hygiene (Sản phẩm mẫu)',
     price: 145000,
     formattedPrice: '145.000đ',
     reviewsCount: 0,
@@ -390,7 +390,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-13',
     name: 'Bộ lục lạc gỗ tự nhiên & sách vải kích thích thị giác',
-    brand: 'Nova Play (Demo)',
+    brand: 'Nova Play (Sản phẩm mẫu)',
     price: 185000,
     formattedPrice: '185.000đ',
     originalPrice: 230000,
@@ -414,7 +414,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-14',
     name: 'Túi chườm thảo dược ấm bụng & muối chườm sau sinh',
-    brand: 'Nova Postpartum (Demo)',
+    brand: 'Nova Postpartum (Sản phẩm mẫu)',
     price: 240000,
     formattedPrice: '240.000đ',
     originalPrice: 295000,
@@ -436,7 +436,7 @@ export const PRODUCTS_DATA: ProductItem[] = [
   {
     id: 'prod-15',
     name: 'Máy hâm sữa & tiệt trùng bình sữa cầm tay đa năng',
-    brand: 'Nova Postpartum (Demo)',
+    brand: 'Nova Postpartum (Sản phẩm mẫu)',
     price: 540000,
     formattedPrice: '540.000đ',
     reviewsCount: 0,
@@ -523,9 +523,9 @@ export const INITIAL_DETAILED_POSTS: DetailedPost[] = [
     avatar: 'NL',
     category: 'birth_prep',
     weekTag: 'Tuần 32',
-    title: 'Review chi tiết danh sách đồ đi sinh gọn nhẹ cho mẹ bầu tuần 32',
+    title: 'Chia sẻ chi tiết danh sách đồ đi sinh gọn nhẹ cho mẹ bầu tuần 32',
     content:
-      'Sau bao ngày nghiên cứu kinh nghiệm từ các mom đi trước, mình đã gói gọn đồ đi sinh vào một giỏ duy nhất: 3 bộ quần áo cài cúc cho mẹ, 5 bộ cotton mềm cho con, tã dán sơ sinh, khăn xô và tinh dầu tràm. Các mẹ đừng mang quá nhiều đồ cồng kềnh nha!',
+      'Sau bao ngày nghiên cứu kinh nghiệm từ các mẹ đi trước, mình đã gói gọn đồ đi sinh vào một giỏ duy nhất: 3 bộ quần áo cài cúc cho mẹ, 5 bộ cotton mềm cho con, tã dán sơ sinh, khăn xô và tinh dầu tràm. Các mẹ đừng mang quá nhiều đồ cồng kềnh nha!',
     image: hospitalBagImg,
     likes: 345,
     likedBy: [],
@@ -539,7 +539,7 @@ export const INITIAL_DETAILED_POSTS: DetailedPost[] = [
         authorId: 'usr-mom-chi',
         author: 'Mẹ Thùy Chi',
         avatar: 'TC',
-        content: 'Bài viết hữu ích quá mom ơi, mình lưu lại để tuần sau sắm dần!',
+        content: 'Bài viết hữu ích quá mẹ ơi, mình lưu lại để tuần sau sắm dần!',
         timeAgo: '1 giờ trước',
         createdAt: new Date(Date.now() - 3600 * 1000).toISOString(),
       },
@@ -548,7 +548,7 @@ export const INITIAL_DETAILED_POSTS: DetailedPost[] = [
         authorId: 'usr-mom-tra',
         author: 'Mẹ Hương Trà',
         avatar: 'HT',
-        content: 'Nhớ mang theo vài chiếc thìa nhỏ và cốc pha sữa ấm nữa mom nhé.',
+        content: 'Nhớ mang theo vài chiếc thìa nhỏ và cốc pha sữa ấm nữa mẹ nhé.',
         timeAgo: '30 phút trước',
         createdAt: new Date(Date.now() - 1800 * 1000).toISOString(),
       },
@@ -617,7 +617,7 @@ export const INITIAL_DETAILED_POSTS: DetailedPost[] = [
         authorId: 'usr-mom-vy',
         author: 'Mẹ Phương Vy',
         avatar: 'PV',
-        content: 'Bình thường lắm mom ơi! Tuần 12 nhau thai làm việc hoàn chỉnh nên bớt nghén đấy, chúc mừng mom nha!',
+        content: 'Bình thường lắm mẹ ơi! Tuần 12 nhau thai làm việc hoàn chỉnh nên bớt nghén đấy, chúc mừng mẹ nha!',
         timeAgo: '4 giờ trước',
         createdAt: new Date(Date.now() - 4 * 3600 * 1000).toISOString(),
       },
@@ -632,7 +632,7 @@ export const INITIAL_DETAILED_POSTS: DetailedPost[] = [
     weekTag: 'Tuần 24',
     title: 'Chia sẻ nhật ký thai máy tuần 24 của Bé Bơ',
     content:
-      'Hôm nay vừa uống xong cốc nước ấm và nghe nhạc Mozart thì Bé Bơ đạp liên tục 5 cái rõ rệt. Cảm giác làm mẹ thật kỳ diệu các mom ơi!',
+      'Hôm nay vừa uống xong cốc nước ấm và nghe nhạc Mozart thì Bé Bơ đạp liên tục 5 cái rõ rệt. Cảm giác làm mẹ thật kỳ diệu các mẹ ơi!',
     likes: 112,
     likedBy: [],
     commentsCount: 0,
@@ -650,7 +650,7 @@ export const INITIAL_DETAILED_POSTS: DetailedPost[] = [
     weekTag: 'Tuần 12',
     title: 'Nhật ký siêu âm tuần 12: Con đã vẫy tay chào ba mẹ!',
     content:
-      'Hôm nay đi đo độ mờ da gáy, nhìn màn hình siêu âm thấy em bé nghịch ngợm cử động hai tay hai chân mà ba mẹ rớt nước mắt vì hạnh phúc. Độ mờ da gáy 1.2mm đạt chuẩn an toàn rồi các mom ơi!',
+      'Hôm nay đi đo độ mờ da gáy, nhìn màn hình siêu âm thấy em bé nghịch ngợm cử động hai tay hai chân mà ba mẹ rớt nước mắt vì hạnh phúc. Độ mờ da gáy 1.2mm đạt chuẩn an toàn rồi các mẹ ơi!',
     likes: 215,
     likedBy: [],
     commentsCount: 0,
@@ -762,7 +762,7 @@ export const NOVA_VIDEOS_DATA: NovaVideoItem[] = [
     channelAvatar: 'LH',
     isVerified: false,
     isFollowing: false,
-    musicTitle: '♫ Trending Sound · Giai điệu mộc Acoustic tươi vui buổi sáng',
+    musicTitle: '♫ Âm thanh nổi bật · Giai điệu mộc Acoustic tươi vui buổi sáng',
     likes: 895,
     commentsCount: 1,
     sharesCount: 145,
@@ -776,7 +776,7 @@ export const NOVA_VIDEOS_DATA: NovaVideoItem[] = [
         authorId: 'usr-mom-han',
         author: 'Ngọc Hân',
         avatar: 'NH',
-        content: 'Món sữa chua Hy Lạp mix dâu tây ăn nghiện luôn mom ơi.',
+        content: 'Món sữa chua Hy Lạp mix dâu tây ăn nghiện luôn mẹ ơi.',
         timeAgo: '3 giờ trước',
         likes: 5,
       },
@@ -790,7 +790,7 @@ export const NOVA_VIDEOS_DATA: NovaVideoItem[] = [
     description:
       'Áp dụng kỹ thuật quấn chũn Swaddle co giãn 4 chiều kết hợp âm thanh trắng tiếng mưa rơi, tái lập môi trường an toàn như trong bụng mẹ.',
     category: 'cham_soc_be',
-    hashtags: ['#GiacNguCuaBe', '#QuanChunSwaddle', '#WhiteNoise', '#MeNuoiCon'],
+    hashtags: ['#GiacNguCuaBe', '#QuanChunSwaddle', '#AmThanhTrang', '#MeNuoiCon'],
     authorId: 'usr-admin',
     channelName: 'Nova Y khoa',
     channelAvatar: 'NV',
@@ -1237,7 +1237,7 @@ export const MODERATOR_USER_PROFILE: UserProfile = {
   phone: '0900 333 444',
   role: 'moderator',
   pregnancyWeek: 22,
-  babyNickname: 'Nova Moderator',
+  babyNickname: 'Điều phối viên Nova',
   isVip: true,
 };
 
@@ -1249,6 +1249,6 @@ export const ADMIN_USER_PROFILE: UserProfile = {
   phone: '0900 111 222',
   role: 'admin',
   pregnancyWeek: 28,
-  babyNickname: 'Nova Admin',
+  babyNickname: 'Quản trị viên Nova',
   isVip: true,
 };

@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@custom-variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));
 
 :root {
   font-family: 'Be Vietnam Pro', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -7,36 +7,112 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  color-scheme: light;
 
-  /* Premium Vietnamese Wellness Palette (60% Ivory Cream · 30% Linen/Surface · 10% Terracotta/Sage) */
-  --nova-bg: #FAF6F0;
-  --nova-linen: #F2ECE3;
-  --nova-surface: #FFFFFF;
-  --nova-text: #322622;
-  --nova-muted: #786962;
-  --nova-border: #E6DDD1;
-  --nova-accent: #B55841;
-  --nova-accent-soft: #F7EAE5;
-  --nova-sage: #6D8572;
-  --nova-sage-soft: #EBF1EC;
-  --nova-forest: #263E35;
-  --nova-gold: #C4A46B;
+  /* Neutral Minimalist Wellness Palette (Light) */
+  --color-nova-bg: #F5F2EB;
+  --color-nova-bg-subtle: #EFECE4;
+  --color-nova-surface: #FAF9F6;
+  --color-nova-surface-elevated: #FAF9F6;
+  --color-nova-border: #E8E1D5;
+  --color-nova-taupe: #B8AA98;
+  --color-nova-icon: #8B857C;
+  --color-nova-text-muted: #6E685F;
+  --color-nova-text: #373630;
+  --color-nova-accent: #51483F;
+  --color-nova-accent-hover: #3F3830;
+  --color-nova-accent-contrast: #FAF9F6;
+  --color-nova-accent-soft: #EDE7DE;
+  --color-nova-sage: #A3A795;
+  --color-nova-sage-text: #4E5344;
+  --color-nova-sage-soft: #ECEEE7;
+
+  /* Semantic Status Tokens (Desaturated Earthy) */
+  --color-nova-danger: #9E473D;
+  --color-nova-danger-soft: #F4E6E4;
+  --color-nova-danger-border: #E2C5C1;
+  --color-nova-warning: #8F6A32;
+  --color-nova-warning-soft: #F3ECE0;
+  --color-nova-warning-border: #DFD0B7;
+  --color-nova-success: #4E5344;
+  --color-nova-success-soft: #ECEEE7;
+  --color-nova-success-border: #CDD2C4;
+
+  /* Legacy alias variables preserved for untouched VoiceChatScreen */
+  --nova-bg: var(--color-nova-bg);
+  --nova-linen: var(--color-nova-bg-subtle);
+  --nova-surface: var(--color-nova-surface);
+  --nova-text: var(--color-nova-text);
+  --nova-muted: var(--color-nova-text-muted);
+  --nova-border: var(--color-nova-border);
+  --nova-accent: var(--color-nova-accent);
+  --nova-accent-soft: var(--color-nova-accent-soft);
+  --nova-sage: var(--color-nova-sage);
+  --nova-sage-soft: var(--color-nova-sage-soft);
+  --nova-forest: var(--color-nova-accent);
+  --nova-gold: var(--color-nova-taupe);
 }
 
-html.dark {
+html.dark,
+html[data-theme="dark"] {
   color-scheme: dark;
-  --nova-bg: #161311;
-  --nova-linen: #231E1B;
-  --nova-surface: #1E1A17;
-  --nova-text: #F4EDE6;
-  --nova-muted: #B5A89F;
-  --nova-border: #362E2A;
-  --nova-accent: #D47A63;
-  --nova-accent-soft: #35231E;
-  --nova-sage: #8DA892;
-  --nova-sage-soft: #1E2922;
-  --nova-forest: #A7C2AC;
-  --nova-gold: #D7BA86;
+
+  /* Neutral Minimalist Wellness Palette (Warm Espresso Dark) */
+  --color-nova-bg: #1C1B18;
+  --color-nova-bg-subtle: #211F1B;
+  --color-nova-surface: #25231F;
+  --color-nova-surface-elevated: #2E2B26;
+  --color-nova-border: #3D3932;
+  --color-nova-taupe: #8F8272;
+  --color-nova-icon: #9B9388;
+  --color-nova-text-muted: #A39D93;
+  --color-nova-text: #F0EBE0;
+  --color-nova-accent: #CDBFA9;
+  --color-nova-accent-hover: #DFD3BF;
+  --color-nova-accent-contrast: #1C1B18;
+  --color-nova-accent-soft: #343028;
+  --color-nova-sage: #B2B6A3;
+  --color-nova-sage-text: #B2B6A3;
+  --color-nova-sage-soft: #252922;
+
+  /* Semantic Status Tokens (Dark) */
+  --color-nova-danger: #D48A80;
+  --color-nova-danger-soft: #332321;
+  --color-nova-danger-border: #523632;
+  --color-nova-warning: #D4B47C;
+  --color-nova-warning-soft: #302A20;
+  --color-nova-warning-border: #4E4230;
+  --color-nova-success: #B2B6A3;
+  --color-nova-success-soft: #252922;
+  --color-nova-success-border: #3C4237;
+}
+
+@theme inline {
+  --color-nova-bg: var(--color-nova-bg);
+  --color-nova-bg-subtle: var(--color-nova-bg-subtle);
+  --color-nova-surface: var(--color-nova-surface);
+  --color-nova-surface-elevated: var(--color-nova-surface-elevated);
+  --color-nova-border: var(--color-nova-border);
+  --color-nova-taupe: var(--color-nova-taupe);
+  --color-nova-icon: var(--color-nova-icon);
+  --color-nova-text-muted: var(--color-nova-text-muted);
+  --color-nova-text: var(--color-nova-text);
+  --color-nova-accent: var(--color-nova-accent);
+  --color-nova-accent-hover: var(--color-nova-accent-hover);
+  --color-nova-accent-contrast: var(--color-nova-accent-contrast);
+  --color-nova-accent-soft: var(--color-nova-accent-soft);
+  --color-nova-sage: var(--color-nova-sage);
+  --color-nova-sage-text: var(--color-nova-sage-text);
+  --color-nova-sage-soft: var(--color-nova-sage-soft);
+  --color-nova-danger: var(--color-nova-danger);
+  --color-nova-danger-soft: var(--color-nova-danger-soft);
+  --color-nova-danger-border: var(--color-nova-danger-border);
+  --color-nova-warning: var(--color-nova-warning);
+  --color-nova-warning-soft: var(--color-nova-warning-soft);
+  --color-nova-warning-border: var(--color-nova-warning-border);
+  --color-nova-success: var(--color-nova-success);
+  --color-nova-success-soft: var(--color-nova-success-soft);
+  --color-nova-success-border: var(--color-nova-success-border);
 }
 
 html[data-font-scale="small"] {
@@ -53,12 +129,13 @@ html[data-font-scale="large"] {
 }
 
 @layer base {
+  html,
   body {
     font-family: inherit;
     -webkit-tap-highlight-color: transparent;
-    color: var(--nova-text);
-    background-color: var(--nova-bg);
-    transition: background-color 0.2s ease, color 0.2s ease;
+    color: var(--color-nova-text);
+    background-color: var(--color-nova-bg);
+    transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
   }
 
   button,
@@ -73,7 +150,7 @@ html[data-font-scale="large"] {
   input:focus-visible,
   textarea:focus-visible,
   select:focus-visible {
-    outline: 2px solid var(--nova-accent);
+    outline: 2px solid var(--color-nova-accent);
     outline-offset: 2px;
   }
 }
@@ -101,39 +178,41 @@ html[data-font-scale="large"] {
   scrollbar-width: none;
 }
 
-/* Soft Warm Ambient Shadows (Single-Level Depth) */
+/* Soft Neutral Ambient Shadows */
 .ios-card-shadow,
 .nova-card-shadow {
-  box-shadow: 0 2px 14px -2px rgba(50, 38, 34, 0.05), 0 1px 4px -1px rgba(50, 38, 34, 0.03);
+  box-shadow: 0 2px 14px -2px rgba(55, 54, 48, 0.05), 0 1px 4px -1px rgba(55, 54, 48, 0.03);
 }
 
 html.dark .ios-card-shadow,
-html.dark .nova-card-shadow {
-  box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.35), 0 1px 4px rgba(0, 0, 0, 0.25);
+html.dark .nova-card-shadow,
+html[data-theme="dark"] .ios-card-shadow,
+html[data-theme="dark"] .nova-card-shadow {
+  box-shadow: 0 4px 18px -2px rgba(0, 0, 0, 0.28), 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .ios-float-shadow {
-  box-shadow: 0 12px 32px -6px rgba(50, 38, 34, 0.12), 0 4px 12px -2px rgba(50, 38, 34, 0.06);
+  box-shadow: 0 12px 32px -6px rgba(55, 54, 48, 0.14), 0 4px 12px -2px rgba(55, 54, 48, 0.07);
 }
 
 .ios-nav-shadow {
-  box-shadow: 0 -4px 20px -4px rgba(50, 38, 34, 0.05);
+  box-shadow: 0 -4px 20px -4px rgba(55, 54, 48, 0.05);
 }
 
 /* Unified Design System Surface Helpers */
 .nova-surface {
-  background-color: var(--nova-surface);
-  border: 1px solid var(--nova-border);
+  background-color: var(--color-nova-surface);
+  border: 1px solid var(--color-nova-border);
 }
 
 .nova-linen {
-  background-color: var(--nova-linen);
-  border: 1px solid var(--nova-border);
+  background-color: var(--color-nova-bg-subtle);
+  border: 1px solid var(--color-nova-border);
 }
 
 /* Gentle tactile press without distracting flash */
 .nova-press {
-  transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.18s ease, border-color 0.18s ease;
+  transition: transform 0.16s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease;
 }
 
 .nova-press:active {

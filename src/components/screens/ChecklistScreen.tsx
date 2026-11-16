@@ -97,9 +97,9 @@ export const ChecklistScreen: React.FC<ChecklistScreenProps> = ({ user, onBack }
       setNewNotes('');
       setNewWeek('');
       setShowAddModal(false);
-      showMsg('Đã thêm mục checklist mới');
+      showMsg('Đã thêm mục chuẩn bị mới');
     } catch (err: any) {
-      showMsg(err?.message || 'Không thể thêm mục checklist');
+      showMsg(err?.message || 'Không thể thêm mục chuẩn bị');
     }
   };
 
@@ -107,14 +107,14 @@ export const ChecklistScreen: React.FC<ChecklistScreenProps> = ({ user, onBack }
     setItems((prev) => prev.filter((c) => c.id !== id));
     try {
       await apiService.deleteChecklistItem(id, user);
-      showMsg('Đã xóa mục khỏi checklist');
+      showMsg('Đã xóa mục khỏi sổ chuẩn bị');
     } catch {}
   };
 
   const handleCreateReminderFromItem = async (item: ChecklistItem) => {
     const createdRem = storageService.addHealthReminder(
       {
-        title: `Checklist: ${item.title}`,
+        title: `Sổ chuẩn bị: ${item.title}`,
         category: 'checkup',
         time: '09:00',
         frequency: 'once',
@@ -132,41 +132,41 @@ export const ChecklistScreen: React.FC<ChecklistScreenProps> = ({ user, onBack }
         user
       );
       setItems((prev) => prev.map((c) => (c.id === updated.id ? updated : c)));
-      showMsg('Đã tạo nhắc nhở 09:00 từ checklist!');
+      showMsg('Đã tạo nhắc nhở lúc 09:00 từ sổ chuẩn bị');
     } catch {
       showMsg('Đã lưu nhắc nhở trên thiết bị');
     }
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-[#FAF6F0] dark:bg-[#161311] overflow-y-auto no-scrollbar select-none">
+    <div className="flex-1 flex flex-col bg-nova-bg text-nova-text overflow-y-auto no-scrollbar select-none">
       {toast && (
-        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-[#322622] dark:bg-[#231E1B] text-[#FAF6F0] border border-[#E6DDD1]/20 text-xs font-semibold px-4 py-2 rounded-full shadow-lg">
+        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-nova-text text-nova-bg border border-nova-border/20 text-xs font-semibold px-4 py-2 rounded-full shadow-lg">
           {toast}
         </div>
       )}
 
-      <header className="px-4 sm:px-5 py-3 flex items-center justify-between border-b border-[#E6DDD1] dark:border-[#362E2A] sticky top-0 bg-[#FAF6F0]/95 dark:bg-[#161311]/95 backdrop-blur-md z-20">
+      <header className="px-4 sm:px-5 py-3 flex items-center justify-between border-b border-nova-border sticky top-0 bg-nova-bg/95 backdrop-blur-md z-20">
         <div className="flex items-center gap-3">
           <button
             onClick={onBack}
             aria-label="Quay lại"
-            className="w-9 h-9 rounded-full bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-[#6B5D56] dark:text-[#C5B9B0] cursor-pointer hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B] transition-colors"
+            className="w-9 h-9 rounded-full bg-nova-surface border border-nova-border flex items-center justify-center text-nova-text-muted cursor-pointer hover:bg-nova-bg-subtle transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
-            <h1 className="font-editorial text-[18px] font-bold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5 leading-tight">
-              <CheckSquare className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892]" /> Nova Checklist
+            <h1 className="font-editorial text-[18px] font-bold text-nova-text flex items-center gap-1.5 leading-tight">
+              <CheckSquare className="w-4 h-4 text-nova-sage-text" /> Sổ chuẩn bị mẹ và bé
             </h1>
-            <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">
-              Chuẩn bị chu toàn từ thai kỳ đến đi sinh
+            <p className="text-[11px] text-nova-text-muted">
+              Chuẩn bị chu toàn từ thai kỳ đến ngày đi sinh
             </p>
           </div>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="min-h-[38px] px-3.5 py-2 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-xs font-bold flex items-center gap-1 cursor-pointer whitespace-nowrap transition-colors"
+          className="min-h-[38px] px-3.5 py-2 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-bold flex items-center gap-1 cursor-pointer whitespace-nowrap transition-colors"
         >
           <Plus className="w-4 h-4" /> Thêm mục
         </button>
@@ -174,16 +174,16 @@ export const ChecklistScreen: React.FC<ChecklistScreenProps> = ({ user, onBack }
 
       <div className="p-4 sm:p-5 space-y-4">
         {/* Progress Overview */}
-        <div className="p-4 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] space-y-2.5">
+        <div className="p-4 rounded-2xl bg-nova-surface border border-nova-border space-y-2.5">
           <div className="flex items-center justify-between text-xs font-bold">
-            <span className="text-[#322622] dark:text-[#F4EDE6]">Tiến độ hoàn thành tổng thể</span>
-            <span className="text-[#4F6B56] dark:text-[#8DA892] tabular-nums">
+            <span className="text-nova-text">Tiến độ hoàn thành tổng thể</span>
+            <span className="text-nova-sage-text tabular-nums">
               {totalDone}/{items.length} mục ({totalPct}%)
             </span>
           </div>
-          <div className="h-2.5 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] overflow-hidden">
+          <div className="h-2.5 rounded-full bg-nova-bg-subtle overflow-hidden">
             <div
-              className="h-full bg-[#4F6B56] dark:bg-[#8DA892] rounded-full transition-all"
+              className="h-full bg-nova-sage rounded-full transition-all"
               style={{ width: `${totalPct}%` }}
             />
           </div>
@@ -200,8 +200,8 @@ export const ChecklistScreen: React.FC<ChecklistScreenProps> = ({ user, onBack }
                 onClick={() => setActiveCategory(cat.id)}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap shrink-0 cursor-pointer tabular-nums transition-colors ${
                   activeCategory === cat.id
-                    ? 'bg-[#B55841] text-white'
-                    : 'bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-[#6B5D56] dark:text-[#C5B9B0] hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B]'
+                    ? 'bg-nova-accent text-nova-accent-contrast'
+                    : 'bg-nova-surface border border-nova-border text-nova-text-muted hover:bg-nova-bg-subtle'
                 }`}
               >
                 {cat.label} ({count})
@@ -213,9 +213,9 @@ export const ChecklistScreen: React.FC<ChecklistScreenProps> = ({ user, onBack }
         {/* Checklist Items */}
         <div className="space-y-2.5">
           {filtered.length === 0 ? (
-            <div className="py-12 text-center text-[#786962] dark:text-[#B5A89F] bg-white dark:bg-[#1E1A17] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A]">
+            <div className="py-12 text-center text-nova-text-muted bg-nova-surface rounded-2xl border border-nova-border">
               <CheckSquare className="w-8 h-8 mx-auto mb-2 opacity-40" />
-              <p className="font-editorial text-[15px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+              <p className="font-editorial text-[15px] font-semibold text-nova-text">
                 Chưa có mục nào trong nhóm này
               </p>
             </div>
@@ -223,7 +223,7 @@ export const ChecklistScreen: React.FC<ChecklistScreenProps> = ({ user, onBack }
             filtered.map((item) => (
               <div
                 key={item.id}
-                className="p-3.5 rounded-2xl bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-start gap-3"
+                className="p-3.5 rounded-2xl bg-nova-surface border border-nova-border flex items-start gap-3"
               >
                 <button
                   onClick={() => handleToggleItem(item)}
@@ -231,40 +231,40 @@ export const ChecklistScreen: React.FC<ChecklistScreenProps> = ({ user, onBack }
                   aria-label="Đánh dấu hoàn thành"
                 >
                   {item.completed ? (
-                    <CheckCircle2 className="w-6 h-6 text-[#4F6B56] dark:text-[#8DA892]" />
+                    <CheckCircle2 className="w-6 h-6 text-nova-sage-text" />
                   ) : (
-                    <Circle className="w-6 h-6 text-[#C5B9B0] dark:text-[#4A403B]" />
+                    <Circle className="w-6 h-6 text-nova-icon" />
                   )}
                 </button>
                 <div className="flex-1 min-w-0">
                   <p
                     className={`text-xs font-bold leading-snug ${
                       item.completed
-                        ? 'line-through text-[#786962] dark:text-[#B5A89F]'
-                        : 'text-[#322622] dark:text-[#F4EDE6]'
+                        ? 'line-through text-nova-text-muted'
+                        : 'text-nova-text'
                     }`}
                   >
                     {item.title}
                   </p>
                   {item.notes && (
-                    <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] mt-1">{item.notes}</p>
+                    <p className="text-[11px] text-nova-text-muted mt-1">{item.notes}</p>
                   )}
                   <div className="flex items-center gap-2 mt-2 flex-wrap">
-                    <span className="text-[10.5px] font-medium text-[#786962] dark:text-[#B5A89F]">
+                    <span className="text-[10.5px] font-medium text-nova-text-muted">
                       {CATEGORY_LABELS.find((c) => c.id === item.category)?.label || item.category}
                     </span>
                     {item.weekNumber && (
                       <>
-                        <span className="text-[#D6CCC0] dark:text-[#4A403B]">·</span>
-                        <span className="text-[10.5px] text-[#B55841] dark:text-[#D47A63] font-bold tabular-nums">
+                        <span className="text-nova-border">·</span>
+                        <span className="text-[10.5px] text-nova-accent font-bold tabular-nums">
                           Tuần {item.weekNumber}
                         </span>
                       </>
                     )}
-                    <span className="text-[#D6CCC0] dark:text-[#4A403B]">·</span>
+                    <span className="text-nova-border">·</span>
                     <button
                       onClick={() => handleCreateReminderFromItem(item)}
-                      className="text-[10.5px] font-bold text-[#9E5B3B] dark:text-[#D7BA86] flex items-center gap-1 hover:underline cursor-pointer"
+                      className="text-[10.5px] font-bold text-nova-warning flex items-center gap-1 hover:underline cursor-pointer"
                     >
                       <BellPlus className="w-3 h-3" />
                       {item.reminderId ? 'Đã gắn nhắc nhở' : 'Tạo nhắc nhở'}
@@ -273,8 +273,9 @@ export const ChecklistScreen: React.FC<ChecklistScreenProps> = ({ user, onBack }
                 </div>
                 <button
                   onClick={() => handleDeleteItem(item.id)}
-                  className="p-1.5 text-[#B5A89F] hover:text-[#B55841] dark:hover:text-[#D47A63] cursor-pointer shrink-0 transition-colors"
+                  className="p-1.5 text-nova-icon hover:text-nova-danger cursor-pointer shrink-0 transition-colors"
                   title="Xóa mục"
+                  aria-label="Xóa mục"
                 >
                   <Trash2 className="w-4 h-4" />
                 </button>
@@ -285,26 +286,26 @@ export const ChecklistScreen: React.FC<ChecklistScreenProps> = ({ user, onBack }
       </div>
 
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#161311]/60 backdrop-blur-xs">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1C1B18]/60 backdrop-blur-xs">
           <form
             onSubmit={handleAddItem}
-            className="w-full max-w-sm bg-[#FAF6F0] dark:bg-[#1E1A17] rounded-3xl p-5 border border-[#E6DDD1] dark:border-[#362E2A] space-y-3 shadow-2xl"
+            className="w-full max-w-sm bg-nova-surface-elevated rounded-3xl p-5 border border-nova-border space-y-3 shadow-2xl"
           >
-            <div className="flex items-center justify-between pb-2 border-b border-[#E6DDD1] dark:border-[#362E2A]">
-              <h3 className="font-editorial text-[18px] font-bold text-[#322622] dark:text-[#F4EDE6]">
-                Thêm mục Checklist mới
+            <div className="flex items-center justify-between pb-2 border-b border-nova-border">
+              <h3 className="font-editorial text-[18px] font-bold text-nova-text">
+                Thêm mục chuẩn bị mới
               </h3>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
                 aria-label="Đóng"
-                className="w-8 h-8 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] dark:text-[#B5A89F] flex items-center justify-center cursor-pointer"
+                className="w-8 h-8 rounded-full bg-nova-bg-subtle text-nova-text-muted flex items-center justify-center cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
             <div>
-              <label className="block text-[11px] font-bold text-[#6B5D56] dark:text-[#C5B9B0] mb-1">
+              <label className="block text-[11px] font-bold text-nova-text-muted mb-1">
                 Nội dung cần chuẩn bị *
               </label>
               <input
@@ -312,19 +313,19 @@ export const ChecklistScreen: React.FC<ChecklistScreenProps> = ({ user, onBack }
                 required
                 value={newTitle}
                 onChange={(e) => setNewTitle(e.target.value)}
-                placeholder="VD: Mua máy hút sữa & túi trữ sữa"
-                className="w-full px-3 py-2.5 rounded-xl bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6]"
+                placeholder="Ví dụ: Mua máy hút sữa và túi trữ sữa"
+                className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-accent"
               />
             </div>
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-[11px] font-bold text-[#6B5D56] dark:text-[#C5B9B0] mb-1">
-                  Nhóm checklist
+                <label className="block text-[11px] font-bold text-nova-text-muted mb-1">
+                  Nhóm chuẩn bị
                 </label>
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value as ChecklistCategory)}
-                  className="w-full px-2.5 py-2.5 rounded-xl bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6]"
+                  className="w-full px-2.5 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-accent"
                 >
                   {CATEGORY_LABELS.filter((c) => c.id !== 'all').map((c) => (
                     <option key={c.id} value={c.id}>
@@ -334,7 +335,7 @@ export const ChecklistScreen: React.FC<ChecklistScreenProps> = ({ user, onBack }
                 </select>
               </div>
               <div>
-                <label className="block text-[11px] font-bold text-[#6B5D56] dark:text-[#C5B9B0] mb-1">
+                <label className="block text-[11px] font-bold text-nova-text-muted mb-1">
                   Tuần gợi ý
                 </label>
                 <input
@@ -344,12 +345,12 @@ export const ChecklistScreen: React.FC<ChecklistScreenProps> = ({ user, onBack }
                   value={newWeek}
                   onChange={(e) => setNewWeek(e.target.value)}
                   placeholder="Tuần (tùy chọn)"
-                  className="w-full px-3 py-2.5 rounded-xl bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6] tabular-nums"
+                  className="w-full px-3 py-2.5 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text tabular-nums focus:outline-none focus:border-nova-accent"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-bold text-[#6B5D56] dark:text-[#C5B9B0] mb-1">
+              <label className="block text-[11px] font-bold text-nova-text-muted mb-1">
                 Ghi chú thêm
               </label>
               <textarea
@@ -357,14 +358,14 @@ export const ChecklistScreen: React.FC<ChecklistScreenProps> = ({ user, onBack }
                 value={newNotes}
                 onChange={(e) => setNewNotes(e.target.value)}
                 placeholder="Chi tiết thương hiệu, kích cỡ hoặc lưu ý..."
-                className="w-full px-3 py-2 rounded-xl bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6]"
+                className="w-full px-3 py-2 rounded-xl bg-nova-bg border border-nova-border text-xs text-nova-text focus:outline-none focus:border-nova-accent"
               />
             </div>
             <button
               type="submit"
-              className="w-full min-h-[44px] py-2.5 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-xs font-bold cursor-pointer transition-colors"
+              className="w-full min-h-[44px] py-2.5 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs font-bold cursor-pointer transition-colors"
             >
-              Lưu vào Checklist
+              Lưu vào sổ chuẩn bị
             </button>
           </form>
         </div>

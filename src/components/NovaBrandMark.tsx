@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface NovaBrandMarkProps {
   className?: string;
@@ -54,8 +54,8 @@ export const NovaLotusDivider: React.FC<{ label?: string; className?: string }> 
   className = '',
 }) => (
   <div className={`flex items-center gap-3 select-none ${className}`}>
-    <div className="h-px flex-1 bg-[#E6DDD1] dark:bg-[#362E2A]" />
-    <div className="flex items-center gap-2 text-[#C4A46B]">
+    <div className="h-px flex-1 bg-nova-border" />
+    <div className="flex items-center gap-2 text-nova-taupe">
       <svg viewBox="0 0 24 12" className="w-5 h-2.5" fill="none" aria-hidden="true">
         <path
           d="M12 1.5C10.6 4.2 10.6 7.8 12 10.5C13.4 7.8 13.4 4.2 12 1.5Z"
@@ -74,17 +74,25 @@ export const NovaLotusDivider: React.FC<{ label?: string; className?: string }> 
         />
       </svg>
       {label && (
-        <span className="text-[11px] font-medium tracking-wide text-[#786962] dark:text-[#B5A89F] whitespace-nowrap">
+        <span className="text-[11px] font-medium tracking-wide text-nova-text-muted whitespace-nowrap">
           {label}
         </span>
       )}
     </div>
-    <div className="h-px flex-1 bg-[#E6DDD1] dark:bg-[#362E2A]" />
+    <div className="h-px flex-1 bg-nova-border" />
   </div>
 );
 
 interface NovaImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallbackTitle?: string;
+}
+
+function normalizeImageSrc(rawSrc?: string): string | undefined {
+  if (!rawSrc) return rawSrc;
+  if (rawSrc.startsWith('/src/assets/images/')) {
+    return rawSrc.replace('/src/assets/images/', '/images/');
+  }
+  return rawSrc;
 }
 
 /**
@@ -97,16 +105,21 @@ export const NovaImage: React.FC<NovaImageProps> = ({
   fallbackTitle,
   ...rest
 }) => {
+  const resolvedSrc = normalizeImageSrc(src);
   const [hasError, setHasError] = useState(false);
 
-  if (!src || hasError) {
+  useEffect(() => {
+    setHasError(false);
+  }, [resolvedSrc]);
+
+  if (!resolvedSrc || hasError) {
     return (
       <div
         role="img"
         aria-label={alt || fallbackTitle || 'Hình ảnh Nova'}
-        className={`flex flex-col items-center justify-center bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] dark:text-[#B5A89F] border border-[#E6DDD1] dark:border-[#362E2A] p-4 text-center ${className}`}
+        className={`flex flex-col items-center justify-center bg-nova-bg-subtle text-nova-text-muted border border-nova-border p-4 text-center ${className}`}
       >
-        <NovaBrandMark className="w-8 h-8 text-[#B55841]/70 mb-1.5" />
+        <NovaBrandMark className="w-8 h-8 text-nova-accent/70 mb-1.5" />
         {(fallbackTitle || alt) && (
           <span className="text-xs font-medium line-clamp-2 max-w-[16rem] opacity-85">
             {fallbackTitle || alt}
@@ -118,7 +131,7 @@ export const NovaImage: React.FC<NovaImageProps> = ({
 
   return (
     <img
-      src={src}
+      src={resolvedSrc}
       alt={alt || ''}
       referrerPolicy="no-referrer"
       onError={() => setHasError(true)}
@@ -143,21 +156,21 @@ export const NovaEmptyState: React.FC<NovaEmptyStateProps> = ({
   onAction,
   icon,
 }) => (
-  <div className="rounded-2xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] p-6 sm:p-8 text-center flex flex-col items-center justify-center">
-    <div className="w-12 h-12 rounded-2xl bg-[#F2ECE3] dark:bg-[#2A2320] text-[#B55841] dark:text-[#D47A63] flex items-center justify-center mb-3">
+  <div className="rounded-2xl bg-nova-surface border border-nova-border p-6 sm:p-8 text-center flex flex-col items-center justify-center">
+    <div className="w-12 h-12 rounded-2xl bg-nova-bg-subtle text-nova-accent flex items-center justify-center mb-3">
       {icon || <NovaBrandMark className="w-6 h-6" />}
     </div>
-    <h4 className="font-editorial text-base sm:text-lg font-semibold text-[#322622] dark:text-[#F4EDE6]">
+    <h4 className="font-editorial text-base sm:text-lg font-semibold text-nova-text">
       {title}
     </h4>
-    <p className="text-xs sm:text-sm text-[#786962] dark:text-[#B5A89F] mt-1.5 max-w-md leading-relaxed">
+    <p className="text-xs sm:text-sm text-nova-text-muted mt-1.5 max-w-md leading-relaxed">
       {description}
     </p>
     {actionLabel && onAction && (
       <button
         type="button"
         onClick={onAction}
-        className="mt-4 px-5 py-2.5 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-xs sm:text-sm font-semibold transition-colors cursor-pointer min-h-[44px] whitespace-nowrap"
+        className="mt-4 px-5 py-2.5 rounded-xl bg-nova-accent hover:bg-nova-accent-hover text-nova-accent-contrast text-xs sm:text-sm font-semibold transition-colors cursor-pointer min-h-[44px] whitespace-nowrap"
       >
         {actionLabel}
       </button>
