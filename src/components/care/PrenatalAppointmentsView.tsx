@@ -44,6 +44,9 @@ export const PrenatalAppointmentsView: React.FC = () => {
   const [completingApt, setCompletingApt] = useState<PrenatalAppointment | null>(null);
   const [resultsSummary, setResultsSummary] = useState('');
 
+  // Delete confirmation state
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const triggerToast = (msg: string) => {
@@ -101,13 +104,11 @@ export const PrenatalAppointmentsView: React.FC = () => {
     triggerToast('Đã thêm câu hỏi cần hỏi bác sĩ!');
   };
 
-  const handleDeleteAppointment = (id: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (window.confirm('Bạn có chắc chắn muốn xóa lịch khám thai này không?')) {
-      const updated = storageService.deletePrenatalAppointment(id);
-      setAppointments(updated);
-      triggerToast('Đã xóa lịch khám');
-    }
+  const handleConfirmDeleteAppointment = (id: string) => {
+    const updated = storageService.deletePrenatalAppointment(id);
+    setAppointments(updated);
+    setConfirmDeleteId(null);
+    triggerToast('Đã xóa lịch khám');
   };
 
   const handleConfirmComplete = () => {
@@ -135,7 +136,7 @@ export const PrenatalAppointmentsView: React.FC = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-[#3A2E2B] text-white px-4 py-2 rounded-full text-xs font-semibold shadow-lg border border-white/10"
+            className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-[#322622] dark:bg-[#F4EDE6] text-white dark:text-[#322622] px-4 py-2 rounded-full text-xs font-semibold shadow-lg"
           >
             {toastMessage}
           </motion.div>
@@ -143,21 +144,23 @@ export const PrenatalAppointmentsView: React.FC = () => {
       </AnimatePresence>
 
       {/* Top Banner & Action */}
-      <div className="bg-white rounded-3xl p-5 border border-[#F0ECE9] shadow-xs flex items-center justify-between">
-        <div className="flex items-center gap-2.5">
-          <div className="w-10 h-10 rounded-2xl bg-[#FCEEEB] text-[#C84B4B] flex items-center justify-center">
+      <div className="bg-white dark:bg-[#1E1A17] rounded-3xl p-5 border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3 min-w-0">
+          <div className="w-10 h-10 rounded-2xl bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] flex items-center justify-center shrink-0">
             <Stethoscope className="w-5 h-5" />
           </div>
-          <div>
-            <h3 className="text-sm font-bold text-[#3A2E2B]">Sổ theo dõi Lịch khám thai</h3>
-            <p className="text-[11px] text-[#8C7B75]">
+          <div className="min-w-0">
+            <h3 className="font-editorial text-[16px] font-semibold text-[#322622] dark:text-[#F4EDE6] truncate">
+              Sổ theo dõi Lịch khám thai
+            </h3>
+            <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">
               Chuẩn 6 mốc vàng tầm soát của Bộ Y tế
             </p>
           </div>
         </div>
         <button
           onClick={() => setShowAddModal(true)}
-          className="flex items-center gap-1.5 px-3.5 py-2 bg-[#C84B4B] hover:bg-[#B33E3E] text-white rounded-2xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+          className="flex items-center gap-1.5 px-3.5 py-2.5 bg-[#B55841] hover:bg-[#9E4A35] text-white rounded-2xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap min-h-[44px]"
         >
           <Plus className="w-4 h-4" />
           <span>Đặt lịch khám</span>
@@ -165,23 +168,23 @@ export const PrenatalAppointmentsView: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex items-center gap-2 p-1 bg-[#F5F0EB] rounded-2xl">
+      <div className="flex items-center gap-2 p-1 bg-[#F2ECE3] dark:bg-[#231E1B] rounded-2xl">
         <button
           onClick={() => setActiveTab('upcoming')}
-          className={`flex-1 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+          className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer min-h-[40px] ${
             activeTab === 'upcoming'
-              ? 'bg-white text-[#3A2E2B] shadow-xs'
-              : 'text-[#8C7B75] hover:text-[#3A2E2B]'
+              ? 'bg-white dark:bg-[#1E1A17] text-[#322622] dark:text-[#F4EDE6]'
+              : 'text-[#786962] dark:text-[#B5A89F] hover:text-[#322622]'
           }`}
         >
           Lịch khám sắp tới ({appointments.filter((a) => a.status === 'upcoming').length})
         </button>
         <button
           onClick={() => setActiveTab('completed')}
-          className={`flex-1 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer ${
+          className={`flex-1 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer min-h-[40px] ${
             activeTab === 'completed'
-              ? 'bg-white text-[#3A2E2B] shadow-xs'
-              : 'text-[#8C7B75] hover:text-[#3A2E2B]'
+              ? 'bg-white dark:bg-[#1E1A17] text-[#322622] dark:text-[#F4EDE6]'
+              : 'text-[#786962] dark:text-[#B5A89F] hover:text-[#322622]'
           }`}
         >
           Đã khám xong ({appointments.filter((a) => a.status === 'completed').length})
@@ -191,8 +194,8 @@ export const PrenatalAppointmentsView: React.FC = () => {
       {/* Appointments List */}
       <div className="space-y-3">
         {filteredAppointments.length === 0 ? (
-          <div className="bg-white rounded-3xl p-8 text-center text-[#8C7B75] border border-[#F0ECE9]">
-            <Calendar className="w-8 h-8 mx-auto text-[#DDD6CF] mb-2" />
+          <div className="bg-white dark:bg-[#1E1A17] rounded-3xl p-8 text-center text-[#786962] dark:text-[#B5A89F] border border-[#E6DDD1] dark:border-[#362E2A]">
+            <Calendar className="w-8 h-8 mx-auto text-[#C4B7AD] mb-2" />
             <p className="text-xs font-medium">
               {activeTab === 'upcoming'
                 ? 'Mẹ không có lịch khám sắp tới. Hãy bấm "Đặt lịch khám" để ghi nhớ ngày hẹn!'
@@ -207,36 +210,35 @@ export const PrenatalAppointmentsView: React.FC = () => {
             return (
               <div
                 key={apt.id}
-                className="bg-white rounded-3xl border border-[#F0ECE9] shadow-xs overflow-hidden transition-all"
+                className="bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] overflow-hidden transition-all"
               >
                 {/* Main Card Header */}
                 <div
                   onClick={() => setExpandedAptId(isExpanded ? null : apt.id)}
-                  className="p-5 cursor-pointer hover:bg-[#FFFDFB] transition-colors"
+                  className="p-5 cursor-pointer hover:bg-[#FAF6F0]/60 dark:hover:bg-[#231E1B]/50 transition-colors"
                 >
                   <div className="flex items-start justify-between gap-3 mb-2">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex items-center gap-1.5 mb-1 text-[11px] font-semibold">
                         {apt.weekRecommended && (
-                          <span className="text-[10px] font-bold text-[#C84B4B] bg-[#FCEEEB] px-2 py-0.5 rounded-full">
-                            Tuần {apt.weekRecommended}
+                          <span className="text-[#B55841] dark:text-[#D47A63]">
+                            Tuần {apt.weekRecommended} ·
                           </span>
                         )}
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          apt.status === 'completed'
-                            ? 'bg-[#EAFBF0] text-[#27AE60]'
-                            : 'bg-[#FEF5E7] text-[#E67E22]'
-                        }`}>
+                        <span className={apt.status === 'completed' ? 'text-[#4F6B56] dark:text-[#8DA892]' : 'text-[#9E5B3B] dark:text-[#D7BA86]'}>
                           {apt.status === 'completed' ? 'Đã hoàn thành' : 'Sắp tới'}
                         </span>
                       </div>
-                      <h4 className="text-sm font-bold text-[#3A2E2B] leading-snug">
+                      <h4 className="font-editorial text-[16px] font-semibold text-[#322622] dark:text-[#F4EDE6] leading-snug">
                         {apt.title}
                       </h4>
                     </div>
                     <button
-                      onClick={(e) => handleDeleteAppointment(apt.id, e)}
-                      className="p-1.5 text-[#BBB0A8] hover:text-[#C84B4B] transition-colors cursor-pointer"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setConfirmDeleteId(apt.id);
+                      }}
+                      className="p-2 text-[#A3958E] hover:text-[#B55841] transition-colors cursor-pointer"
                       title="Xóa lịch khám"
                     >
                       <Trash2 className="w-4 h-4" />
@@ -244,31 +246,31 @@ export const PrenatalAppointmentsView: React.FC = () => {
                   </div>
 
                   {/* Date, Time, Clinic */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#6E5D57] pt-2 border-t border-[#FAF6F3]">
-                    <div className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-[#C84B4B]" />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#6B5D56] dark:text-[#C5B9B0] pt-2.5 border-t border-[#E6DDD1]/60 dark:border-[#362E2A]">
+                    <div className="flex items-center gap-1.5 tabular-nums">
+                      <Calendar className="w-3.5 h-3.5 text-[#B55841] dark:text-[#D47A63]" />
                       <span className="font-semibold">{apt.date} ({apt.time})</span>
                     </div>
                     <div className="flex items-center gap-1.5 truncate">
-                      <MapPin className="w-3.5 h-3.5 text-[#2980B9]" />
+                      <MapPin className="w-3.5 h-3.5 text-[#6D8572]" />
                       <span className="truncate">{apt.hospitalOrClinic}</span>
                     </div>
                   </div>
 
                   {/* Doctor & Question Counter Preview */}
-                  <div className="flex items-center justify-between mt-3 pt-2 border-t border-[#FAF6F3] text-[11px]">
-                    <div className="flex items-center gap-1.5 text-[#8C7B75]">
+                  <div className="flex items-center justify-between mt-3 pt-2.5 border-t border-[#E6DDD1]/60 dark:border-[#362E2A] text-[11px]">
+                    <div className="flex items-center gap-1.5 text-[#786962] dark:text-[#B5A89F]">
                       <User className="w-3.5 h-3.5" />
                       <span>{apt.doctorName || 'Bác sĩ sản khoa phụ trách'}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-[#C84B4B]">
+                      <span className="font-semibold text-[#B55841] dark:text-[#D47A63] tabular-nums">
                         {answeredCount}/{apt.questions.length} câu hỏi đã giải đáp
                       </span>
                       {isExpanded ? (
-                        <ChevronUp className="w-4 h-4 text-[#8C7B75]" />
+                        <ChevronUp className="w-4 h-4 text-[#786962]" />
                       ) : (
-                        <ChevronDown className="w-4 h-4 text-[#8C7B75]" />
+                        <ChevronDown className="w-4 h-4 text-[#786962]" />
                       )}
                     </div>
                   </div>
@@ -281,12 +283,12 @@ export const PrenatalAppointmentsView: React.FC = () => {
                       initial={{ height: 0, opacity: 0 }}
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
-                      className="border-t border-[#F0ECE9] bg-[#FAF8F5] p-5 space-y-4"
+                      className="border-t border-[#E6DDD1] dark:border-[#362E2A] bg-[#FAF6F0] dark:bg-[#231E1B] p-5 space-y-4"
                     >
                       {/* Clinical Notes */}
                       {apt.notes && (
-                        <div className="p-3 bg-white rounded-2xl border border-[#EFEAE5] text-xs text-[#6E5D57] leading-relaxed">
-                          <strong className="text-[#3A2E2B] font-bold block mb-1">
+                        <div className="p-3.5 bg-white dark:bg-[#1E1A17] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#6B5D56] dark:text-[#C5B9B0] leading-relaxed">
+                          <strong className="text-[#322622] dark:text-[#F4EDE6] font-semibold block mb-1">
                             Lưu ý chuẩn bị trước khi khám:
                           </strong>
                           {apt.notes}
@@ -296,13 +298,13 @@ export const PrenatalAppointmentsView: React.FC = () => {
                       {/* Doctor Questions Checklist */}
                       <div>
                         <div className="flex items-center justify-between mb-2">
-                          <h5 className="text-xs font-bold text-[#3A2E2B] flex items-center gap-1.5">
-                            <HelpCircle className="w-3.5 h-3.5 text-[#C84B4B]" />
+                          <h5 className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5">
+                            <HelpCircle className="w-3.5 h-3.5 text-[#B55841] dark:text-[#D47A63]" />
                             <span>Danh sách câu hỏi cần hỏi bác sĩ:</span>
                           </h5>
                           <button
                             onClick={() => setActiveQuestionAptId(apt.id)}
-                            className="text-[11px] font-bold text-[#C84B4B] hover:underline cursor-pointer"
+                            className="text-[11px] font-semibold text-[#B55841] dark:text-[#D47A63] hover:underline cursor-pointer"
                           >
                             + Thêm câu hỏi
                           </button>
@@ -310,23 +312,23 @@ export const PrenatalAppointmentsView: React.FC = () => {
 
                         {/* Add question inline input */}
                         {activeQuestionAptId === apt.id && (
-                          <div className="flex items-center gap-2 mb-2">
+                          <div className="flex items-center gap-2 mb-2.5">
                             <input
                               type="text"
                               value={newQuestionText}
                               onChange={(e) => setNewQuestionText(e.target.value)}
                               placeholder="Nhập câu hỏi mẹ muốn hỏi bác sĩ..."
-                              className="flex-1 bg-white border border-[#EFEAE5] rounded-xl px-3 py-1.5 text-[16px] sm:text-xs text-[#3A2E2B] focus:outline-none focus:border-[#C84B4B]"
+                              className="flex-1 bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-[16px] sm:text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
                             />
                             <button
                               onClick={() => handleAddQuestion(apt.id)}
-                              className="px-3 py-1.5 bg-[#C84B4B] text-white rounded-xl text-xs font-bold cursor-pointer"
+                              className="px-3.5 py-2 bg-[#B55841] text-white rounded-xl text-xs font-semibold cursor-pointer"
                             >
                               Thêm
                             </button>
                             <button
                               onClick={() => setActiveQuestionAptId(null)}
-                              className="p-1 text-[#8C7B75] hover:text-[#3A2E2B] cursor-pointer"
+                              className="p-1.5 text-[#786962] hover:text-[#322622] cursor-pointer"
                             >
                               <X className="w-4 h-4" />
                             </button>
@@ -339,13 +341,13 @@ export const PrenatalAppointmentsView: React.FC = () => {
                             <div
                               key={q.id}
                               onClick={() => handleToggleQuestion(apt.id, q.id)}
-                              className="flex items-start gap-2.5 p-2.5 bg-white rounded-xl border border-[#EFEAE5] cursor-pointer hover:border-[#DDD6CF]"
+                              className="flex items-start gap-2.5 p-3 bg-white dark:bg-[#1E1A17] rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] cursor-pointer hover:border-[#B55841]/50"
                             >
                               <div
                                 className={`w-4.5 h-4.5 rounded-md border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${
                                   q.isAnswered
-                                    ? 'bg-[#27AE60] border-[#27AE60] text-white'
-                                    : 'border-[#CCC3BD] bg-white'
+                                    ? 'bg-[#6D8572] border-[#6D8572] text-white'
+                                    : 'border-[#C4B7AD] dark:border-[#524640] bg-white dark:bg-[#231E1B]'
                                 }`}
                               >
                                 {q.isAnswered && <Check className="w-3 h-3 stroke-[3]" />}
@@ -354,14 +356,14 @@ export const PrenatalAppointmentsView: React.FC = () => {
                                 <p
                                   className={`text-xs ${
                                     q.isAnswered
-                                      ? 'line-through text-[#8C7B75]'
-                                      : 'text-[#3A2E2B] font-medium'
+                                      ? 'line-through text-[#786962] dark:text-[#B5A89F]'
+                                      : 'text-[#322622] dark:text-[#F4EDE6] font-medium'
                                   }`}
                                 >
                                   {q.question}
                                 </p>
                                 {q.answerNotes && (
-                                  <p className="text-[11px] text-[#27AE60] font-semibold mt-1">
+                                  <p className="text-[11px] text-[#4F6B56] dark:text-[#8DA892] font-semibold mt-1">
                                     Bác sĩ giải đáp: {q.answerNotes}
                                   </p>
                                 )}
@@ -373,8 +375,8 @@ export const PrenatalAppointmentsView: React.FC = () => {
 
                       {/* Completed Result Notes */}
                       {apt.resultsSummary && (
-                        <div className="p-3 bg-[#EAFBF0] rounded-2xl border border-[#CDEED6] text-xs text-[#27AE60]">
-                          <strong className="font-bold block mb-1">Kết quả sau khám:</strong>
+                        <div className="p-3.5 bg-[#EBF1EC] dark:bg-[#1E2922] rounded-2xl border border-[#CFE0D3] dark:border-[#2C3F33] text-xs text-[#263E35] dark:text-[#A7C2AC]">
+                          <strong className="font-semibold block mb-1">Kết quả sau khám:</strong>
                           {apt.resultsSummary}
                         </div>
                       )}
@@ -384,7 +386,7 @@ export const PrenatalAppointmentsView: React.FC = () => {
                         <div className="pt-2">
                           <button
                             onClick={() => setCompletingApt(apt)}
-                            className="w-full py-2.5 bg-[#27AE60] hover:bg-[#219653] text-white rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 transition-colors shadow-xs cursor-pointer"
+                            className="w-full py-3 bg-[#263E35] hover:bg-[#1D3029] text-[#FAF6F0] rounded-2xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer min-h-[44px]"
                           >
                             <CheckCircle2 className="w-4 h-4" />
                             <span>Đã hoàn thành buổi khám thai</span>
@@ -400,6 +402,38 @@ export const PrenatalAppointmentsView: React.FC = () => {
         )}
       </div>
 
+      {/* Modal Xác nhận Xóa lịch khám */}
+      <AnimatePresence>
+        {confirmDeleteId && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#161311]/55 backdrop-blur-xs">
+            <div className="w-full max-w-sm bg-white dark:bg-[#1E1A17] rounded-3xl p-5 border border-[#E6DDD1] dark:border-[#362E2A] shadow-2xl space-y-3">
+              <h4 className="font-editorial text-base font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                Xóa lịch khám này?
+              </h4>
+              <p className="text-xs text-[#6B5D56] dark:text-[#C5B9B0]">
+                Mẹ có chắc muốn xóa lịch khám thai và danh sách câu hỏi kèm theo không?
+              </p>
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setConfirmDeleteId(null)}
+                  className="flex-1 py-2.5 rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] text-xs font-semibold text-[#786962] cursor-pointer min-h-[44px]"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleConfirmDeleteAppointment(confirmDeleteId)}
+                  className="flex-1 py-2.5 rounded-xl bg-[#B55841] text-white text-xs font-semibold cursor-pointer min-h-[44px]"
+                >
+                  Xóa lịch
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+
       {/* Modal Đặt Lịch Khám Mới */}
       <AnimatePresence>
         {showAddModal && (
@@ -409,28 +443,28 @@ export const PrenatalAppointmentsView: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setShowAddModal(false)}
-              className="fixed inset-0 bg-black/50 backdrop-blur-xs cursor-pointer"
+              className="fixed inset-0 bg-[#161311]/55 backdrop-blur-xs cursor-pointer"
             />
             <motion.form
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
               onSubmit={handleCreateAppointment}
-              className="relative w-full max-w-[460px] bg-white rounded-3xl p-6 shadow-2xl z-10 border border-[#F0ECE9] flex flex-col gap-3.5"
+              className="relative w-full max-w-[460px] bg-white dark:bg-[#1E1A17] rounded-3xl p-6 shadow-2xl z-10 border border-[#E6DDD1] dark:border-[#362E2A] flex flex-col gap-3.5"
             >
-              <div className="flex items-center justify-between pb-2 border-b border-[#F0ECE9]">
-                <h3 className="text-base font-bold text-[#3A2E2B]">Đặt lịch khám thai mới</h3>
+              <div className="flex items-center justify-between pb-2.5 border-b border-[#E6DDD1] dark:border-[#362E2A]">
+                <h3 className="font-editorial text-lg font-semibold text-[#322622] dark:text-[#F4EDE6]">Đặt lịch khám thai mới</h3>
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="w-8 h-8 rounded-full bg-[#FAF6F3] text-[#8C7B75] flex items-center justify-center hover:bg-[#EFEAE5] cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] flex items-center justify-center hover:bg-[#E6DDD1] cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#3A2E2B] block mb-1">
+                <label className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] block mb-1">
                   Tên buổi khám / Mốc tuần thai *
                 </label>
                 <input
@@ -439,35 +473,35 @@ export const PrenatalAppointmentsView: React.FC = () => {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="VD: Siêu âm 4D tuần 22 hoặc Tái khám định kỳ"
-                  className="w-full bg-[#FAF6F3] border border-[#EFEAE5] rounded-xl px-3 py-2 text-[16px] sm:text-xs text-[#3A2E2B] focus:outline-none focus:border-[#C84B4B]"
+                  className="w-full bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-[16px] sm:text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-xs font-bold text-[#3A2E2B] block mb-1">Ngày khám *</label>
+                  <label className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] block mb-1">Ngày khám *</label>
                   <input
                     type="date"
                     required
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
-                    className="w-full bg-[#FAF6F3] border border-[#EFEAE5] rounded-xl px-3 py-2 text-[16px] sm:text-xs text-[#3A2E2B] focus:outline-none focus:border-[#C84B4B]"
+                    className="w-full bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-[16px] sm:text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-[#3A2E2B] block mb-1">Giờ khám *</label>
+                  <label className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] block mb-1">Giờ khám *</label>
                   <input
                     type="time"
                     required
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
-                    className="w-full bg-[#FAF6F3] border border-[#EFEAE5] rounded-xl px-3 py-2 text-[16px] sm:text-xs text-[#3A2E2B] focus:outline-none focus:border-[#C84B4B]"
+                    className="w-full bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-[16px] sm:text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#3A2E2B] block mb-1">
+                <label className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] block mb-1">
                   Bệnh viện / Phòng khám *
                 </label>
                 <input
@@ -476,12 +510,12 @@ export const PrenatalAppointmentsView: React.FC = () => {
                   value={hospital}
                   onChange={(e) => setHospital(e.target.value)}
                   placeholder="VD: Bệnh viện Phụ Sản Từ Dũ hoặc Phòng khám Bác sĩ"
-                  className="w-full bg-[#FAF6F3] border border-[#EFEAE5] rounded-xl px-3 py-2 text-[16px] sm:text-xs text-[#3A2E2B] focus:outline-none focus:border-[#C84B4B]"
+                  className="w-full bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-[16px] sm:text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#3A2E2B] block mb-1">
+                <label className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] block mb-1">
                   Bác sĩ phụ trách (Tùy chọn)
                 </label>
                 <input
@@ -489,12 +523,12 @@ export const PrenatalAppointmentsView: React.FC = () => {
                   value={doctorName}
                   onChange={(e) => setDoctorName(e.target.value)}
                   placeholder="VD: BS. CKII Nguyễn Thị Kim Ánh"
-                  className="w-full bg-[#FAF6F3] border border-[#EFEAE5] rounded-xl px-3 py-2 text-[16px] sm:text-xs text-[#3A2E2B] focus:outline-none focus:border-[#C84B4B]"
+                  className="w-full bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-[16px] sm:text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#3A2E2B] block mb-1">
+                <label className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] block mb-1">
                   Ghi chú chuẩn bị (Tùy chọn)
                 </label>
                 <textarea
@@ -502,21 +536,21 @@ export const PrenatalAppointmentsView: React.FC = () => {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="VD: Nhịn ăn sáng để xét nghiệm máu, mang theo sổ khám cũ..."
-                  className="w-full bg-[#FAF6F3] border border-[#EFEAE5] rounded-xl px-3 py-2 text-[16px] sm:text-xs text-[#3A2E2B] focus:outline-none focus:border-[#C84B4B]"
+                  className="w-full bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-[16px] sm:text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#F0ECE9]">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E6DDD1] dark:border-[#362E2A]">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 text-xs font-bold text-[#8C7B75] hover:text-[#3A2E2B] cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-[#786962] hover:text-[#322622] cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 bg-[#C84B4B] hover:bg-[#B33E3E] text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer"
+                  className="px-5 py-2.5 bg-[#B55841] hover:bg-[#9E4A35] text-white rounded-xl text-xs font-semibold cursor-pointer"
                 >
                   Lưu lịch khám
                 </button>
@@ -535,28 +569,30 @@ export const PrenatalAppointmentsView: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setCompletingApt(null)}
-              className="fixed inset-0 bg-black/50 backdrop-blur-xs cursor-pointer"
+              className="fixed inset-0 bg-[#161311]/55 backdrop-blur-xs cursor-pointer"
             />
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 15 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="relative w-full max-w-[440px] bg-white rounded-3xl p-6 shadow-2xl z-10 border border-[#F0ECE9] flex flex-col gap-3.5"
+              className="relative w-full max-w-[440px] bg-white dark:bg-[#1E1A17] rounded-3xl p-6 shadow-2xl z-10 border border-[#E6DDD1] dark:border-[#362E2A] flex flex-col gap-3.5"
             >
-              <div className="flex items-center justify-between pb-2 border-b border-[#F0ECE9]">
+              <div className="flex items-center justify-between pb-2.5 border-b border-[#E6DDD1] dark:border-[#362E2A]">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-5 h-5 text-[#27AE60]" />
-                  <h3 className="text-base font-bold text-[#3A2E2B]">Hoàn thành khám thai</h3>
+                  <CheckCircle2 className="w-5 h-5 text-[#6D8572]" />
+                  <h3 className="font-editorial text-lg font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                    Hoàn thành khám thai
+                  </h3>
                 </div>
                 <button
                   onClick={() => setCompletingApt(null)}
-                  className="w-8 h-8 rounded-full bg-[#FAF6F3] text-[#8C7B75] flex items-center justify-center hover:bg-[#EFEAE5] cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] flex items-center justify-center hover:bg-[#E6DDD1] cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              <p className="text-xs text-[#6E5D57]">
+              <p className="text-xs text-[#6B5D56] dark:text-[#C5B9B0]">
                 Mẹ hãy ghi chú tóm tắt kết quả (cân nặng em bé, tim thai, lời dặn của bác sĩ...) để lưu lại kỷ niệm:
               </p>
 
@@ -565,21 +601,21 @@ export const PrenatalAppointmentsView: React.FC = () => {
                 value={resultsSummary}
                 onChange={(e) => setResultsSummary(e.target.value)}
                 placeholder="VD: Bé phát triển đúng chuẩn tuần thai, tim thai 145 ck/phút, bác sĩ dặn uống thêm canxi và hẹn 4 tuần nữa tái khám..."
-                className="w-full bg-[#FAF6F3] border border-[#EFEAE5] rounded-xl p-3 text-[16px] sm:text-xs text-[#3A2E2B] focus:outline-none focus:border-[#27AE60]"
+                className="w-full bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl p-3 text-[16px] sm:text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#6D8572]"
               />
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#F0ECE9]">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-[#E6DDD1] dark:border-[#362E2A]">
                 <button
                   type="button"
                   onClick={() => setCompletingApt(null)}
-                  className="px-4 py-2 text-xs font-bold text-[#8C7B75] hover:text-[#3A2E2B] cursor-pointer"
+                  className="px-4 py-2 text-xs font-semibold text-[#786962] hover:text-[#322622] cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
                   type="button"
                   onClick={handleConfirmComplete}
-                  className="px-5 py-2 bg-[#27AE60] hover:bg-[#219653] text-white rounded-xl text-xs font-bold shadow-xs cursor-pointer"
+                  className="px-5 py-2.5 bg-[#263E35] hover:bg-[#1D3029] text-[#FAF6F0] rounded-xl text-xs font-semibold cursor-pointer"
                 >
                   Xác nhận xong
                 </button>

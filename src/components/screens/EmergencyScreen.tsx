@@ -1,23 +1,18 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   PhoneCall,
   ShieldAlert,
   AlertTriangle,
   Plus,
-  Heart,
   Hospital,
   User,
-  Clock,
-  Sparkles,
-  CheckCircle2,
   X,
   FileText,
   Ambulance,
   PhoneForwarded,
   Trash2,
-  Database,
 } from 'lucide-react';
 import { EmergencyContact } from '../../types';
 
@@ -35,6 +30,7 @@ export const EmergencyScreen: React.FC<EmergencyScreenProps> = ({
   onBack,
 }) => {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [newContactName, setNewContactName] = useState('');
   const [newRelationship, setNewRelationship] = useState('Chồng / Người thân');
   const [newPhone, setNewPhone] = useState('');
@@ -131,226 +127,258 @@ export const EmergencyScreen: React.FC<EmergencyScreenProps> = ({
   ];
 
   return (
-    <div className="flex-1 flex flex-col bg-[#FFFBF7] overflow-y-auto no-scrollbar select-none">
+    <div className="flex-1 flex flex-col bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] overflow-y-auto no-scrollbar select-none">
       {/* Toast */}
       {toastMessage && (
-        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-[#3A2E2B] text-white text-xs font-semibold px-4 py-2 rounded-full shadow-xl flex items-center gap-2">
-          <PhoneCall className="w-3.5 h-3.5 text-[#2ECC71]" />
+        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-[#322622] dark:bg-[#F4EDE6] text-white dark:text-[#161311] text-xs font-semibold px-4 py-2.5 rounded-full shadow-xl flex items-center gap-2">
+          <PhoneCall className="w-3.5 h-3.5 text-[#8DA892] dark:text-[#4F6B56] shrink-0" />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Top Header */}
-      <div className="px-5 pt-3 pb-2 flex items-center justify-between border-b border-[#F0ECE6]/60 sticky top-0 bg-[#FFFBF7]/90 backdrop-blur-md z-20">
-        <button
-          onClick={onBack}
-          className="w-9 h-9 rounded-full bg-white border border-[#EFEAE5] shadow-xs flex items-center justify-center text-[#5E4E49] hover:bg-[#F5EFEB] transition-colors cursor-pointer"
-        >
-          <ArrowLeft className="w-4 h-4" />
-        </button>
-        <span className="text-[14px] font-bold text-[#E74C3C] flex items-center gap-1.5">
-          <ShieldAlert className="w-4 h-4" />
-          <span>Số khẩn cấp SOS</span>
-        </span>
-        <div className="flex items-center gap-1 bg-[#FDF2F0] text-[#E74C3C] px-2 py-0.5 rounded-full text-[10.5px] font-bold">
-          <span className="w-2 h-2 rounded-full bg-[#E74C3C] animate-ping" />
-          <span>Trực 24/7</span>
+      <header className="px-4 sm:px-6 pt-3 pb-3 flex items-center justify-between border-b border-[#E6DDD1] dark:border-[#362E2A] sticky top-0 bg-[#FAF6F0]/95 dark:bg-[#161311]/95 backdrop-blur-md z-20">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <button
+            onClick={onBack}
+            className="w-10 h-10 rounded-full bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] shadow-xs flex items-center justify-center text-[#6B5D56] dark:text-[#C5B9B0] hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B] transition-colors cursor-pointer shrink-0"
+            aria-label="Quay lại"
+          >
+            <ArrowLeft className="w-4.5 h-4.5" />
+          </button>
+          <div className="min-w-0">
+            <h1 className="font-editorial text-[17px] font-bold text-[#A9422D] dark:text-[#E5927D] flex items-center gap-1.5 truncate">
+              <ShieldAlert className="w-4.5 h-4.5 shrink-0" />
+              <span>Số khẩn cấp SOS</span>
+            </h1>
+            <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] truncate">
+              Kết nối nhanh cấp cứu và người thân
+            </p>
+          </div>
         </div>
-      </div>
+        <span className="inline-flex items-center gap-1 bg-[#F7EAE5] dark:bg-[#35231E] border border-[#EBCDC2] dark:border-[#52352D] text-[#A9422D] dark:text-[#E5927D] px-2.5 py-1 rounded-full text-[10.5px] font-bold whitespace-nowrap shrink-0">
+          Hỗ trợ 24/7
+        </span>
+      </header>
 
-      <div className="px-5 pt-3 pb-8 space-y-4">
+      <div className="px-4 sm:px-6 pt-4 pb-10 space-y-4 max-w-4xl mx-auto w-full">
         {/* GIANT SOS 115 BUTTON */}
-        <motion.div
-          whileTap={{ scale: 0.96 }}
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.98 }}
           onClick={() => handleCall('115', 'Cấp cứu Y tế Toàn quốc')}
-          className="relative p-5 bg-gradient-to-tr from-[#D63031] via-[#E17055] to-[#D63031] text-white rounded-3xl shadow-lg shadow-[#D63031]/30 flex flex-col items-center text-center cursor-pointer overflow-hidden border-2 border-white/30"
+          className="w-full relative p-5 sm:p-6 bg-gradient-to-br from-[#A9422D] via-[#9D3C28] to-[#933825] text-white rounded-3xl shadow-md flex flex-col items-center text-center cursor-pointer overflow-hidden border border-[#C66C57]/40"
         >
-          {/* Subtle pulse background */}
-          <div className="absolute inset-0 bg-white/10 animate-pulse pointer-events-none" />
-
-          <div className="w-16 h-16 rounded-full bg-white text-[#D63031] flex items-center justify-center shadow-md mb-2">
-            <Ambulance className="w-8 h-8 animate-bounce" />
+          <div className="w-16 h-16 rounded-full bg-white text-[#A9422D] flex items-center justify-center shadow-sm mb-2.5">
+            <Ambulance className="w-8 h-8" />
           </div>
 
-          <span className="text-[28px] font-black tracking-tight leading-none mb-1">
+          <span className="font-editorial text-[26px] sm:text-[28px] font-bold tracking-tight leading-none mb-1.5 tabular-nums">
             GỌI 115 CẤP CỨU
           </span>
-          <span className="text-[12.5px] font-bold text-white/90">
+          <span className="text-[12.5px] font-bold text-white/95 tabular-nums">
             Cấp cứu Y tế Toàn quốc · Miễn cước 24/7
           </span>
-          <p className="text-[11px] text-white/75 mt-1 max-w-[260px]">
+          <p className="text-[11.5px] text-white/85 mt-1.5 max-w-[300px] leading-relaxed">
             Chạm ngay để quay số điều xe cấp cứu và nhân viên y tế đến hỗ trợ tức thì
           </p>
-        </motion.div>
+        </motion.button>
 
         {/* Người thân khẩn cấp */}
-        <div className="p-4 bg-white rounded-3xl border border-[#EFEAE5] shadow-xs space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <User className="w-4 h-4 text-[#C84B4B]" />
-              <h3 className="text-[13.5px] font-extrabold text-[#3A2E2B]">
+        <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] shadow-xs space-y-3">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <User className="w-4 h-4 text-[#B55841] dark:text-[#D47A63] shrink-0" />
+              <h2 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6] truncate">
                 Người thân & Bác sĩ riêng
-              </h3>
+              </h2>
             </div>
             <button
+              type="button"
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-1 text-[11px] font-bold text-[#C84B4B] bg-[#FFF2EE] px-2.5 py-1 rounded-full hover:bg-[#FFE6E0] transition-colors cursor-pointer"
+              className="min-h-[38px] flex items-center gap-1 text-[11.5px] font-bold text-[#B55841] dark:text-[#D47A63] bg-[#F7EAE5] dark:bg-[#35231E] border border-[#EBCDC2] dark:border-[#52352D] px-3 py-1.5 rounded-full hover:bg-[#EFE0D9] dark:hover:bg-[#412B25] transition-colors cursor-pointer whitespace-nowrap shrink-0"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Thêm số</span>
             </button>
           </div>
 
-          <div className="space-y-2">
-            {contacts.map((contact) => (
-              <div
-                key={contact.id}
-                className="p-3 bg-[#FAF7F4] rounded-2xl border border-[#F0ECE6] flex items-center justify-between hover:border-[#C84B4B]/30 transition-colors"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[13px] font-bold text-[#3A2E2B]">{contact.name}</span>
-                    <span className="text-[10px] font-semibold bg-[#EFEAE5] text-[#5E4E49] px-2 py-0.2 rounded-full">
-                      {contact.relationship}
+          <div className="space-y-2.5">
+            {contacts.map((contact) => {
+              const isConfirming = confirmDeleteId === contact.id;
+              return (
+                <div
+                  key={contact.id}
+                  className="p-3.5 bg-[#FAF6F0] dark:bg-[#231E1B] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-between gap-3 transition-colors"
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-[13.5px] font-bold text-[#322622] dark:text-[#F4EDE6]">{contact.name}</span>
+                      <span className="text-[10.5px] font-semibold bg-[#F2ECE3] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-[#6B5D56] dark:text-[#C5B9B0] px-2 py-0.5 rounded-full whitespace-nowrap">
+                        {contact.relationship}
+                      </span>
+                    </div>
+                    <span className="text-[13px] font-mono font-bold text-[#B55841] dark:text-[#D47A63] block mt-0.5 tabular-nums">
+                      {contact.phone}
                     </span>
+                    {contact.notes && (
+                      <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] mt-0.5 leading-relaxed">{contact.notes}</p>
+                    )}
                   </div>
-                  <span className="text-[12px] font-mono font-bold text-[#C84B4B]">
-                    {contact.phone}
-                  </span>
-                  {contact.notes && (
-                    <p className="text-[10px] text-[#8C7B75] mt-0.5">{contact.notes}</p>
-                  )}
-                </div>
 
-                <div className="flex items-center gap-1.5 shrink-0">
-                  {onDeleteContact && contacts.length > 1 && (
-                    <button
-                      onClick={() => {
-                        if (window.confirm(`Xóa số liên hệ của ${contact.name}?`)) {
-                          onDeleteContact(contact.id);
-                          triggerToast('Đã xóa số liên hệ khỏi bộ nhớ!');
-                        }
-                      }}
-                      className="w-8 h-8 rounded-full bg-[#F5EFEB] text-[#8C7B75] hover:text-[#E74C3C] hover:bg-[#FDF2F0] flex items-center justify-center transition-colors cursor-pointer"
-                      title="Xóa liên hệ"
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {onDeleteContact && contacts.length > 1 && (
+                      isConfirming ? (
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onDeleteContact(contact.id);
+                              setConfirmDeleteId(null);
+                              triggerToast('Đã xóa số liên hệ!');
+                            }}
+                            className="min-h-[36px] px-2.5 py-1 rounded-xl bg-[#A9422D] text-white text-[11px] font-bold cursor-pointer whitespace-nowrap"
+                          >
+                            Xác nhận
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmDeleteId(null)}
+                            className="min-h-[36px] px-2.5 py-1 rounded-xl bg-[#F2ECE3] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-[#6B5D56] dark:text-[#C5B9B0] text-[11px] font-bold cursor-pointer whitespace-nowrap"
+                          >
+                            Hủy
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => setConfirmDeleteId(contact.id)}
+                          className="w-10 h-10 rounded-full bg-[#F2ECE3] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-[#786962] dark:text-[#B5A89F] hover:text-[#A9422D] dark:hover:text-[#E5927D] flex items-center justify-center transition-colors cursor-pointer"
+                          title="Xóa liên hệ"
+                          aria-label={`Xóa liên hệ ${contact.name}`}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )
+                    )}
+                    <motion.button
+                      type="button"
+                      whileTap={{ scale: 0.92 }}
+                      onClick={() => handleCall(contact.phone, contact.name)}
+                      className="w-11 h-11 rounded-full bg-[#4F6B56] hover:bg-[#3F5745] text-white flex items-center justify-center shadow-sm transition-colors cursor-pointer shrink-0"
+                      title="Gọi ngay"
+                      aria-label={`Gọi ${contact.name}`}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                  <motion.button
-                    whileTap={{ scale: 0.88 }}
-                    onClick={() => handleCall(contact.phone, contact.name)}
-                    className="w-10 h-10 rounded-full bg-[#2ECC71] text-white flex items-center justify-center shadow-md hover:bg-[#27AE60] transition-colors cursor-pointer shrink-0"
-                    title="Gọi ngay"
-                  >
-                    <PhoneCall className="w-5 h-5" />
-                  </motion.button>
+                      <PhoneCall className="w-5 h-5" />
+                    </motion.button>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
-          {/* Persistent storage indicator badge */}
-          <div className="pt-2 border-t border-[#F5EFEB] flex items-center justify-between text-[11px] text-[#8C7B75]">
-            <span className="flex items-center gap-1.5">
-              <Database className="w-3.5 h-3.5 text-[#2ECC71]" />
-              <span>Đã lưu tự động vào bộ nhớ máy</span>
-            </span>
-            <span className="text-[10px] bg-[#E8F8F0] text-[#2ECC71] font-bold px-2 py-0.5 rounded-full">
-              Bền vững
-            </span>
-          </div>
-        </div>
+          <p className="pt-2 border-t border-[#E6DDD1] dark:border-[#362E2A] text-[11px] text-[#786962] dark:text-[#B5A89F]">
+            Danh bạ người thân được lưu sẵn trên thiết bị để mẹ gọi nhanh khi cần hỗ trợ.
+          </p>
+        </section>
 
         {/* Bệnh viện phụ sản khẩn cấp */}
-        <div className="p-4 bg-white rounded-3xl border border-[#EFEAE5] shadow-xs space-y-3">
+        <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] shadow-xs space-y-3">
           <div className="flex items-center gap-2">
-            <Hospital className="w-4 h-4 text-[#C84B4B]" />
-            <h3 className="text-[13.5px] font-extrabold text-[#3A2E2B]">
+            <Hospital className="w-4 h-4 text-[#B55841] dark:text-[#D47A63] shrink-0" />
+            <h2 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6]">
               Hotline Bệnh viện Phụ Sản Cấp cứu
-            </h3>
+            </h2>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             {nationalHospitals.map((hosp, idx) => (
               <div
                 key={idx}
-                className="p-3 bg-[#FAF7F4] rounded-2xl border border-[#F0ECE6] flex items-center justify-between"
+                className="p-3.5 bg-[#FAF6F0] dark:bg-[#231E1B] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-between gap-3"
               >
-                <div className="max-w-[200px]">
+                <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <h4 className="text-[12.5px] font-bold text-[#3A2E2B]">{hosp.name}</h4>
-                    <span className="text-[9.5px] font-bold text-[#E74C3C] bg-[#FDF2F0] px-1.5 py-0.2 rounded-full">
+                    <h3 className="text-[13px] font-bold text-[#322622] dark:text-[#F4EDE6]">{hosp.name}</h3>
+                    <span className="text-[10px] font-bold text-[#A9422D] dark:text-[#E5927D] bg-[#F7EAE5] dark:bg-[#35231E] border border-[#EBCDC2] dark:border-[#52352D] px-2 py-0.5 rounded-full whitespace-nowrap">
                       {hosp.badge}
                     </span>
                   </div>
-                  <span className="text-[12px] font-mono font-bold text-[#C84B4B] block mt-0.5">
+                  <span className="text-[12.5px] font-mono font-bold text-[#B55841] dark:text-[#D47A63] block mt-0.5 tabular-nums">
                     {hosp.phone}
                   </span>
-                  <p className="text-[10px] text-[#8C7B75] truncate">{hosp.address}</p>
+                  <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] truncate">{hosp.address}</p>
                 </div>
 
                 <motion.button
-                  whileTap={{ scale: 0.88 }}
+                  type="button"
+                  whileTap={{ scale: 0.92 }}
                   onClick={() => handleCall(hosp.phone, hosp.name)}
-                  className="w-9 h-9 rounded-full bg-[#C84B4B] text-white flex items-center justify-center shadow-sm hover:bg-[#B84040] transition-colors cursor-pointer shrink-0"
+                  className="w-11 h-11 rounded-full bg-[#B55841] hover:bg-[#9E4A35] text-white flex items-center justify-center shadow-xs transition-colors cursor-pointer shrink-0"
                   title={`Gọi ${hosp.name}`}
+                  aria-label={`Gọi ${hosp.name}`}
                 >
-                  <PhoneForwarded className="w-4 h-4" />
+                  <PhoneForwarded className="w-4.5 h-4.5" />
                 </motion.button>
               </div>
             ))}
           </div>
-        </div>
+        </section>
 
         {/* Cẩm nang Dấu hiệu nguy hiểm */}
-        <div className="p-4 bg-[#FFF5F2] rounded-3xl border border-[#F2DDD7] space-y-2.5">
+        <section className="p-4 sm:p-5 bg-[#F7EAE5] dark:bg-[#35231E] rounded-3xl border border-[#EBCDC2] dark:border-[#52352D] space-y-3">
           <div className="flex items-center gap-2">
-            <AlertTriangle className="w-4 h-4 text-[#E74C3C]" />
-            <h3 className="text-[13px] font-extrabold text-[#3A2E2B]">
+            <AlertTriangle className="w-4 h-4 text-[#A9422D] dark:text-[#E5927D] shrink-0" />
+            <h2 className="font-editorial text-[15px] font-bold text-[#322622] dark:text-[#F4EDE6]">
               5 Dấu hiệu mẹ cần vào viện CẤP CỨU ngay
-            </h3>
+            </h2>
           </div>
 
           <div className="space-y-2">
             {warningSigns.map((sign, idx) => (
-              <div key={idx} className="p-2.5 bg-white rounded-xl border border-[#F0ECE6]">
-                <h4 className="text-[12px] font-bold text-[#E74C3C] mb-0.5">
-                  ⚠️ {sign.title}
-                </h4>
-                <p className="text-[11px] text-[#5E4E49] leading-relaxed">
+              <div
+                key={idx}
+                className="p-3 bg-white dark:bg-[#1E1A17] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A]"
+              >
+                <h3 className="text-[12.5px] font-bold text-[#A9422D] dark:text-[#E5927D] mb-0.5 flex items-center gap-1.5">
+                  <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                  <span>{sign.title}</span>
+                </h3>
+                <p className="text-[11.5px] text-[#6B5D56] dark:text-[#C5B9B0] leading-relaxed">
                   {sign.desc}
                 </p>
               </div>
             ))}
           </div>
-        </div>
+        </section>
 
         {/* Giấy tờ cần chuẩn bị */}
-        <div className="p-4 bg-white rounded-2xl border border-[#EFEAE5] shadow-xs">
-          <div className="flex items-center gap-2 mb-2">
-            <FileText className="w-4 h-4 text-[#8C7B75]" />
-            <h3 className="text-[12.5px] font-bold text-[#3A2E2B]">
+        <section className="p-4 sm:p-5 bg-white dark:bg-[#1E1A17] rounded-3xl border border-[#E6DDD1] dark:border-[#362E2A] shadow-xs">
+          <div className="flex items-center gap-2 mb-2.5">
+            <FileText className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892] shrink-0" />
+            <h2 className="font-editorial text-[14px] font-bold text-[#322622] dark:text-[#F4EDE6]">
               Giấy tờ cần mang ngay khi vào viện
-            </h3>
+            </h2>
           </div>
-          <ul className="text-[11.5px] text-[#5E4E49] space-y-1 pl-4 list-disc">
+          <ul className="text-[12px] text-[#6B5D56] dark:text-[#C5B9B0] space-y-1.5 pl-4 list-disc leading-relaxed">
             <li>CCCD gắn chip & Thẻ BHYT (hoặc ứng dụng VNeID / VssID).</li>
             <li>Sổ theo dõi khám thai và toàn bộ hồ sơ siêu âm, xét nghiệm.</li>
             <li>Hợp đồng sinh con / Bảo hiểm sức khỏe tư nhân (nếu có).</li>
           </ul>
-        </div>
+        </section>
       </div>
 
       {/* Modal Thêm người thân */}
       {showAddModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs select-none">
-          <div className="w-full max-w-[340px] bg-[#FFFBF7] rounded-3xl p-5 shadow-2xl border border-[#EFEAE5]">
-            <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#EFEAE5]">
-              <h3 className="text-[15px] font-bold text-[#3A2E2B]">Thêm số người thân</h3>
+          <div className="w-full max-w-[360px] bg-[#FAF6F0] dark:bg-[#1E1A17] rounded-3xl p-5 shadow-2xl border border-[#E6DDD1] dark:border-[#362E2A]">
+            <div className="flex items-center justify-between mb-3.5 pb-2.5 border-b border-[#E6DDD1] dark:border-[#362E2A]">
+              <h3 className="font-editorial text-[16px] font-bold text-[#322622] dark:text-[#F4EDE6]">Thêm số người thân</h3>
               <button
+                type="button"
                 onClick={() => setShowAddModal(false)}
-                className="w-7 h-7 rounded-full bg-[#EFEAE5] flex items-center justify-center text-[#5E4E49]"
+                className="w-9 h-9 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-[#6B5D56] dark:text-[#C5B9B0] cursor-pointer"
+                aria-label="Đóng"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -358,22 +386,22 @@ export const EmergencyScreen: React.FC<EmergencyScreenProps> = ({
 
             <form onSubmit={handleSaveContact} className="space-y-3">
               <div>
-                <label className="block text-[11px] font-bold text-[#8C7B75] mb-1">Họ và tên</label>
+                <label className="block text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] mb-1">Họ và tên</label>
                 <input
                   type="text"
                   value={newContactName}
                   onChange={(e) => setNewContactName(e.target.value)}
                   placeholder="VD: Anh Đức (Chồng)"
-                  className="w-full px-3 py-2 bg-white border border-[#E8DFD5] rounded-xl text-[12.5px] text-[#3A2E2B] focus:outline-none focus:border-[#C84B4B]"
+                  className="w-full px-3 py-2.5 bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-[12.5px] text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] dark:placeholder:text-[#B5A89F] focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-[#8C7B75] mb-1">Mối quan hệ</label>
+                <label className="block text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] mb-1">Mối quan hệ</label>
                 <select
                   value={newRelationship}
                   onChange={(e) => setNewRelationship(e.target.value)}
-                  className="w-full px-3 py-2 bg-white border border-[#E8DFD5] rounded-xl text-[12.5px] text-[#3A2E2B] focus:outline-none focus:border-[#C84B4B]"
+                  className="w-full px-3 py-2.5 bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-[12.5px] text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
                 >
                   <option value="Chồng">Chồng</option>
                   <option value="Mẹ ruột / Mẹ chồng">Mẹ ruột / Mẹ chồng</option>
@@ -385,38 +413,38 @@ export const EmergencyScreen: React.FC<EmergencyScreenProps> = ({
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-[#8C7B75] mb-1">Số điện thoại</label>
+                <label className="block text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] mb-1">Số điện thoại</label>
                 <input
                   type="tel"
                   value={newPhone}
                   onChange={(e) => setNewPhone(e.target.value)}
                   placeholder="0912 345 678"
-                  className="w-full px-3 py-2 bg-white border border-[#E8DFD5] rounded-xl text-[12.5px] font-mono text-[#3A2E2B] focus:outline-none focus:border-[#C84B4B]"
+                  className="w-full px-3 py-2.5 bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-[12.5px] font-mono text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] dark:placeholder:text-[#B5A89F] tabular-nums focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
                 />
               </div>
 
               <div>
-                <label className="block text-[11px] font-bold text-[#8C7B75] mb-1">Ghi chú (Tùy chọn)</label>
+                <label className="block text-[11px] font-bold text-[#786962] dark:text-[#B5A89F] mb-1">Ghi chú (Tùy chọn)</label>
                 <input
                   type="text"
                   value={newNotes}
                   onChange={(e) => setNewNotes(e.target.value)}
                   placeholder="VD: Liên hệ đầu tiên khi chuyển dạ"
-                  className="w-full px-3 py-2 bg-white border border-[#E8DFD5] rounded-xl text-[12.5px] text-[#3A2E2B] focus:outline-none focus:border-[#C84B4B]"
+                  className="w-full px-3 py-2.5 bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-[12.5px] text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] dark:placeholder:text-[#B5A89F] focus:outline-none focus:border-[#B55841] dark:focus:border-[#D47A63]"
                 />
               </div>
 
-              <div className="flex gap-2 pt-2">
+              <div className="flex gap-2.5 pt-2">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  className="flex-1 py-2.5 rounded-xl border border-[#E2DAD0] text-[#5E4E49] text-[12px] font-bold hover:bg-[#F8F5F2]"
+                  className="flex-1 min-h-[44px] py-2.5 rounded-xl bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-[#6B5D56] dark:text-[#C5B9B0] text-[12.5px] font-bold hover:bg-[#F2ECE3] dark:hover:bg-[#2B2521] cursor-pointer transition-colors"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-[#C84B4B] text-white text-[12px] font-bold hover:bg-[#B84040]"
+                  className="flex-1 min-h-[44px] py-2.5 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-[12.5px] font-bold cursor-pointer transition-colors"
                 >
                   Lưu số
                 </button>

@@ -1,23 +1,28 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PRODUCTS_DATA } from '../../data/mockData';
-import { ProductItem } from '../../types';
+import { PRODUCTS_DATA, SHOP_CATEGORIES } from '../../data/mockData';
+import { SHOP_COMBOS } from '../../data/ecosystemData';
+import { ProductItem, ProductCategory, ProductCombo, OrderInfo, UserProfile } from '../../types';
+import { apiService } from '../../services/apiService';
+import { NovaImage } from '../NovaBrandMark';
 import {
   Search,
   ShoppingBag,
   Star,
   Plus,
   SlidersHorizontal,
-  ChevronDown,
-  ChevronUp,
   Check,
   Crown,
   X,
   RotateCcw,
-  Sparkles,
-  Tag,
-  ArrowUpDown,
   Package,
+  Info,
+  Heart,
+  Scale,
+  Sparkles,
+  Clock,
+  CheckCircle2,
+  Truck,
 } from 'lucide-react';
 
 interface ShopScreenProps {
@@ -28,11 +33,12 @@ interface ShopScreenProps {
   isVip?: boolean;
   onOpenVipModal?: () => void;
   onNavigateToOrderInfo?: () => void;
+  user?: UserProfile;
+  orders?: OrderInfo[];
 }
 
-type FilterType = 'all' | 'price' | 'rating' | 'promo';
-type PriceSortOrder = 'asc' | 'desc';
-type PriceRange = 'all' | 'under100' | '100to500' | 'above500';
+type SortType = 'default' | 'price_asc' | 'price_desc' | 'promo';
+type PriceRange = 'all' | 'under150' | '150to400' | 'above400';
 
 export const ShopScreen: React.FC<ShopScreenProps> = ({
   onOpenCart,
@@ -42,52 +48,101 @@ export const ShopScreen: React.FC<ShopScreenProps> = ({
   isVip = false,
   onOpenVipModal,
   onNavigateToOrderInfo,
+  user,
+  orders: localOrders = [],
 }) => {
-  const [selectedFilter, setSelectedFilter] = useState<FilterType>('all');
-  const [priceSortOrder, setPriceSortOrder] = useState<PriceSortOrder>('asc');
-  const [showPriceDropdown, setShowPriceDropdown] = useState(false);
+  const [catalogProducts, setCatalogProducts] = useState<ProductItem[]>(PRODUCTS_DATA);
+  const [wishlistIds, setWishlistIds] = useState<string[]>([]);
+  const [serverOrders, setServerOrders] = useState<OrderInfo[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<ProductCategory>('all');
+  const [sortType, setSortType] = useState<SortType>('default');
   const [searchQuery, setSearchQuery] = useState('');
   const [addedNoticeId, setAddedNoticeId] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const [reviewsSummary, setReviewsSummary] = useState<
+    Record<string, { rating?: number; reviewsCount: number }>
+  >({});
 
-  // Advanced Filter Modal State
+  // Advanced Filter, Wishlist, Compare & Order Tracking state
   const [isAdvancedFilterOpen, setIsAdvancedFilterOpen] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedPriceRange, setSelectedPriceRange] = useState<PriceRange>('all');
-  const [selectedMinRating, setSelectedMinRating] = useState<number>(0);
+  const [selectedBrand, setSelectedBrand] = useState<string>('all');
+  const [onlyInStock, setOnlyInStock] = useState(false);
+  const [onlyWishlist, setOnlyWishlist] = useState(false);
 
-  const filterChips: { id: FilterType; label: string; hasArrow?: boolean }[] = [
-    { id: 'all', label: 'Tất cả' },
-    {
-      id: 'price',
-      label:
-        selectedFilter === 'price'
-          ? priceSortOrder === 'asc'
-            ? 'Mức giá ↑'
-            : 'Mức giá ↓'
-          : 'Mức giá',
-      hasArrow: true,
-    },
-    { id: 'rating', label: 'Đánh giá' },
-    { id: 'promo', label: 'Khuyến mãi' },
-  ];
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+  const [isCompareOpen, setIsCompareOpen] = useState(false);
+  const [isOrdersOpen, setIsOrdersOpen] = useState(false);
 
-  const handleChipClick = (filterId: FilterType) => {
-    if (filterId === 'price') {
-      if (selectedFilter === 'price') {
-        // Toggle sort order between asc and desc
-        setPriceSortOrder((prev) => (prev === 'asc' ? 'desc' : 'asc'));
-      } else {
-        setSelectedFilter('price');
-        setPriceSortOrder('asc');
-      }
-    } else {
-      setSelectedFilter(filterId);
-      setShowPriceDropdown(false);
-    }
+  const notify = (msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2400);
   };
+
+  const loadShopData = () => {
+    apiService
+      .fetchProducts()
+      .then((list) => {
+        if (list.length > 0) setCatalogProducts(list);
+      })
+      .catch(() => {});
+    apiService
+      .fetchAllReviewsSummary()
+      .then((res) => {
+        if (res && res.summary) setReviewsSummary(res.summary);
+      })
+      .catch(() => {});
+    apiService
+      .fetchWishlist(user)
+      .then(setWishlistIds)
+      .catch(() => {});
+    apiService
+      .fetchOrders(false, user)
+      .then(setServerOrders)
+      .catch(() => {});
+  };
+
+  useEffect(() => {
+    loadShopData();
+    const handler = () => loadShopData();
+    window.addEventListener('nova_reviews_updated', handler);
+    window.addEventListener('nova_orders_updated', handler);
+    return () => {
+      window.removeEventListener('nova_reviews_updated', handler);
+      window.removeEventListener('nova_orders_updated', handler);
+    };
+  }, [user?.id]);
+
+  const enrichedProducts = useMemo<ProductItem[]>(() => {
+    return catalogProducts.map((p) => {
+      const realRev = reviewsSummary[p.id];
+      if (realRev) {
+        return {
+          ...p,
+          rating: realRev.rating,
+          reviewsCount: realRev.reviewsCount,
+        };
+      }
+      return p;
+    });
+  }, [catalogProducts, reviewsSummary]);
+
+  const availableBrands = useMemo(
+    () => Array.from(new Set(enrichedProducts.map((p) => p.brand))),
+    [enrichedProducts]
+  );
+
+  const mergedOrders = useMemo(() => {
+    const map = new Map<string, OrderInfo>();
+    [...serverOrders, ...localOrders].forEach((o) => {
+      if (!map.has(o.orderId)) map.set(o.orderId, o);
+    });
+    return Array.from(map.values());
+  }, [serverOrders, localOrders]);
 
   const handleAdd = (e: React.MouseEvent, product: ProductItem) => {
     e.stopPropagation();
+    if (!product.inStock) return;
     onAddToCart(product);
     setAddedNoticeId(product.id);
     setTimeout(() => {
@@ -95,120 +150,175 @@ export const ShopScreen: React.FC<ShopScreenProps> = ({
     }, 1200);
   };
 
-  // Reset all filters
+  const handleAddCombo = (combo: ProductCombo) => {
+    let addedCount = 0;
+    combo.productIds.forEach((pid) => {
+      const prod = enrichedProducts.find((p) => p.id === pid && p.inStock);
+      if (prod) {
+        onAddToCart(prod);
+        addedCount++;
+      }
+    });
+    if (addedCount > 0) {
+      notify(`Đã thêm ${addedCount} sản phẩm từ "${combo.title}" vào giỏ hàng!`);
+    } else {
+      notify('Các sản phẩm trong combo hiện tạm hết hàng.');
+    }
+  };
+
+  const handleToggleWishlist = async (e: React.MouseEvent, productId: string) => {
+    e.stopPropagation();
+    const optimistic = wishlistIds.includes(productId)
+      ? wishlistIds.filter((id) => id !== productId)
+      : [productId, ...wishlistIds];
+    setWishlistIds(optimistic);
+    try {
+      const updated = await apiService.toggleWishlist(productId, user);
+      setWishlistIds(updated);
+    } catch {}
+  };
+
+  const handleToggleCompare = (e: React.MouseEvent, productId: string) => {
+    e.stopPropagation();
+    if (compareIds.includes(productId)) {
+      setCompareIds(compareIds.filter((id) => id !== productId));
+    } else if (compareIds.length >= 3) {
+      notify('Chỉ so sánh tối đa 3 sản phẩm cùng lúc.');
+    } else {
+      setCompareIds([...compareIds, productId]);
+    }
+  };
+
   const handleResetFilters = () => {
-    setSelectedFilter('all');
-    setPriceSortOrder('asc');
+    setSortType('default');
     setSearchQuery('');
     setSelectedCategory('all');
     setSelectedPriceRange('all');
-    setSelectedMinRating(0);
+    setSelectedBrand('all');
+    setOnlyInStock(false);
+    setOnlyWishlist(false);
     setIsAdvancedFilterOpen(false);
   };
 
-  // Filter & Sort Logic
   const filteredProducts = useMemo(() => {
-    let list = [...PRODUCTS_DATA];
+    let list = [...enrichedProducts];
 
-    // 1. Search query filter
     if (searchQuery.trim() !== '') {
       const q = searchQuery.toLowerCase();
       list = list.filter(
         (p) =>
           p.name.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q)
+          p.description.toLowerCase().includes(q) ||
+          p.brand.toLowerCase().includes(q)
       );
     }
 
-    // 2. Category filter (from advanced sheet)
     if (selectedCategory !== 'all') {
       list = list.filter((p) => p.category === selectedCategory);
     }
 
-    // 3. Price range filter (from advanced sheet)
-    if (selectedPriceRange === 'under100') {
-      list = list.filter((p) => p.price < 100000);
-    } else if (selectedPriceRange === '100to500') {
-      list = list.filter((p) => p.price >= 100000 && p.price <= 500000);
-    } else if (selectedPriceRange === 'above500') {
-      list = list.filter((p) => p.price > 500000);
+    if (selectedBrand !== 'all') {
+      list = list.filter((p) => p.brand === selectedBrand);
     }
 
-    // 4. Rating filter (from advanced sheet)
-    if (selectedMinRating > 0) {
-      list = list.filter((p) => p.rating >= selectedMinRating);
+    if (onlyWishlist) {
+      list = list.filter((p) => wishlistIds.includes(p.id));
     }
 
-    // 5. Active Tab Filter & Sorter
-    if (selectedFilter === 'price') {
-      list.sort((a, b) =>
-        priceSortOrder === 'asc' ? a.price - b.price : b.price - a.price
-      );
-    } else if (selectedFilter === 'rating') {
-      // Sort highest rating first
-      list.sort((a, b) => b.rating - a.rating);
-    } else if (selectedFilter === 'promo') {
-      // Filter promotional / popular affordable items (< 300k) or books & skincare
-      list = list.filter((p) => p.price <= 300000 || p.category === 'books');
+    if (selectedPriceRange === 'under150') {
+      list = list.filter((p) => p.price < 150000);
+    } else if (selectedPriceRange === '150to400') {
+      list = list.filter((p) => p.price >= 150000 && p.price <= 400000);
+    } else if (selectedPriceRange === 'above400') {
+      list = list.filter((p) => p.price > 400000);
+    }
+
+    if (onlyInStock) {
+      list = list.filter((p) => p.inStock);
+    }
+
+    if (sortType === 'price_asc') {
+      list.sort((a, b) => a.price - b.price);
+    } else if (sortType === 'price_desc') {
+      list.sort((a, b) => b.price - a.price);
+    } else if (sortType === 'promo') {
+      list = list.filter((p) => p.originalPrice && p.originalPrice > p.price);
     }
 
     return list;
   }, [
+    enrichedProducts,
     searchQuery,
     selectedCategory,
+    selectedBrand,
+    onlyWishlist,
+    wishlistIds,
     selectedPriceRange,
-    selectedMinRating,
-    selectedFilter,
-    priceSortOrder,
+    onlyInStock,
+    sortType,
   ]);
 
+  const compareProducts = useMemo(
+    () => enrichedProducts.filter((p) => compareIds.includes(p.id)),
+    [enrichedProducts, compareIds]
+  );
+
   const hasActiveAdvancedFilter =
-    selectedCategory !== 'all' ||
-    selectedPriceRange !== 'all' ||
-    selectedMinRating > 0;
+    selectedPriceRange !== 'all' || onlyInStock || selectedBrand !== 'all' || onlyWishlist;
+
+  const ORDER_STATUS_LABEL: Record<string, string> = {
+    pending: 'Chờ xác nhận',
+    awaiting_verification: 'Chờ xác minh CK VietQR',
+    confirmed: 'Đã xác nhận',
+    shipping: 'Đang giao hàng',
+    delivered: 'Đã giao thành công',
+    cancelled: 'Đã hủy',
+  };
 
   return (
-    <div className="flex-1 flex flex-col px-5 pt-3 pb-6 overflow-y-auto no-scrollbar select-none bg-[#FFFBF7] relative">
-      {/* Top Header (Hình 1) */}
-      <header className="flex items-center justify-between py-1 mb-3 shrink-0">
-        <div>
-          <h1 className="text-[24px] font-bold text-[#3A2E2B] tracking-tight leading-tight">
-            Cửa hàng Nova
+    <div className="flex-1 flex flex-col px-4 sm:px-5 pt-3 pb-20 overflow-y-auto no-scrollbar select-none bg-[#FAF6F0] dark:bg-[#161311] relative">
+      {toast && (
+        <div className="fixed top-12 left-1/2 -translate-x-1/2 z-50 bg-[#322622] dark:bg-[#F4EDE6] text-white dark:text-[#161311] text-xs font-semibold px-4 py-2 rounded-full shadow-xl">
+          {toast}
+        </div>
+      )}
+
+      {/* Header */}
+      <header className="flex items-center justify-between py-1 mb-2.5 shrink-0 gap-2">
+        <div className="min-w-0">
+          <h1 className="font-editorial text-[22px] sm:text-[26px] font-semibold text-[#322622] dark:text-[#F4EDE6] tracking-tight leading-tight truncate">
+            Cửa hàng Mẹ & Bé
           </h1>
           {isVip && (
-            <span className="text-[10px] font-bold text-[#B38728] flex items-center gap-1">
+            <span className="text-[11px] font-semibold text-[#9E5B3B] dark:text-[#D7BA86] flex items-center gap-1 mt-0.5">
               <Crown className="w-3 h-3 fill-current" />
-              <span>Đặc quyền VIP: Đang giảm 10% toàn bộ</span>
+              <span>Đặc quyền VIP: Giảm 10% đơn hàng</span>
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-2">
-          {onNavigateToOrderInfo && (
-            <motion.button
-              whileTap={{ scale: 0.92 }}
-              onClick={onNavigateToOrderInfo}
-              className="px-3 py-1.5 rounded-full bg-[#FFF2EE] text-[#C84B4B] text-[11px] font-bold flex items-center gap-1 border border-[#F5DFD5] hover:bg-[#FFE5DF] transition-colors cursor-pointer"
-              title="Thông tin đặt hàng & Sổ địa chỉ"
-            >
-              <Package className="w-3.5 h-3.5" />
-              <span>Đơn hàng</span>
-            </motion.button>
-          )}
-
-          {/* Shopping Cart Button */}
+        <div className="flex items-center gap-2 shrink-0">
           <motion.button
-            whileTap={{ scale: 0.88 }}
+            whileTap={{ scale: 0.94 }}
+            onClick={() => setIsOrdersOpen(true)}
+            className="px-3 py-1.5 rounded-xl bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] text-[11px] font-semibold flex items-center gap-1.5 border border-[#EBCDC2] dark:border-[#52352D] hover:bg-[#F2DFD8] dark:hover:bg-[#432B25] transition-colors cursor-pointer whitespace-nowrap min-h-[40px] tabular-nums"
+          >
+            <Package className="w-3.5 h-3.5" />
+            <span>Đơn hàng ({mergedOrders.length})</span>
+          </motion.button>
+
+          <motion.button
+            whileTap={{ scale: 0.9 }}
             onClick={onOpenCart}
-            className="w-10 h-10 rounded-full bg-white border border-[#EFEAE5] shadow-xs flex items-center justify-center text-[#3A2E2B] relative hover:bg-[#FAF6F3] cursor-pointer"
+            className="w-10 h-10 rounded-xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] shadow-xs flex items-center justify-center text-[#322622] dark:text-[#F4EDE6] relative hover:border-[#B55841] transition-colors cursor-pointer"
             aria-label="Giỏ hàng"
           >
-            <ShoppingBag className="w-5 h-5 text-[#3A2E2B] stroke-[1.8]" />
+            <ShoppingBag className="w-5 h-5 stroke-[1.8]" />
             {cartCount > 0 && (
               <motion.span
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
-                className="absolute -top-1 -right-1 w-5 h-5 bg-[#C84B4B] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs"
+                className="absolute -top-1 -right-1 w-5 h-5 bg-[#B55841] text-white text-[10px] font-bold rounded-full flex items-center justify-center shadow-xs tabular-nums"
               >
                 {cartCount}
               </motion.span>
@@ -217,249 +327,330 @@ export const ShopScreen: React.FC<ShopScreenProps> = ({
         </div>
       </header>
 
-      {/* VIP 10% banner prompt if not VIP */}
+      {/* Transparent Demo Catalog Notice */}
+      <div className="mb-3 p-2.5 rounded-xl bg-[#F2ECE3] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center gap-2 text-[11px] text-[#6B5D56] dark:text-[#C5B9B0] shrink-0">
+        <Info className="w-4 h-4 text-[#B55841] dark:text-[#D47A63] shrink-0" />
+        <span>
+          <strong>Danh mục minh họa (Demo):</strong> Tồn kho, giỏ hàng, mã giảm giá và đơn hàng COD/VietQR được xử lý thực tế trên hệ thống Nova.
+        </span>
+      </div>
+
+      {/* VIP Banner */}
       {!isVip && onOpenVipModal && (
         <div
           onClick={onOpenVipModal}
-          className="mb-3 p-2.5 rounded-2xl bg-gradient-to-r from-[#FFF6E5] to-[#FCEEEB] border border-[#F3E5AB] flex items-center justify-between cursor-pointer shrink-0"
+          className="mb-3 p-3 rounded-2xl bg-gradient-to-r from-[#F6EFE2] to-[#F7EAE5] dark:from-[#2F281C] dark:to-[#35231E] border border-[#E5D4B3] dark:border-[#4A3F2B] flex items-center justify-between cursor-pointer shrink-0 transition-colors"
         >
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-xl bg-[#D4AF37] text-white flex items-center justify-center shadow-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#C4A46B] dark:bg-[#D7BA86] text-white dark:text-[#161311] flex items-center justify-center shadow-xs shrink-0">
               <Crown className="w-4 h-4 fill-current" />
             </div>
             <div>
-              <p className="text-[11px] font-extrabold text-[#3A2E2B]">
+              <p className="text-[11.5px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
                 Tiết kiệm 10% với gói Nova VIP
               </p>
-              <p className="text-[10px] text-[#7A6A64]">
-                Chỉ 99k/tháng cho toàn bộ cửa hàng
-              </p>
+              <p className="text-[10.5px] text-[#786962] dark:text-[#B5A89F]">Ưu đãi trực tiếp trên giỏ hàng</p>
             </div>
           </div>
-          <span className="text-[10px] font-bold text-[#C84B4B] bg-white px-2 py-1 rounded-full shadow-2xs">
-            Nâng cấp
+          <span className="text-[10.5px] font-semibold text-[#B55841] dark:text-[#D47A63] bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] px-2.5 py-1 rounded-lg whitespace-nowrap">
+            Xem gói
           </span>
         </div>
       )}
 
-      {/* Search Bar with Advanced Filter Trigger (Hình 1) */}
-      <div className="relative mb-3.5 shrink-0">
-        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#8C7B75]">
-          <Search className="w-4 h-4 stroke-[2]" />
-        </div>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Tìm kiếm đồ dùng mẹ & bé..."
-          className="w-full pl-10 pr-20 py-3 bg-white border border-[#EDE7E2] rounded-2xl text-[13px] text-[#3A2E2B] placeholder:text-[#8C7B75] focus:outline-none focus:ring-2 focus:ring-[#C84B4B]/30 focus:border-[#C84B4B] shadow-2xs transition-all"
-        />
-
-        <div className="absolute inset-y-0 right-0 pr-2 flex items-center gap-1">
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="p-1.5 text-[#8C7B75] hover:text-[#3A2E2B] cursor-pointer"
-              title="Xóa tìm kiếm"
-            >
-              <X className="w-3.5 h-3.5" />
-            </button>
-          )}
-
-          {/* Sliders Button opening Advanced Sheet */}
-          <button
-            onClick={() => setIsAdvancedFilterOpen(true)}
-            className={`p-2 rounded-xl transition-colors cursor-pointer relative ${
-              hasActiveAdvancedFilter
-                ? 'bg-[#FCEEEB] text-[#C84B4B]'
-                : 'text-[#8C7B75] hover:text-[#3A2E2B]'
-            }`}
-            title="Bộ lọc nâng cao"
-            aria-label="Mở bộ lọc nâng cao"
-          >
-            <SlidersHorizontal className="w-4 h-4" />
-            {hasActiveAdvancedFilter && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#C84B4B]" />
+      {/* Search Bar & Sort */}
+      <div className="flex flex-col sm:flex-row gap-2 mb-3 shrink-0">
+        <div className="relative flex-1">
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#786962] dark:text-[#B5A89F]">
+            <Search className="w-4 h-4 stroke-[2]" />
+          </div>
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Tìm sản phẩm, thương hiệu, công dụng..."
+            className="w-full min-h-[42px] pl-10 pr-24 py-2.5 bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-[13px] text-[#322622] dark:text-[#F4EDE6] placeholder:text-[#786962] focus:outline-none focus:ring-2 focus:ring-[#B55841]/25"
+          />
+          <div className="absolute inset-y-0 right-0 pr-2 flex items-center gap-1">
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="p-1 text-[#786962] hover:text-[#322622] dark:hover:text-[#F4EDE6] cursor-pointer"
+                aria-label="Xóa tìm kiếm"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
             )}
-          </button>
+            <button
+              onClick={() => setOnlyWishlist(!onlyWishlist)}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
+                onlyWishlist
+                  ? 'bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63]'
+                  : 'text-[#786962] dark:text-[#B5A89F]'
+              }`}
+              title={`Yêu thích (${wishlistIds.length})`}
+            >
+              <Heart className={`w-4 h-4 ${onlyWishlist ? 'fill-current' : ''}`} />
+            </button>
+            <button
+              onClick={() => setIsAdvancedFilterOpen(true)}
+              className={`p-1.5 rounded-lg transition-colors cursor-pointer relative ${
+                hasActiveAdvancedFilter
+                  ? 'bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63]'
+                  : 'text-[#786962] dark:text-[#B5A89F]'
+              }`}
+              title="Bộ lọc nâng cao"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+            </button>
+          </div>
         </div>
+
+        <select
+          value={sortType}
+          onChange={(e) => setSortType(e.target.value as SortType)}
+          className="min-h-[42px] px-3 py-2.5 bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] focus:outline-none cursor-pointer"
+          aria-label="Sắp xếp sản phẩm"
+        >
+          <option value="default">Sắp xếp: Mặc định</option>
+          <option value="price_asc">Giá: Thấp đến cao</option>
+          <option value="price_desc">Giá: Cao đến thấp</option>
+          <option value="promo">Đang khuyến mãi</option>
+        </select>
       </div>
 
-      {/* Filter Chips with Morphing Shared Layout Animation (Hình 1) */}
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 mb-3 shrink-0 min-h-[48px]">
-        {filterChips.map((chip) => {
-          const isActive = selectedFilter === chip.id;
+      {/* Mother & Baby Combos Strip */}
+      <section className="mb-3 shrink-0">
+        <div className="flex items-center justify-between mb-2">
+          <h2 className="font-editorial text-sm font-semibold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-[#C4A46B] dark:text-[#D7BA86]" />
+            <span>Combo Mẹ & Bé tiết kiệm</span>
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+          {SHOP_COMBOS.map((combo) => (
+            <div
+              key={combo.id}
+              className="p-3 rounded-2xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] nova-card-shadow flex items-center justify-between gap-2.5"
+            >
+              <div className="min-w-0">
+                <span className="text-[10px] font-semibold text-[#9E5B3B] dark:text-[#D7BA86] bg-[#F6EFE2] dark:bg-[#2F281C] px-2 py-0.5 rounded-md inline-block">
+                  {combo.badgeText}
+                </span>
+                <p className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] mt-1 truncate">
+                  {combo.title}
+                </p>
+                <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] truncate">{combo.subtitle}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleAddCombo(combo)}
+                className="px-3.5 min-h-[38px] py-2 rounded-xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-[11px] font-semibold whitespace-nowrap cursor-pointer shrink-0 transition-colors"
+              >
+                + Chọn combo
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Categories Horizontal Scroll Strip */}
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1.5 mb-2 shrink-0">
+        {SHOP_CATEGORIES.map((cat) => {
+          const isActive = selectedCategory === cat.id;
           return (
             <button
-              key={chip.id}
-              onClick={() => handleChipClick(chip.id)}
-              className={`relative h-9 px-4 rounded-full text-[13px] font-semibold whitespace-nowrap cursor-pointer transition-colors duration-200 shrink-0 flex items-center justify-center gap-1.5 ${
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`px-3.5 min-h-[38px] py-2 rounded-xl text-xs font-semibold whitespace-nowrap cursor-pointer transition-colors shrink-0 border ${
                 isActive
-                  ? 'text-white shadow-xs'
-                  : 'text-[#6E5D57] bg-white border border-[#EDE7E2] hover:bg-[#FAF7F4]'
+                  ? 'bg-[#B55841] text-white border-[#B55841] shadow-2xs'
+                  : 'bg-[#FFFFFF] dark:bg-[#1E1A17] text-[#6B5D56] dark:text-[#C5B9B0] border-[#E6DDD1] dark:border-[#362E2A] hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B]'
               }`}
             >
-              {isActive && (
-                <motion.div
-                  layoutId="shopFilterTab"
-                  transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-                  className="absolute inset-0 bg-[#C84B4B] rounded-full shadow-sm"
-                />
-              )}
-              <span className="relative z-10 leading-none">{chip.label}</span>
-              {chip.hasArrow && (
-                <span className="relative z-10 flex items-center">
-                  {selectedFilter === 'price' && priceSortOrder === 'desc' ? (
-                    <ChevronUp className="w-3.5 h-3.5 text-white stroke-[2.5]" />
-                  ) : (
-                    <ChevronDown
-                      className={`w-3.5 h-3.5 stroke-[2.5] ${
-                        isActive ? 'text-white' : 'text-[#8C7B75]'
-                      }`}
-                    />
-                  )}
-                </span>
-              )}
+              {cat.label}
             </button>
           );
         })}
       </div>
 
-      {/* Active Filter Status & Reset Action */}
-      <div className="flex items-center justify-between px-1 mb-3 text-[11px] text-[#8C7B75]">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <span>
-            <strong className="text-[#3A2E2B] tabular-nums font-bold">
-              {filteredProducts.length}
-            </strong>{' '}
-            sản phẩm
-          </span>
-          {selectedFilter === 'price' && (
-            <span className="text-[#C84B4B] font-semibold">
-              · {priceSortOrder === 'asc' ? 'Giá tăng dần ↑' : 'Giá giảm dần ↓'}
-            </span>
+      {/* Compare Bar + Result Count */}
+      <div className="flex flex-wrap items-center justify-between gap-2 px-1 mb-3 text-[11px] text-[#786962] dark:text-[#B5A89F]">
+        <span className="tabular-nums">
+          Hiển thị <strong className="text-[#322622] dark:text-[#F4EDE6]">{filteredProducts.length}</strong> /{' '}
+          {enrichedProducts.length} sản phẩm
+          {onlyWishlist && ` · Đang lọc Yêu thích (${wishlistIds.length})`}
+        </span>
+        <div className="flex items-center gap-3">
+          {compareIds.length > 0 && (
+            <button
+              onClick={() => setIsCompareOpen(true)}
+              className="flex items-center gap-1 text-[#4F6B56] dark:text-[#8DA892] font-semibold hover:underline cursor-pointer tabular-nums"
+            >
+              <Scale className="w-3.5 h-3.5" />
+              <span>So sánh ({compareIds.length}/3)</span>
+            </button>
           )}
-          {selectedFilter === 'rating' && (
-            <span className="text-[#C84B4B] font-semibold">
-              · Đánh giá cao nhất
-            </span>
-          )}
-          {selectedFilter === 'promo' && (
-            <span className="text-[#C84B4B] font-semibold">
-              · Khuyến mãi hot
-            </span>
+          {(sortType !== 'default' || searchQuery !== '' || selectedCategory !== 'all' || hasActiveAdvancedFilter) && (
+            <button
+              onClick={handleResetFilters}
+              className="flex items-center gap-1 text-[#B55841] dark:text-[#D47A63] font-semibold hover:underline cursor-pointer"
+            >
+              <RotateCcw className="w-3 h-3" />
+              <span>Đặt lại bộ lọc</span>
+            </button>
           )}
         </div>
-
-        {(selectedFilter !== 'all' ||
-          searchQuery !== '' ||
-          hasActiveAdvancedFilter) && (
-          <button
-            onClick={handleResetFilters}
-            className="flex items-center gap-1 text-[#C84B4B] font-semibold hover:underline cursor-pointer shrink-0 ml-2"
-          >
-            <RotateCcw className="w-3 h-3" />
-            <span>Đặt lại</span>
-          </button>
-        )}
       </div>
 
-      {/* Product Grid 2 Cột (Hình 1) */}
+      {/* Responsive Product Grid */}
       {filteredProducts.length === 0 ? (
-        /* Empty State */
-        <div className="py-12 px-4 rounded-3xl bg-white border border-[#EFEAE5] text-center ios-card-shadow my-2">
-          <div className="w-14 h-14 rounded-2xl bg-[#FCEEEB] text-[#C84B4B] flex items-center justify-center mx-auto mb-3">
-            <Search className="w-6 h-6 stroke-[1.8]" />
+        <div className="py-12 px-4 rounded-3xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-center nova-card-shadow my-2">
+          <div className="w-12 h-12 rounded-2xl bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] flex items-center justify-center mx-auto mb-3">
+            <Search className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-bold text-[#3A2E2B]">
+          <h3 className="font-editorial text-base font-semibold text-[#322622] dark:text-[#F4EDE6]">
             Không tìm thấy sản phẩm phù hợp
           </h3>
-          <p className="text-xs text-[#8C7B75] mt-1 max-w-[240px] mx-auto leading-relaxed">
-            Mẹ hãy thử tìm kiếm từ khóa khác hoặc đặt lại bộ lọc nhé!
+          <p className="text-xs text-[#786962] dark:text-[#B5A89F] mt-1">
+            Hãy thử từ khóa khác hoặc đặt lại bộ lọc danh mục nhé!
           </p>
           <button
             onClick={handleResetFilters}
-            className="mt-4 px-4 py-2 bg-[#C84B4B] text-white text-xs font-bold rounded-xl shadow-xs hover:bg-[#B84040] cursor-pointer"
+            className="mt-4 px-5 min-h-[44px] py-2 bg-[#B55841] hover:bg-[#9E4A35] text-white text-xs font-semibold rounded-xl cursor-pointer transition-colors"
           >
             Xem tất cả sản phẩm
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-2 gap-3.5">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3.5">
           {filteredProducts.map((product) => {
             const isRecentlyAdded = addedNoticeId === product.id;
-            const displayPrice = isVip
-              ? Math.round(product.price * 0.9).toLocaleString('vi-VN') + 'đ'
-              : product.formattedPrice;
+            const isWishlisted = wishlistIds.includes(product.id);
+            const isComparing = compareIds.includes(product.id);
+            const effectivePrice = isVip ? Math.round(product.price * 0.9) : product.price;
+            const discountPercent =
+              product.originalPrice && product.originalPrice > effectivePrice
+                ? Math.round(((product.originalPrice - effectivePrice) / product.originalPrice) * 100)
+                : 0;
 
             return (
               <motion.div
                 key={product.id}
                 layout
                 whileHover={{ y: -3 }}
-                whileTap={{ scale: 0.97 }}
                 onClick={() => onSelectProduct(product)}
-                className="bg-white rounded-[22px] p-3 ios-card-shadow border border-[#F2ECE7] flex flex-col justify-between cursor-pointer group hover:border-[#E5DDD6] transition-all relative overflow-hidden"
+                className={`bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-[22px] p-3 nova-card-shadow border flex flex-col justify-between cursor-pointer group transition-all relative overflow-hidden ${
+                  product.inStock
+                    ? 'border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#D47A63]'
+                    : 'border-[#E6DDD1] dark:border-[#2C2522] opacity-80'
+                }`}
               >
-                {/* Product Image Square */}
-                <div className="relative w-full aspect-square rounded-[16px] overflow-hidden bg-[#F7F3EF] mb-2.5">
-                  <img
+                <div className="relative w-full aspect-square rounded-[16px] overflow-hidden bg-[#F2ECE3] dark:bg-[#231E1B] mb-2.5">
+                  <NovaImage
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    fallbackTitle={product.name}
+                    className={`w-full h-full object-cover transition-transform duration-300 ${
+                      product.inStock ? 'group-hover:scale-105' : 'grayscale-[40%]'
+                    }`}
                     loading="lazy"
-                    referrerPolicy="no-referrer"
                   />
 
-                  {/* Rating badge */}
-                  <div className="absolute top-2 left-2 bg-white/90 backdrop-blur-md px-1.5 py-0.5 rounded-md flex items-center gap-0.5 shadow-2xs">
-                    <Star className="w-3 h-3 text-[#F39C12] fill-current" />
-                    <span className="text-[10px] font-bold text-[#3A2E2B] tabular-nums">
-                      {product.rating}
-                    </span>
+                  <div className="absolute top-2 left-2 flex flex-col gap-1">
+                    {discountPercent > 0 && (
+                      <span className="bg-[#B55841] text-white text-[9.5px] font-bold px-1.5 py-0.5 rounded-md shadow-2xs tabular-nums">
+                        -{discountPercent}%
+                      </span>
+                    )}
+                    {!product.inStock && (
+                      <span className="bg-[#322622]/90 text-white text-[9.5px] font-semibold px-1.5 py-0.5 rounded-md">
+                        Tạm hết hàng
+                      </span>
+                    )}
                   </div>
 
-                  {isVip && (
-                    <div className="absolute top-2 right-2 bg-[#D4AF37] text-[#2A2321] text-[9px] font-black px-1.5 py-0.2 rounded-md">
-                      -10% VIP
-                    </div>
-                  )}
+                  {/* Wishlist & Compare buttons */}
+                  <div className="absolute top-2 right-2 flex flex-col gap-1">
+                    <button
+                      type="button"
+                      onClick={(e) => handleToggleWishlist(e, product.id)}
+                      className={`w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-xs shadow-xs cursor-pointer transition-colors ${
+                        isWishlisted
+                          ? 'bg-[#B55841] text-white'
+                          : 'bg-white/90 dark:bg-[#1E1A17]/90 text-[#6B5D56] dark:text-[#C5B9B0]'
+                      }`}
+                      aria-label="Yêu thích"
+                    >
+                      <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-current' : ''}`} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => handleToggleCompare(e, product.id)}
+                      className={`w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-xs shadow-xs cursor-pointer transition-colors ${
+                        isComparing
+                          ? 'bg-[#6D8572] text-white'
+                          : 'bg-white/90 dark:bg-[#1E1A17]/90 text-[#6B5D56] dark:text-[#C5B9B0]'
+                      }`}
+                      title="So sánh sản phẩm"
+                    >
+                      <Scale className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
                 </div>
 
-                {/* Product Name & Price */}
                 <div className="flex flex-col flex-1 justify-between">
-                  <h3 className="text-[13px] font-bold text-[#3A2E2B] leading-snug line-clamp-2 min-h-[36px] group-hover:text-[#C84B4B] transition-colors">
-                    {product.name}
-                  </h3>
+                  <div>
+                    <p className="text-[10.5px] font-medium text-[#786962] dark:text-[#B5A89F] truncate">
+                      {product.brand}
+                    </p>
+                    <h3 className="font-editorial text-[13.5px] font-semibold text-[#322622] dark:text-[#F4EDE6] leading-snug line-clamp-2 min-h-[38px] mt-0.5 group-hover:text-[#B55841] dark:group-hover:text-[#D47A63] transition-colors">
+                      {product.name}
+                    </h3>
 
-                  <div className="flex items-center justify-between mt-2 pt-1 border-t border-gray-100">
+                    <div className="flex items-center gap-1 mt-1 text-[10.5px]">
+                      {product.reviewsCount > 0 && product.rating !== undefined ? (
+                        <>
+                          <Star className="w-3 h-3 text-[#C4A46B] dark:text-[#D7BA86] fill-current" />
+                          <span className="font-semibold text-[#322622] dark:text-[#F4EDE6] tabular-nums">
+                            {product.rating}
+                          </span>
+                          <span className="text-[#786962] dark:text-[#B5A89F] tabular-nums">
+                            ({product.reviewsCount})
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-[#786962] dark:text-[#B5A89F] italic">Chưa có đánh giá</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between mt-2.5 pt-2 border-t border-[#E6DDD1] dark:border-[#362E2A]">
                     <div>
-                      <span className="text-[14px] font-extrabold text-[#C84B4B] tabular-nums">
-                        {displayPrice}
+                      <span className="text-[14px] font-bold text-[#B55841] dark:text-[#D47A63] tabular-nums">
+                        {effectivePrice.toLocaleString('vi-VN')}đ
                       </span>
-                      {isVip && (
-                        <span className="text-[10px] text-[#A0938E] line-through block leading-tight">
-                          {product.formattedPrice}
+                      {(product.formattedOriginalPrice || isVip) && (
+                        <span className="text-[10px] text-[#786962] dark:text-[#B5A89F] line-through block leading-tight tabular-nums">
+                          {product.formattedOriginalPrice || product.formattedPrice}
                         </span>
                       )}
                     </div>
 
-                    {/* Add to Cart Mini Button */}
                     <motion.button
-                      whileTap={{ scale: 0.8 }}
+                      whileTap={product.inStock ? { scale: 0.85 } : undefined}
+                      disabled={!product.inStock}
                       onClick={(e) => handleAdd(e, product)}
-                      className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors cursor-pointer ${
-                        isRecentlyAdded
-                          ? 'bg-[#2ECC71] text-white'
-                          : 'bg-[#FCEEEB] text-[#C84B4B] hover:bg-[#C84B4B] hover:text-white'
+                      className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors ${
+                        !product.inStock
+                          ? 'bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] cursor-not-allowed'
+                          : isRecentlyAdded
+                          ? 'bg-[#6D8572] text-white cursor-pointer'
+                          : 'bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] hover:bg-[#B55841] hover:text-white cursor-pointer'
                       }`}
                       aria-label={`Thêm ${product.name} vào giỏ`}
                     >
-                      {isRecentlyAdded ? (
-                        <Check className="w-3.5 h-3.5 stroke-[2.5]" />
-                      ) : (
-                        <Plus className="w-4 h-4 stroke-[2.5]" />
-                      )}
+                      {isRecentlyAdded ? <Check className="w-4 h-4 stroke-[2.5]" /> : <Plus className="w-4 h-4 stroke-[2.5]" />}
                     </motion.button>
                   </div>
                 </div>
@@ -469,18 +660,10 @@ export const ShopScreen: React.FC<ShopScreenProps> = ({
         </div>
       )}
 
-      {/* Safe Care Guarantee Footer Pill */}
-      <div className="mt-5 p-3 rounded-2xl bg-[#FAF6F3] border border-[#EBE4DE] text-center">
-        <p className="text-[11px] text-[#7A6A64]">
-          🛡️ 100% Sản phẩm được kiểm định an toàn cho mẹ bầu & trẻ sơ sinh
-        </p>
-      </div>
-
-      {/* Advanced Filter Modal Sheet */}
+      {/* Advanced Filter Modal */}
       <AnimatePresence>
         {isAdvancedFilterOpen && (
-          <div className="fixed inset-0 z-50 flex items-end justify-center select-none">
-            {/* Backdrop */}
+          <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center select-none">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -489,78 +672,45 @@ export const ShopScreen: React.FC<ShopScreenProps> = ({
               className="absolute inset-0 bg-black/45 backdrop-blur-xs cursor-pointer"
             />
 
-            {/* Sheet */}
             <motion.div
               initial={{ y: '100%' }}
               animate={{ y: 0 }}
               exit={{ y: '100%' }}
-              transition={{ type: 'spring', damping: 28, stiffness: 350 }}
-              className="relative w-full max-w-[430px] bg-white rounded-t-[32px] p-5 shadow-2xl flex flex-col z-10 border-t border-[#F0ECE9] max-h-[85%] overflow-y-auto no-scrollbar"
+              className="relative w-full max-w-[460px] bg-[#FAF6F0] dark:bg-[#161311] rounded-t-[28px] md:rounded-[28px] p-5 shadow-2xl flex flex-col z-10 border border-[#E6DDD1] dark:border-[#362E2A] max-h-[85vh] overflow-y-auto no-scrollbar"
             >
-              <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-3" />
-
-              <div className="flex items-center justify-between pb-3 border-b border-gray-100 mb-4">
+              <div className="flex items-center justify-between pb-3 border-b border-[#E6DDD1] dark:border-[#362E2A] mb-4">
                 <div className="flex items-center gap-2">
-                  <SlidersHorizontal className="w-4 h-4 text-[#C84B4B]" />
-                  <h3 className="text-base font-bold text-[#3A2E2B]">
+                  <SlidersHorizontal className="w-4 h-4 text-[#B55841] dark:text-[#D47A63]" />
+                  <h3 className="font-editorial text-base font-semibold text-[#322622] dark:text-[#F4EDE6]">
                     Bộ lọc nâng cao
                   </h3>
                 </div>
                 <button
                   onClick={() => setIsAdvancedFilterOpen(false)}
-                  className="w-7 h-7 rounded-full bg-[#FAF6F3] flex items-center justify-center text-[#8C7B75] hover:bg-[#EFEAE5]"
+                  className="w-8 h-8 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] flex items-center justify-center text-[#786962] dark:text-[#B5A89F] cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
-              {/* 1. Category */}
               <div className="mb-4">
-                <label className="text-xs font-bold text-[#3A2E2B] block mb-2">
-                  Danh mục sản phẩm
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { id: 'all', label: 'Tất cả danh mục' },
-                    { id: 'books', label: 'Sách & Sổ tay' },
-                    { id: 'jewelry', label: 'Trang sức phong thủy' },
-                    { id: 'skincare', label: 'Dưỡng da thai kỳ' },
-                    { id: 'bedding', label: 'Gối ôm & Giấc ngủ' },
-                  ].map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => setSelectedCategory(cat.id)}
-                      className={`p-2.5 rounded-xl text-xs font-semibold text-left transition-colors cursor-pointer border ${
-                        selectedCategory === cat.id
-                          ? 'bg-[#FCEEEB] text-[#C84B4B] border-[#C84B4B]'
-                          : 'bg-[#FAF7F4] text-[#6E5D57] border-[#EDE7E2] hover:bg-gray-100'
-                      }`}
-                    >
-                      {cat.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* 2. Price Range */}
-              <div className="mb-4">
-                <label className="text-xs font-bold text-[#3A2E2B] block mb-2">
+                <label className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] block mb-2">
                   Khoảng giá
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   {[
                     { id: 'all' as PriceRange, label: 'Mọi mức giá' },
-                    { id: 'under100' as PriceRange, label: 'Dưới 100.000đ' },
-                    { id: '100to500' as PriceRange, label: '100.000đ - 500.000đ' },
-                    { id: 'above500' as PriceRange, label: 'Trên 500.000đ' },
+                    { id: 'under150' as PriceRange, label: 'Dưới 150.000đ' },
+                    { id: '150to400' as PriceRange, label: '150.000đ - 400.000đ' },
+                    { id: 'above400' as PriceRange, label: 'Trên 400.000đ' },
                   ].map((range) => (
                     <button
                       key={range.id}
                       onClick={() => setSelectedPriceRange(range.id)}
-                      className={`p-2.5 rounded-xl text-xs font-semibold text-left transition-colors cursor-pointer border ${
+                      className={`p-2.5 rounded-xl text-xs font-semibold text-left cursor-pointer border transition-colors ${
                         selectedPriceRange === range.id
-                          ? 'bg-[#FCEEEB] text-[#C84B4B] border-[#C84B4B]'
-                          : 'bg-[#FAF7F4] text-[#6E5D57] border-[#EDE7E2] hover:bg-gray-100'
+                          ? 'bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] border-[#B55841]'
+                          : 'bg-[#FFFFFF] dark:bg-[#1E1A17] text-[#6B5D56] dark:text-[#C5B9B0] border-[#E6DDD1] dark:border-[#362E2A]'
                       }`}
                     >
                       {range.label}
@@ -569,51 +719,213 @@ export const ShopScreen: React.FC<ShopScreenProps> = ({
                 </div>
               </div>
 
-              {/* 3. Rating */}
-              <div className="mb-5">
-                <label className="text-xs font-bold text-[#3A2E2B] block mb-2">
-                  Đánh giá người dùng
+              <div className="mb-4">
+                <label className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] block mb-2">
+                  Thương hiệu
                 </label>
-                <div className="flex items-center gap-2">
-                  {[
-                    { val: 0, label: 'Tất cả' },
-                    { val: 4.8, label: '4.8⭐ trở lên' },
-                    { val: 5.0, label: '5.0⭐ tuyệt đối' },
-                  ].map((r) => (
-                    <button
-                      key={r.val}
-                      onClick={() => setSelectedMinRating(r.val)}
-                      className={`flex-1 py-2 rounded-xl text-xs font-semibold transition-colors cursor-pointer border ${
-                        selectedMinRating === r.val
-                          ? 'bg-[#FCEEEB] text-[#C84B4B] border-[#C84B4B]'
-                          : 'bg-[#FAF7F4] text-[#6E5D57] border-[#EDE7E2]'
-                      }`}
-                    >
-                      {r.label}
-                    </button>
+                <select
+                  value={selectedBrand}
+                  onChange={(e) => setSelectedBrand(e.target.value)}
+                  className="w-full min-h-[42px] px-3 py-2.5 rounded-xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#322622] dark:text-[#F4EDE6]"
+                >
+                  <option value="all">Tất cả thương hiệu</option>
+                  {availableBrands.map((b) => (
+                    <option key={b} value={b}>
+                      {b}
+                    </option>
                   ))}
-                </div>
+                </select>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-3 pt-2 border-t border-gray-100">
+              <div className="mb-5 space-y-2">
+                <label className="flex items-center gap-2.5 p-3 rounded-xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={onlyInStock}
+                    onChange={(e) => setOnlyInStock(e.target.checked)}
+                    className="w-4 h-4 accent-[#B55841]"
+                  />
+                  <span className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                    Chỉ hiển thị sản phẩm còn hàng
+                  </span>
+                </label>
+                <label className="flex items-center gap-2.5 p-3 rounded-xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={onlyWishlist}
+                    onChange={(e) => setOnlyWishlist(e.target.checked)}
+                    className="w-4 h-4 accent-[#B55841]"
+                  />
+                  <span className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] tabular-nums">
+                    Chỉ hiển thị mục đã Yêu thích ({wishlistIds.length})
+                  </span>
+                </label>
+              </div>
+
+              <div className="flex items-center gap-3 pt-3 border-t border-[#E6DDD1] dark:border-[#362E2A]">
                 <button
                   onClick={handleResetFilters}
-                  className="flex-1 py-3 text-xs font-bold text-[#8C7B75] bg-[#FAF7F4] hover:bg-gray-200 rounded-xl cursor-pointer"
+                  className="flex-1 min-h-[44px] py-3 text-xs font-semibold text-[#6B5D56] dark:text-[#C5B9B0] bg-[#F2ECE3] dark:bg-[#231E1B] rounded-xl cursor-pointer transition-colors"
                 >
-                  Thiết lập lại
+                  Đặt lại
                 </button>
                 <button
                   onClick={() => setIsAdvancedFilterOpen(false)}
-                  className="flex-1 py-3 text-xs font-bold text-white bg-[#C84B4B] hover:bg-[#B84040] rounded-xl shadow-md cursor-pointer"
+                  className="flex-1 min-h-[44px] py-3 text-xs font-semibold text-white bg-[#B55841] hover:bg-[#9E4A35] rounded-xl shadow-sm cursor-pointer transition-colors tabular-nums"
                 >
-                  Áp dụng ({filteredProducts.length} món)
+                  Áp dụng ({filteredProducts.length})
                 </button>
               </div>
             </motion.div>
           </div>
         )}
       </AnimatePresence>
+
+      {/* Compare Modal */}
+      <AnimatePresence>
+        {isCompareOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 select-none">
+            <div onClick={() => setIsCompareOpen(false)} className="fixed inset-0 bg-black/55 backdrop-blur-xs" />
+            <div className="relative z-10 w-full max-w-3xl bg-[#FAF6F0] dark:bg-[#161311] rounded-3xl p-5 shadow-2xl border border-[#E6DDD1] dark:border-[#362E2A] max-h-[85vh] overflow-y-auto">
+              <div className="flex items-center justify-between pb-3 border-b border-[#E6DDD1] dark:border-[#362E2A] mb-4">
+                <h3 className="font-editorial text-base font-semibold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2 tabular-nums">
+                  <Scale className="w-4 h-4 text-[#4F6B56] dark:text-[#8DA892]" />
+                  <span>So sánh sản phẩm ({compareProducts.length}/3)</span>
+                </h3>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setCompareIds([]);
+                      setIsCompareOpen(false);
+                    }}
+                    className="text-xs font-semibold text-[#B55841] dark:text-[#D47A63] cursor-pointer"
+                  >
+                    Xóa tất cả
+                  </button>
+                  <button
+                    onClick={() => setIsCompareOpen(false)}
+                    className="w-8 h-8 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] dark:text-[#B5A89F] flex items-center justify-center cursor-pointer"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {compareProducts.map((p) => (
+                  <div
+                    key={p.id}
+                    className="p-3 rounded-2xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] space-y-2"
+                  >
+                    <NovaImage
+                      src={p.image}
+                      alt={p.name}
+                      fallbackTitle={p.name}
+                      className="w-full h-32 object-cover rounded-xl bg-[#F2ECE3] dark:bg-[#231E1B]"
+                    />
+                    <p className="font-editorial text-xs font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                      {p.name}
+                    </p>
+                    <p className="text-sm font-bold text-[#B55841] dark:text-[#D47A63] tabular-nums">
+                      {p.formattedPrice}
+                    </p>
+                    <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">Thương hiệu: {p.brand}</p>
+                    <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">
+                      Tồn kho: {p.inStock ? `Còn ${p.stockCount ?? ''}` : 'Tạm hết hàng'}
+                    </p>
+                    <ul className="space-y-1 text-[11px] text-[#6B5D56] dark:text-[#C5B9B0]">
+                      {p.benefits.slice(0, 3).map((b, i) => (
+                        <li key={i}>• {b}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Order Tracking Drawer Modal */}
+      <AnimatePresence>
+        {isOrdersOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 select-none">
+            <div onClick={() => setIsOrdersOpen(false)} className="fixed inset-0 bg-black/55 backdrop-blur-xs" />
+            <div className="relative z-10 w-full max-w-xl bg-[#FAF6F0] dark:bg-[#161311] rounded-3xl p-5 shadow-2xl border border-[#E6DDD1] dark:border-[#362E2A] max-h-[85vh] overflow-y-auto no-scrollbar">
+              <div className="flex items-center justify-between pb-3 border-b border-[#E6DDD1] dark:border-[#362E2A] mb-3.5">
+                <h3 className="font-editorial text-base font-semibold text-[#322622] dark:text-[#F4EDE6] flex items-center gap-2 tabular-nums">
+                  <Truck className="w-4.5 h-4.5 text-[#B55841] dark:text-[#D47A63]" />
+                  <span>Theo dõi đơn hàng ({mergedOrders.length})</span>
+                </h3>
+                <button
+                  onClick={() => setIsOrdersOpen(false)}
+                  className="w-8 h-8 rounded-full bg-[#F2ECE3] dark:bg-[#231E1B] text-[#786962] dark:text-[#B5A89F] flex items-center justify-center cursor-pointer"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              {mergedOrders.length === 0 ? (
+                <div className="py-10 text-center text-xs text-[#786962] dark:text-[#B5A89F] space-y-2">
+                  <Package className="w-9 h-9 mx-auto opacity-40" />
+                  <p>Mẹ chưa có đơn hàng nào được tạo.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {mergedOrders.map((ord) => (
+                    <div
+                      key={ord.orderId}
+                      className="p-3.5 rounded-2xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] space-y-2 text-xs"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-mono font-bold text-[#B55841] dark:text-[#D47A63]">
+                          {ord.orderId}
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] border border-[#EBCDC2] dark:border-[#52352D]">
+                          {ORDER_STATUS_LABEL[ord.status] || ord.status}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] tabular-nums">
+                        PT: {ord.paymentMethod.toUpperCase()} · Tổng:{' '}
+                        <strong className="text-[#322622] dark:text-[#F4EDE6]">
+                          {ord.totalAmount.toLocaleString('vi-VN')}đ
+                        </strong>
+                      </p>
+                      {ord.trackingHistory && ord.trackingHistory.length > 0 && (
+                        <div className="pt-2 border-t border-[#E6DDD1] dark:border-[#362E2A] space-y-1">
+                          {ord.trackingHistory.map((ev, idx) => (
+                            <p
+                              key={idx}
+                              className="text-[11px] text-[#6B5D56] dark:text-[#C5B9B0] flex items-center gap-1.5"
+                            >
+                              <Clock className="w-3 h-3 text-[#4F6B56] dark:text-[#8DA892] shrink-0" />
+                              <span>{ev.label}</span>
+                            </p>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {onNavigateToOrderInfo && cartCount > 0 && (
+                <button
+                  onClick={() => {
+                    setIsOrdersOpen(false);
+                    onNavigateToOrderInfo();
+                  }}
+                  className="mt-4 w-full min-h-[44px] py-3 rounded-2xl bg-[#B55841] hover:bg-[#9E4A35] text-white text-xs font-semibold cursor-pointer flex items-center justify-center gap-1.5 transition-colors tabular-nums"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span>Đi tới thanh toán giỏ hàng hiện tại ({cartCount} sản phẩm)</span>
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
+

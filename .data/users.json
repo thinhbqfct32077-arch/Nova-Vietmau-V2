@@ -1,0 +1,398 @@
+[
+  {
+    "id": "usr-1",
+    "name": "Khánh Băng",
+    "email": "khanhbang.mom@gmail.com",
+    "phone": "0987 654 321",
+    "avatar": "/src/assets/images/mother_avatar_1790926298307.jpg",
+    "role": "user",
+    "pregnancyWeek": 24,
+    "dueDate": "15/11/2026",
+    "babyNickname": "Bé Bơ",
+    "babyGender": "girl",
+    "bloodType": "O+",
+    "weightKg": 58.5,
+    "heightCm": 162,
+    "isVip": true,
+    "vipPlan": "yearly",
+    "vipExpiry": "12/2026",
+    "streakDays": 18,
+    "completedExercises": 34,
+    "novaPoints": 1250,
+    "rewardsEnabled": true,
+    "emergencyContacts": [
+      {
+        "id": "em-1",
+        "name": "Cấp cứu Y tế Toàn quốc (115)",
+        "relationship": "Khẩn cấp 24/7",
+        "phone": "115",
+        "isPrimary": true,
+        "notes": "Gọi xe cấp cứu và sơ cứu y tế tức thời"
+      },
+      {
+        "id": "em-2",
+        "name": "Nguyễn Minh Đức",
+        "relationship": "Chồng yêu",
+        "phone": "0912 345 678",
+        "isPrimary": true,
+        "notes": "Liên hệ đầu tiên khi có dấu hiệu chuyển dạ"
+      },
+      {
+        "id": "em-3",
+        "name": "Bác sĩ Yến Khoa",
+        "relationship": "Bác sĩ sản khoa theo dõi",
+        "phone": "0903 888 999",
+        "notes": "Phòng khám Sản Bệnh viện Phụ Sản"
+      },
+      {
+        "id": "em-4",
+        "name": "Mẹ Hà (Bà ngoại)",
+        "relationship": "Mẹ ruột",
+        "phone": "0988 765 432",
+        "notes": "Hỗ trợ đưa đón và chăm sóc bé"
+      },
+      {
+        "id": "em-5",
+        "name": "BV Phụ Sản Trung Ương / Từ Dũ",
+        "relationship": "Hotline Cấp cứu Sản khoa",
+        "phone": "1900 6922",
+        "notes": "Trực cấp cứu sản khoa 24/24"
+      }
+    ],
+    "shippingAddresses": [
+      {
+        "id": "addr-1",
+        "fullName": "Khánh Băng",
+        "phone": "0987 654 321",
+        "province": "TP. Hồ Chí Minh",
+        "district": "Quận 3",
+        "ward": "Phường Võ Thị Sáu",
+        "streetAddress": "142 Nguyễn Thị Minh Khai, Tòa nhà Rosana, Căn hộ 502",
+        "isDefault": true,
+        "label": "Nhà riêng",
+        "deliveryNote": "Nhà có mẹ bầu & trẻ sơ sinh, xin gọi trước khi đến, không bấm chuông to"
+      },
+      {
+        "id": "addr-2",
+        "fullName": "Khánh Băng (Văn phòng)",
+        "phone": "0987 654 321",
+        "province": "TP. Hồ Chí Minh",
+        "district": "Quận 1",
+        "ward": "Phường Bến Nghé",
+        "streetAddress": "33 Lê Duẩn, Tòa nhà Diamond Plaza, Tầng 8",
+        "isDefault": false,
+        "label": "Văn phòng",
+        "deliveryNote": "Gửi lễ tân tòa nhà trong giờ hành chính (8h30 - 17h30)"
+      },
+      {
+        "id": "addr-3",
+        "fullName": "Bà Ngoại (Nguyễn Thị Mai)",
+        "phone": "0912 345 678",
+        "province": "Hà Nội",
+        "district": "Quận Cầu Giấy",
+        "ward": "Phường Dịch Vọng Hậu",
+        "streetAddress": "Số 18 Ngõ 86 Duy Tân",
+        "isDefault": false,
+        "label": "Nhà người thân",
+        "deliveryNote": "Giao trực tiếp cho bà ngoại nhận đồ bé yêu"
+      }
+    ]
+  },
+  {
+    "id": "usr-2",
+    "name": "Mẹ Lan Hương",
+    "email": "lanhuong.mom@gmail.com",
+    "phone": "0912 888 777",
+    "avatar": "/src/assets/images/mother_avatar_1790926298307.jpg",
+    "role": "user",
+    "pregnancyWeek": 12,
+    "dueDate": "15/11/2026",
+    "babyNickname": "Bé Đậu",
+    "babyGender": "girl",
+    "bloodType": "O+",
+    "weightKg": 58.5,
+    "heightCm": 162,
+    "isVip": false,
+    "vipPlan": "yearly",
+    "vipExpiry": "12/2026",
+    "streakDays": 18,
+    "completedExercises": 34,
+    "novaPoints": 1250,
+    "rewardsEnabled": true,
+    "emergencyContacts": [
+      {
+        "id": "em-1",
+        "name": "Cấp cứu Y tế Toàn quốc (115)",
+        "relationship": "Khẩn cấp 24/7",
+        "phone": "115",
+        "isPrimary": true,
+        "notes": "Gọi xe cấp cứu và sơ cứu y tế tức thời"
+      },
+      {
+        "id": "em-2",
+        "name": "Nguyễn Minh Đức",
+        "relationship": "Chồng yêu",
+        "phone": "0912 345 678",
+        "isPrimary": true,
+        "notes": "Liên hệ đầu tiên khi có dấu hiệu chuyển dạ"
+      },
+      {
+        "id": "em-3",
+        "name": "Bác sĩ Yến Khoa",
+        "relationship": "Bác sĩ sản khoa theo dõi",
+        "phone": "0903 888 999",
+        "notes": "Phòng khám Sản Bệnh viện Phụ Sản"
+      },
+      {
+        "id": "em-4",
+        "name": "Mẹ Hà (Bà ngoại)",
+        "relationship": "Mẹ ruột",
+        "phone": "0988 765 432",
+        "notes": "Hỗ trợ đưa đón và chăm sóc bé"
+      },
+      {
+        "id": "em-5",
+        "name": "BV Phụ Sản Trung Ương / Từ Dũ",
+        "relationship": "Hotline Cấp cứu Sản khoa",
+        "phone": "1900 6922",
+        "notes": "Trực cấp cứu sản khoa 24/24"
+      }
+    ],
+    "shippingAddresses": [
+      {
+        "id": "addr-1",
+        "fullName": "Khánh Băng",
+        "phone": "0987 654 321",
+        "province": "TP. Hồ Chí Minh",
+        "district": "Quận 3",
+        "ward": "Phường Võ Thị Sáu",
+        "streetAddress": "142 Nguyễn Thị Minh Khai, Tòa nhà Rosana, Căn hộ 502",
+        "isDefault": true,
+        "label": "Nhà riêng",
+        "deliveryNote": "Nhà có mẹ bầu & trẻ sơ sinh, xin gọi trước khi đến, không bấm chuông to"
+      },
+      {
+        "id": "addr-2",
+        "fullName": "Khánh Băng (Văn phòng)",
+        "phone": "0987 654 321",
+        "province": "TP. Hồ Chí Minh",
+        "district": "Quận 1",
+        "ward": "Phường Bến Nghé",
+        "streetAddress": "33 Lê Duẩn, Tòa nhà Diamond Plaza, Tầng 8",
+        "isDefault": false,
+        "label": "Văn phòng",
+        "deliveryNote": "Gửi lễ tân tòa nhà trong giờ hành chính (8h30 - 17h30)"
+      },
+      {
+        "id": "addr-3",
+        "fullName": "Bà Ngoại (Nguyễn Thị Mai)",
+        "phone": "0912 345 678",
+        "province": "Hà Nội",
+        "district": "Quận Cầu Giấy",
+        "ward": "Phường Dịch Vọng Hậu",
+        "streetAddress": "Số 18 Ngõ 86 Duy Tân",
+        "isDefault": false,
+        "label": "Nhà người thân",
+        "deliveryNote": "Giao trực tiếp cho bà ngoại nhận đồ bé yêu"
+      }
+    ]
+  },
+  {
+    "id": "usr-mod",
+    "name": "Điều phối viên Thu Hà",
+    "email": "moderator@novacare.vn",
+    "phone": "0900 333 444",
+    "avatar": "/src/assets/images/mother_avatar_1790926298307.jpg",
+    "role": "moderator",
+    "pregnancyWeek": 22,
+    "dueDate": "15/11/2026",
+    "babyNickname": "Nova Moderator",
+    "babyGender": "girl",
+    "bloodType": "O+",
+    "weightKg": 58.5,
+    "heightCm": 162,
+    "isVip": true,
+    "vipPlan": "yearly",
+    "vipExpiry": "12/2026",
+    "streakDays": 18,
+    "completedExercises": 34,
+    "novaPoints": 1250,
+    "rewardsEnabled": true,
+    "emergencyContacts": [
+      {
+        "id": "em-1",
+        "name": "Cấp cứu Y tế Toàn quốc (115)",
+        "relationship": "Khẩn cấp 24/7",
+        "phone": "115",
+        "isPrimary": true,
+        "notes": "Gọi xe cấp cứu và sơ cứu y tế tức thời"
+      },
+      {
+        "id": "em-2",
+        "name": "Nguyễn Minh Đức",
+        "relationship": "Chồng yêu",
+        "phone": "0912 345 678",
+        "isPrimary": true,
+        "notes": "Liên hệ đầu tiên khi có dấu hiệu chuyển dạ"
+      },
+      {
+        "id": "em-3",
+        "name": "Bác sĩ Yến Khoa",
+        "relationship": "Bác sĩ sản khoa theo dõi",
+        "phone": "0903 888 999",
+        "notes": "Phòng khám Sản Bệnh viện Phụ Sản"
+      },
+      {
+        "id": "em-4",
+        "name": "Mẹ Hà (Bà ngoại)",
+        "relationship": "Mẹ ruột",
+        "phone": "0988 765 432",
+        "notes": "Hỗ trợ đưa đón và chăm sóc bé"
+      },
+      {
+        "id": "em-5",
+        "name": "BV Phụ Sản Trung Ương / Từ Dũ",
+        "relationship": "Hotline Cấp cứu Sản khoa",
+        "phone": "1900 6922",
+        "notes": "Trực cấp cứu sản khoa 24/24"
+      }
+    ],
+    "shippingAddresses": [
+      {
+        "id": "addr-1",
+        "fullName": "Khánh Băng",
+        "phone": "0987 654 321",
+        "province": "TP. Hồ Chí Minh",
+        "district": "Quận 3",
+        "ward": "Phường Võ Thị Sáu",
+        "streetAddress": "142 Nguyễn Thị Minh Khai, Tòa nhà Rosana, Căn hộ 502",
+        "isDefault": true,
+        "label": "Nhà riêng",
+        "deliveryNote": "Nhà có mẹ bầu & trẻ sơ sinh, xin gọi trước khi đến, không bấm chuông to"
+      },
+      {
+        "id": "addr-2",
+        "fullName": "Khánh Băng (Văn phòng)",
+        "phone": "0987 654 321",
+        "province": "TP. Hồ Chí Minh",
+        "district": "Quận 1",
+        "ward": "Phường Bến Nghé",
+        "streetAddress": "33 Lê Duẩn, Tòa nhà Diamond Plaza, Tầng 8",
+        "isDefault": false,
+        "label": "Văn phòng",
+        "deliveryNote": "Gửi lễ tân tòa nhà trong giờ hành chính (8h30 - 17h30)"
+      },
+      {
+        "id": "addr-3",
+        "fullName": "Bà Ngoại (Nguyễn Thị Mai)",
+        "phone": "0912 345 678",
+        "province": "Hà Nội",
+        "district": "Quận Cầu Giấy",
+        "ward": "Phường Dịch Vọng Hậu",
+        "streetAddress": "Số 18 Ngõ 86 Duy Tân",
+        "isDefault": false,
+        "label": "Nhà người thân",
+        "deliveryNote": "Giao trực tiếp cho bà ngoại nhận đồ bé yêu"
+      }
+    ]
+  },
+  {
+    "id": "usr-admin",
+    "name": "Quản trị viên Nova",
+    "email": "admin@novacare.vn",
+    "phone": "0900 111 222",
+    "avatar": "/src/assets/images/mother_avatar_1790926298307.jpg",
+    "role": "admin",
+    "pregnancyWeek": 28,
+    "dueDate": "15/11/2026",
+    "babyNickname": "Nova Admin",
+    "babyGender": "girl",
+    "bloodType": "O+",
+    "weightKg": 58.5,
+    "heightCm": 162,
+    "isVip": true,
+    "vipPlan": "yearly",
+    "vipExpiry": "12/2026",
+    "streakDays": 18,
+    "completedExercises": 34,
+    "novaPoints": 1250,
+    "rewardsEnabled": true,
+    "emergencyContacts": [
+      {
+        "id": "em-1",
+        "name": "Cấp cứu Y tế Toàn quốc (115)",
+        "relationship": "Khẩn cấp 24/7",
+        "phone": "115",
+        "isPrimary": true,
+        "notes": "Gọi xe cấp cứu và sơ cứu y tế tức thời"
+      },
+      {
+        "id": "em-2",
+        "name": "Nguyễn Minh Đức",
+        "relationship": "Chồng yêu",
+        "phone": "0912 345 678",
+        "isPrimary": true,
+        "notes": "Liên hệ đầu tiên khi có dấu hiệu chuyển dạ"
+      },
+      {
+        "id": "em-3",
+        "name": "Bác sĩ Yến Khoa",
+        "relationship": "Bác sĩ sản khoa theo dõi",
+        "phone": "0903 888 999",
+        "notes": "Phòng khám Sản Bệnh viện Phụ Sản"
+      },
+      {
+        "id": "em-4",
+        "name": "Mẹ Hà (Bà ngoại)",
+        "relationship": "Mẹ ruột",
+        "phone": "0988 765 432",
+        "notes": "Hỗ trợ đưa đón và chăm sóc bé"
+      },
+      {
+        "id": "em-5",
+        "name": "BV Phụ Sản Trung Ương / Từ Dũ",
+        "relationship": "Hotline Cấp cứu Sản khoa",
+        "phone": "1900 6922",
+        "notes": "Trực cấp cứu sản khoa 24/24"
+      }
+    ],
+    "shippingAddresses": [
+      {
+        "id": "addr-1",
+        "fullName": "Khánh Băng",
+        "phone": "0987 654 321",
+        "province": "TP. Hồ Chí Minh",
+        "district": "Quận 3",
+        "ward": "Phường Võ Thị Sáu",
+        "streetAddress": "142 Nguyễn Thị Minh Khai, Tòa nhà Rosana, Căn hộ 502",
+        "isDefault": true,
+        "label": "Nhà riêng",
+        "deliveryNote": "Nhà có mẹ bầu & trẻ sơ sinh, xin gọi trước khi đến, không bấm chuông to"
+      },
+      {
+        "id": "addr-2",
+        "fullName": "Khánh Băng (Văn phòng)",
+        "phone": "0987 654 321",
+        "province": "TP. Hồ Chí Minh",
+        "district": "Quận 1",
+        "ward": "Phường Bến Nghé",
+        "streetAddress": "33 Lê Duẩn, Tòa nhà Diamond Plaza, Tầng 8",
+        "isDefault": false,
+        "label": "Văn phòng",
+        "deliveryNote": "Gửi lễ tân tòa nhà trong giờ hành chính (8h30 - 17h30)"
+      },
+      {
+        "id": "addr-3",
+        "fullName": "Bà Ngoại (Nguyễn Thị Mai)",
+        "phone": "0912 345 678",
+        "province": "Hà Nội",
+        "district": "Quận Cầu Giấy",
+        "ward": "Phường Dịch Vọng Hậu",
+        "streetAddress": "Số 18 Ngõ 86 Duy Tân",
+        "isDefault": false,
+        "label": "Nhà người thân",
+        "deliveryNote": "Giao trực tiếp cho bà ngoại nhận đồ bé yêu"
+      }
+    ]
+  }
+]

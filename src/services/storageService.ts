@@ -16,6 +16,8 @@ import {
   WeightLog,
   AppNotification,
   MoodType,
+  SleepQuality,
+  NutritionLog,
 } from '../types';
 import {
   INITIAL_USER_PROFILE,
@@ -25,6 +27,9 @@ import {
   PRODUCTS_DATA,
   INITIAL_CHAT_MESSAGES,
 } from '../data/mockData';
+
+export type ThemeMode = 'light' | 'dark';
+export type FontScale = 'small' | 'normal' | 'large';
 
 const STORAGE_KEYS = {
   USER_PROFILE: 'nova_mom_user_profile_v2',
@@ -41,6 +46,10 @@ const STORAGE_KEYS = {
   PRENATAL_APPOINTMENTS: 'nova_mom_prenatal_appointments_v3',
   NOTIFICATIONS: 'nova_mom_notifications_v3',
   WEIGHT_LOGS: 'nova_mom_weight_logs_v3',
+  THEME_MODE: 'nova_mom_theme_mode_v1',
+  FONT_SCALE: 'nova_mom_font_scale_v1',
+  OFFLINE_CACHE: 'nova_mom_offline_cache_v1',
+  SESSION_TOKEN: 'nova_mom_session_token_v1',
 };
 
 // Safe JSON parser helper
@@ -77,48 +86,17 @@ export function getTodayDateString(date = new Date()): string {
   return `${year}-${month}-${day}`;
 }
 
-const DEFAULT_REMINDERS: HealthReminder[] = [
-  {
-    id: 'rem-1',
-    title: 'Uống cốc nước ấm đầu ngày',
-    category: 'water',
-    time: '07:30',
-    frequency: 'daily',
-    isEnabled: true,
-    notes: '250ml nước ấm giúp thanh lọc dạ dày và tuần hoàn nước ối',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'rem-2',
-    title: 'Uống nước & vận động nhẹ buổi sáng',
-    category: 'water',
-    time: '10:00',
-    frequency: 'daily',
-    isEnabled: true,
-    notes: 'Bổ sung 250ml nước và đứng dậy đi lại 5 phút',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'rem-3',
-    title: 'Tập Yoga bầu 15 phút giãn cơ',
-    category: 'yoga',
-    time: '16:30',
-    frequency: 'daily',
-    isEnabled: true,
-    notes: 'Tư thế con mèo - con bò và tư thế em bé giúp giảm mỏi lưng',
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: 'rem-4',
-    title: 'Nghe nhạc Mozart & Thai giáo bé yêu',
-    category: 'music',
-    time: '21:00',
-    frequency: 'daily',
-    isEnabled: true,
-    notes: 'Bản giao hưởng dịu êm giúp mẹ và bé thư giãn sâu trước khi ngủ',
-    createdAt: new Date().toISOString(),
-  },
-];
+function getReminderStorageKey(userId?: string): string {
+  try {
+    if (userId) return `${STORAGE_KEYS.HEALTH_REMINDERS}_${userId}`;
+    const raw = localStorage.getItem(STORAGE_KEYS.USER_PROFILE);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed?.id) return `${STORAGE_KEYS.HEALTH_REMINDERS}_${parsed.id}`;
+    }
+  } catch {}
+  return `${STORAGE_KEYS.HEALTH_REMINDERS}_usr-1`;
+}
 
 export const storageService = {
   // -------------------------------------------------------------
@@ -314,46 +292,67 @@ export const storageService = {
   },
 
   // -------------------------------------------------------------
-  // HEALTH REMINDERS (Nhắc nhở & Hẹn giờ)
+  // HEALTH REMINDERS (Nhắc nhở & Hẹn giờ - Lưu riêng theo từng tài khoản)
   // -------------------------------------------------------------
-  loadHealthReminders(): HealthReminder[] {
-    return safeParse<HealthReminder[]>(STORAGE_KEYS.HEALTH_REMINDERS, DEFAULT_REMINDERS);
+  loadHealthReminders(userId?: string): HealthReminder[] {
+    const key = getReminderStorageKey(userId);
+    return safeParse<HealthReminder[]>(key, []);
   },
 
-  saveHealthReminders(reminders: HealthReminder[]): void {
-    safeSet(STORAGE_KEYS.HEALTH_REMINDERS, reminders);
+  saveHealthReminders(reminders: HealthReminder[], userId?: string): void {
+    const key = getReminderStorageKey(userId);
+    const activeId = userId || this.loadUserProfile().id;
+    const scoped = reminders.map((r) => ({ ...r, userId: activeId }));
+    safeSet(key, scoped);
   },
 
-  addHealthReminder(reminder: Omit<HealthReminder, 'id' | 'createdAt'>): HealthReminder {
-    const current = this.loadHealthReminders();
+  addHealthReminder(
+    reminder: Omit<HealthReminder, 'id' | 'createdAt'>,
+    userId?: string
+  ): HealthReminder {
+    const activeId = userId || this.loadUserProfile().id;
+    const current = this.loadHealthReminders(activeId);
     const newRem: HealthReminder = {
       ...reminder,
+      userId: activeId,
       id: `rem-${Date.now()}-${Math.random().toString(36).substr(2, 4)}`,
       createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     };
     const updated = [newRem, ...current];
-    this.saveHealthReminders(updated);
+    this.saveHealthReminders(updated, activeId);
     return newRem;
   },
 
-  updateHealthReminder(id: string, partial: Partial<HealthReminder>): HealthReminder[] {
-    const current = this.loadHealthReminders();
-    const updated = current.map((r) => (r.id === id ? { ...r, ...partial } : r));
-    this.saveHealthReminders(updated);
+  updateHealthReminder(
+    id: string,
+    partial: Partial<HealthReminder>,
+    userId?: string
+  ): HealthReminder[] {
+    const activeId = userId || this.loadUserProfile().id;
+    const current = this.loadHealthReminders(activeId);
+    const updated = current.map((r) =>
+      r.id === id ? { ...r, ...partial, updatedAt: new Date().toISOString() } : r
+    );
+    this.saveHealthReminders(updated, activeId);
     return updated;
   },
 
-  toggleHealthReminder(id: string): HealthReminder[] {
-    const current = this.loadHealthReminders();
-    const updated = current.map((r) => (r.id === id ? { ...r, isEnabled: !r.isEnabled } : r));
-    this.saveHealthReminders(updated);
+  toggleHealthReminder(id: string, userId?: string): HealthReminder[] {
+    const activeId = userId || this.loadUserProfile().id;
+    const current = this.loadHealthReminders(activeId);
+    const updated = current.map((r) =>
+      r.id === id ? { ...r, isEnabled: !r.isEnabled, updatedAt: new Date().toISOString() } : r
+    );
+    this.saveHealthReminders(updated, activeId);
     return updated;
   },
 
-  deleteHealthReminder(id: string): HealthReminder[] {
-    const current = this.loadHealthReminders();
+  deleteHealthReminder(id: string, userId?: string): HealthReminder[] {
+    const activeId = userId || this.loadUserProfile().id;
+    const current = this.loadHealthReminders(activeId);
     const updated = current.filter((r) => r.id !== id);
-    this.saveHealthReminders(updated);
+    this.saveHealthReminders(updated, activeId);
     return updated;
   },
 
@@ -744,6 +743,73 @@ export const storageService = {
     return updated;
   },
 
+  updateSleepInDiary(
+    dateStr: string,
+    payload: { sleepHours?: number; sleepQuality?: SleepQuality; sleepNote?: string }
+  ): HealthDiaryEntry {
+    const entry = this.getHealthDiaryEntry(dateStr);
+    const updated: HealthDiaryEntry = {
+      ...entry,
+      sleepHours: payload.sleepHours !== undefined ? payload.sleepHours : entry.sleepHours,
+      sleepQuality: payload.sleepQuality !== undefined ? payload.sleepQuality : entry.sleepQuality,
+      sleepNote: payload.sleepNote !== undefined ? payload.sleepNote : entry.sleepNote,
+      updatedAt: new Date().toISOString(),
+    };
+    return this.saveHealthDiaryEntry(updated);
+  },
+
+  addNutritionLogToDiary(
+    dateStr: string,
+    log: Omit<NutritionLog, 'id'>
+  ): HealthDiaryEntry {
+    const entry = this.getHealthDiaryEntry(dateStr);
+    const newLog: NutritionLog = {
+      ...log,
+      id: `nut-${Date.now()}-${Math.random().toString(36).slice(2, 5)}`,
+    };
+    const updated: HealthDiaryEntry = {
+      ...entry,
+      nutritionLogs: [newLog, ...(entry.nutritionLogs || [])],
+      updatedAt: new Date().toISOString(),
+    };
+    return this.saveHealthDiaryEntry(updated);
+  },
+
+  removeNutritionLogFromDiary(dateStr: string, logId: string): HealthDiaryEntry {
+    const entry = this.getHealthDiaryEntry(dateStr);
+    const updated: HealthDiaryEntry = {
+      ...entry,
+      nutritionLogs: (entry.nutritionLogs || []).filter((n) => n.id !== logId),
+      updatedAt: new Date().toISOString(),
+    };
+    return this.saveHealthDiaryEntry(updated);
+  },
+
+  updateDiaryNotes(
+    dateStr: string,
+    payload: {
+      activityNotes?: string;
+      personalNotes?: string;
+      doctorAdviceNotes?: string;
+      fetalKickCount?: number;
+    }
+  ): HealthDiaryEntry {
+    const entry = this.getHealthDiaryEntry(dateStr);
+    const updated: HealthDiaryEntry = {
+      ...entry,
+      ...payload,
+      updatedAt: new Date().toISOString(),
+    };
+    return this.saveHealthDiaryEntry(updated);
+  },
+
+  deleteHealthDiaryEntry(dateStr: string): Record<string, HealthDiaryEntry> {
+    const all = this.loadHealthDiary();
+    delete all[dateStr];
+    safeSet(STORAGE_KEYS.HEALTH_DIARY, all);
+    return all;
+  },
+
   loadWeightLogs(): WeightLog[] {
     const defaultLogs: WeightLog[] = [
       { id: 'w-1', date: '2026-08-10', weightKg: 50.0, week: 8, notes: 'Khám thai đầu quý 1' },
@@ -955,48 +1021,10 @@ export const storageService = {
   },
 
   // -------------------------------------------------------------
-  // CENTRALIZED NOTIFICATIONS (Trung tâm thông báo toàn diện)
+  // CENTRALIZED NOTIFICATIONS (Trung tâm thông báo - Chỉ lưu thông báo thực)
   // -------------------------------------------------------------
   loadNotifications(): AppNotification[] {
-    const defaultNotifs: AppNotification[] = [
-      {
-        id: 'notif-1',
-        title: 'Lịch khám thai mốc 12 tuần sắp tới',
-        description: 'Siêu âm đo độ mờ da gáy tại BV Phụ Sản. Nhớ kiểm tra checklist câu hỏi cho bác sĩ nhé!',
-        category: 'appointment',
-        timestamp: 'Hôm nay, 08:30',
-        isRead: false,
-        actionScreen: 'care',
-      },
-      {
-        id: 'notif-2',
-        title: 'Mục tiêu nước ấm buổi sáng',
-        description: 'Bổ sung ngay 250ml nước ấm giúp thanh lọc cơ thể và điều hòa lượng dịch ối cho bé.',
-        category: 'water',
-        timestamp: 'Hôm nay, 07:30',
-        isRead: false,
-        actionScreen: 'care',
-      },
-      {
-        id: 'notif-3',
-        title: 'Cột mốc thai kỳ tuần mới',
-        description: 'Bé con tuần này đã có thể cử động các ngón tay và mút ngón tay cái rồi mẹ nhé!',
-        category: 'milestone',
-        timestamp: 'Hôm qua',
-        isRead: true,
-        actionScreen: 'home',
-      },
-      {
-        id: 'notif-4',
-        title: 'Lưu ý an toàn: Dấu hiệu cần gọi cấp cứu',
-        description: 'Mẹ hãy lưu lại số 115 và danh sách các bệnh viện sản khoa gần nhất trong mục Khẩn cấp.',
-        category: 'health',
-        timestamp: '2 ngày trước',
-        isRead: true,
-        actionScreen: 'emergency',
-      },
-    ];
-    return safeParse<AppNotification[]>(STORAGE_KEYS.NOTIFICATIONS, defaultNotifs);
+    return safeParse<AppNotification[]>(STORAGE_KEYS.NOTIFICATIONS, []);
   },
 
   saveNotifications(notifs: AppNotification[]): void {
@@ -1065,17 +1093,11 @@ export const storageService = {
     };
 
     this.saveUserProfile(mergedProfile);
-    this.addNotification({
-      title: 'Đồng bộ tài khoản thành công',
-      description: `Chào mừng ${mergedProfile.name}! Toàn bộ dữ liệu theo dõi thai kỳ của mẹ đã được gắn kết an toàn.`,
-      category: 'system',
-      isRead: false,
-    });
-
     return mergedProfile;
   },
 
   deleteUserAccountAndData(): void {
+    const activeId = this.loadUserProfile().id;
     // Thoroughly remove all user data keys
     localStorage.removeItem(STORAGE_KEYS.USER_PROFILE);
     localStorage.removeItem(STORAGE_KEYS.ORDERS);
@@ -1084,15 +1106,84 @@ export const storageService = {
     localStorage.removeItem(STORAGE_KEYS.CHAT_HISTORY);
     localStorage.removeItem(STORAGE_KEYS.WATER_RECORDS);
     localStorage.removeItem(STORAGE_KEYS.HEALTH_REMINDERS);
+    localStorage.removeItem(`${STORAGE_KEYS.HEALTH_REMINDERS}_${activeId}`);
     localStorage.removeItem(STORAGE_KEYS.DAILY_ACTIVITIES);
     localStorage.removeItem(STORAGE_KEYS.HEALTH_DIARY);
     localStorage.removeItem(STORAGE_KEYS.PRENATAL_APPOINTMENTS);
     localStorage.removeItem(STORAGE_KEYS.NOTIFICATIONS);
     localStorage.removeItem(STORAGE_KEYS.WEIGHT_LOGS);
+    localStorage.removeItem(STORAGE_KEYS.OFFLINE_CACHE);
+    localStorage.removeItem(STORAGE_KEYS.SESSION_TOKEN);
     localStorage.removeItem('nova_mom_onboarded_v3');
     localStorage.setItem(STORAGE_KEYS.LAST_SAVED, new Date().toISOString());
 
-    window.dispatchEvent(new CustomEvent('nova_storage_update', { detail: { action: 'deleted' } }));
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('nova_storage_update', { detail: { action: 'deleted' } }));
+    }
+  },
+
+  // -------------------------------------------------------------
+  // THEME, FONT SCALE & OFFLINE CACHE (Module 16)
+  // -------------------------------------------------------------
+  getThemeMode(): ThemeMode {
+    try {
+      const val = localStorage.getItem(STORAGE_KEYS.THEME_MODE);
+      return val === 'dark' ? 'dark' : 'light';
+    } catch {
+      return 'light';
+    }
+  },
+
+  setThemeMode(theme: ThemeMode): void {
+    try {
+      localStorage.setItem(STORAGE_KEYS.THEME_MODE, theme);
+      if (typeof document !== 'undefined') {
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('nova_theme_change', { detail: { theme } }));
+      }
+    } catch {}
+  },
+
+  getFontScale(): FontScale {
+    try {
+      const val = localStorage.getItem(STORAGE_KEYS.FONT_SCALE);
+      if (val === 'small' || val === 'large') return val;
+      return 'normal';
+    } catch {
+      return 'normal';
+    }
+  },
+
+  setFontScale(scale: FontScale): void {
+    try {
+      localStorage.setItem(STORAGE_KEYS.FONT_SCALE, scale);
+      if (typeof document !== 'undefined') {
+        document.documentElement.setAttribute('data-font-scale', scale);
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('nova_font_scale_change', { detail: { scale } }));
+      }
+    } catch {}
+  },
+
+  setOfflineCache<T>(userId: string, namespace: string, data: T): void {
+    try {
+      const all = safeParse<Record<string, any>>(STORAGE_KEYS.OFFLINE_CACHE, {});
+      all[`${userId}:${namespace}`] = { updatedAt: new Date().toISOString(), data };
+      localStorage.setItem(STORAGE_KEYS.OFFLINE_CACHE, JSON.stringify(all));
+    } catch {}
+  },
+
+  getOfflineCache<T>(userId: string, namespace: string, fallback: T): T {
+    try {
+      const all = safeParse<Record<string, any>>(STORAGE_KEYS.OFFLINE_CACHE, {});
+      const hit = all[`${userId}:${namespace}`];
+      return hit?.data !== undefined ? (hit.data as T) : fallback;
+    } catch {
+      return fallback;
+    }
   },
 
   // -------------------------------------------------------------

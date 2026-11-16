@@ -1,35 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Heart,
   Smile,
   Activity,
   Scale,
   Plus,
   Trash2,
-  Calendar,
   Save,
-  CheckCircle2,
   Info,
-  ChevronRight,
-  TrendingUp,
-  AlertTriangle,
   Stethoscope,
+  Moon,
+  Utensils,
+  FileText,
+  ShieldAlert,
+  Baby,
 } from 'lucide-react';
 import {
   HealthDiaryEntry,
-  SymptomLog,
   SymptomSeverity,
   MoodType,
   WeightLog,
+  SleepQuality,
+  NutritionLog,
+  UserProfile,
 } from '../../types';
-import { storageService, getTodayDateString } from '../../services/storageService';
+import { storageService } from '../../services/storageService';
+import { apiService } from '../../services/apiService';
 
 interface HealthDiaryViewProps {
   selectedDate: string;
+  user?: UserProfile;
 }
 
-export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }) => {
+export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate, user }) => {
   const [diaryEntry, setDiaryEntry] = useState<HealthDiaryEntry>(() =>
     storageService.getHealthDiaryEntry(selectedDate)
   );
@@ -37,13 +40,13 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
     storageService.loadWeightLogs()
   );
 
-  // New symptom form states
+  // Symptom states
   const [showAddSymptom, setShowAddSymptom] = useState(false);
   const [symptomName, setSymptomName] = useState('');
   const [symptomSeverity, setSymptomSeverity] = useState<SymptomSeverity>('mild');
   const [symptomNote, setSymptomNote] = useState('');
 
-  // Weight form states
+  // Weight & Notes states
   const [inputWeight, setInputWeight] = useState<string>(
     diaryEntry.weightKg ? diaryEntry.weightKg.toString() : ''
   );
@@ -51,29 +54,81 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
     diaryEntry.doctorAdviceNotes || ''
   );
   const [moodNote, setMoodNote] = useState<string>(diaryEntry.moodNote || '');
+
+  // Sleep states
+  const [sleepHours, setSleepHours] = useState<string>(
+    diaryEntry.sleepHours !== undefined ? String(diaryEntry.sleepHours) : ''
+  );
+  const [sleepQuality, setSleepQuality] = useState<SleepQuality>(
+    diaryEntry.sleepQuality || 'good'
+  );
+  const [sleepNote, setSleepNote] = useState<string>(diaryEntry.sleepNote || '');
+
+  // Nutrition states
+  const [showAddNutrition, setShowAddNutrition] = useState(false);
+  const [mealType, setMealType] = useState<NutritionLog['mealType']>('morning');
+  const [mealDesc, setMealDesc] = useState('');
+  const [mealTime, setMealTime] = useState('08:00');
+
+  // Activity, personal notes & fetal kicks
+  const [activityNotes, setActivityNotes] = useState<string>(diaryEntry.activityNotes || '');
+  const [personalNotes, setPersonalNotes] = useState<string>(diaryEntry.personalNotes || '');
+  const [kickCount, setKickCount] = useState<string>(
+    diaryEntry.fetalKickCount !== undefined ? String(diaryEntry.fetalKickCount) : ''
+  );
+
+  // Delete confirmation modal state
+  const [confirmResetOpen, setConfirmResetOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 2500);
+    setTimeout(() => setToastMessage(null), 2600);
   };
 
-  useEffect(() => {
-    const entry = storageService.getHealthDiaryEntry(selectedDate);
+  const syncToServer = (entry: HealthDiaryEntry) => {
+    apiService.upsertDiaryEntry(selectedDate, entry, user).catch(() => {});
+  };
+
+  const hydrateFromEntry = (entry: HealthDiaryEntry) => {
     setDiaryEntry(entry);
     setInputWeight(entry.weightKg ? entry.weightKg.toString() : '');
     setDoctorNotes(entry.doctorAdviceNotes || '');
     setMoodNote(entry.moodNote || '');
-    setWeightLogs(storageService.loadWeightLogs());
-  }, [selectedDate]);
+    setSleepHours(entry.sleepHours !== undefined ? String(entry.sleepHours) : '');
+    setSleepQuality(entry.sleepQuality || 'good');
+    setSleepNote(entry.sleepNote || '');
+    setActivityNotes(entry.activityNotes || '');
+    setPersonalNotes(entry.personalNotes || '');
+    setKickCount(entry.fetalKickCount !== undefined ? String(entry.fetalKickCount) : '');
+  };
 
-  const moods: { type: MoodType; label: string; emoji: string; color: string }[] = [
-    { type: 'happy', label: 'Rất vui', emoji: '😊', color: '#F39C12' },
-    { type: 'calm', label: 'Bình an', emoji: '😌', color: '#27AE60' },
-    { type: 'tired', label: 'Mệt mỏi', emoji: '🥱', color: '#8E44AD' },
-    { type: 'excited', label: 'Háo hức', emoji: '🥰', color: '#C84B4B' },
-    { type: 'anxious', label: 'Lo âu', emoji: '🥺', color: '#E67E22' },
-    { type: 'nauseous', label: 'Nghén nôn', emoji: '🤢', color: '#16A085' },
+  useEffect(() => {
+    const local = storageService.getHealthDiaryEntry(selectedDate);
+    hydrateFromEntry(local);
+    setWeightLogs(storageService.loadWeightLogs());
+
+    apiService
+      .fetchDiary(user)
+      .then((res) => {
+        if (res.entries && res.entries[selectedDate]) {
+          const merged = storageService.saveHealthDiaryEntry({
+            ...local,
+            ...res.entries[selectedDate],
+          });
+          hydrateFromEntry(merged);
+        }
+      })
+      .catch(() => {});
+  }, [selectedDate, user?.id]);
+
+  const moods: { type: MoodType; label: string; emoji: string }[] = [
+    { type: 'happy', label: 'Rất vui', emoji: '😊' },
+    { type: 'calm', label: 'Bình an', emoji: '😌' },
+    { type: 'tired', label: 'Mệt mỏi', emoji: '🥱' },
+    { type: 'excited', label: 'Háo hức', emoji: '🥰' },
+    { type: 'anxious', label: 'Lo âu', emoji: '🥺' },
+    { type: 'nauseous', label: 'Nghén nôn', emoji: '🤢' },
   ];
 
   const commonSymptoms = [
@@ -91,13 +146,18 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
   const handleSelectMood = (mood: MoodType) => {
     const updated = storageService.updateMoodInDiary(selectedDate, mood, moodNote);
     setDiaryEntry(updated);
+    syncToServer(updated);
     triggerToast('Đã lưu trạng thái tâm trạng!');
   };
 
   const handleSaveMoodNote = () => {
-    if (!diaryEntry.mood) return;
-    const updated = storageService.updateMoodInDiary(selectedDate, diaryEntry.mood, moodNote);
+    const updated = storageService.updateMoodInDiary(
+      selectedDate,
+      diaryEntry.mood || 'calm',
+      moodNote
+    );
     setDiaryEntry(updated);
+    syncToServer(updated);
     triggerToast('Đã lưu chia sẻ cảm xúc!');
   };
 
@@ -115,6 +175,7 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
     });
 
     setDiaryEntry(updated);
+    syncToServer(updated);
     setSymptomName('');
     setSymptomNote('');
     setShowAddSymptom(false);
@@ -124,7 +185,50 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
   const handleRemoveSymptom = (symptomId: string) => {
     const updated = storageService.removeSymptomFromDiary(selectedDate, symptomId);
     setDiaryEntry(updated);
+    syncToServer(updated);
     triggerToast('Đã xóa triệu chứng');
+  };
+
+  const handleSaveSleep = (e: React.FormEvent) => {
+    e.preventDefault();
+    const hours = parseFloat(sleepHours);
+    if (isNaN(hours) || hours < 0 || hours > 24) {
+      triggerToast('Vui lòng nhập số giờ ngủ hợp lệ (0 - 24 giờ)');
+      return;
+    }
+    const updated = storageService.updateSleepInDiary(selectedDate, {
+      sleepHours: hours,
+      sleepQuality,
+      sleepNote: sleepNote.trim() || undefined,
+    });
+    setDiaryEntry(updated);
+    syncToServer(updated);
+    triggerToast(`Đã lưu giấc ngủ ${hours} giờ!`);
+  };
+
+  const handleAddNutrition = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!mealDesc.trim()) {
+      triggerToast('Vui lòng nhập món ăn hoặc vitamin đã bổ sung');
+      return;
+    }
+    const updated = storageService.addNutritionLogToDiary(selectedDate, {
+      mealType,
+      description: mealDesc.trim(),
+      time: mealTime || '08:00',
+    });
+    setDiaryEntry(updated);
+    syncToServer(updated);
+    setMealDesc('');
+    setShowAddNutrition(false);
+    triggerToast('Đã thêm nhật ký dinh dưỡng!');
+  };
+
+  const handleRemoveNutrition = (logId: string) => {
+    const updated = storageService.removeNutritionLogFromDiary(selectedDate, logId);
+    setDiaryEntry(updated);
+    syncToServer(updated);
+    triggerToast('Đã xóa mục dinh dưỡng');
   };
 
   const handleSaveWeight = (e: React.FormEvent) => {
@@ -138,73 +242,115 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
     const updated = storageService.updateWeightInDiary(selectedDate, val);
     setDiaryEntry(updated);
     setWeightLogs(storageService.loadWeightLogs());
+    syncToServer(updated);
     triggerToast(`Đã lưu cân nặng ${val} kg!`);
   };
 
-  const handleSaveDoctorNotes = () => {
-    const updated = storageService.saveHealthDiaryEntry({
-      ...diaryEntry,
-      doctorAdviceNotes: doctorNotes,
+  const handleSaveAllNotes = () => {
+    const parsedKicks = kickCount.trim() ? Math.max(0, parseInt(kickCount, 10) || 0) : undefined;
+    const updated = storageService.updateDiaryNotes(selectedDate, {
+      activityNotes: activityNotes.trim(),
+      personalNotes: personalNotes.trim(),
+      doctorAdviceNotes: doctorNotes.trim(),
+      fetalKickCount: parsedKicks,
     });
     setDiaryEntry(updated);
-    triggerToast('Đã lưu lời dặn của bác sĩ!');
+    syncToServer(updated);
+    triggerToast('Đã lưu ghi chú & lời dặn bác sĩ!');
   };
 
-  const initialWeight = 50.0; // Pre-pregnancy baseline
+  const handleDeleteDayDiary = async () => {
+    storageService.deleteHealthDiaryEntry(selectedDate);
+    try {
+      await apiService.deleteDiaryDate(selectedDate, user);
+    } catch {}
+    const fresh = storageService.getHealthDiaryEntry(selectedDate);
+    hydrateFromEntry(fresh);
+    setConfirmResetOpen(false);
+    triggerToast(`Đã xóa nhật ký ngày ${selectedDate}`);
+  };
+
+  const initialWeight = 50.0;
   const currentRecordedWeight = diaryEntry.weightKg || (weightLogs[0]?.weightKg ?? initialWeight);
   const totalGain = (currentRecordedWeight - initialWeight).toFixed(1);
 
+  const mealLabels: Record<NutritionLog['mealType'], string> = {
+    morning: 'Bữa sáng',
+    lunch: 'Bữa trưa',
+    dinner: 'Bữa tối',
+    snack: 'Bữa phụ',
+    supplement: 'Vitamin / Sắt / Canxi',
+  };
+
   return (
     <div className="flex flex-col gap-5 pb-6">
-      {/* Toast alert */}
       <AnimatePresence>
         {toastMessage && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-[#3A2E2B] text-white px-4 py-2 rounded-full text-xs font-semibold shadow-lg border border-white/10"
+            className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-[#322622] dark:bg-[#F4EDE6] text-white dark:text-[#322622] px-4 py-2 rounded-full text-xs font-semibold shadow-lg"
           >
             {toastMessage}
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* 1. Tâm trạng & Cảm xúc */}
-      <section className="bg-white rounded-3xl p-5 border border-[#F0ECE9] shadow-xs">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#FEF5E7] text-[#F39C12] flex items-center justify-center">
+      {/* Non-diagnostic notice */}
+      <div className="p-3.5 rounded-2xl bg-[#F2ECE3]/75 dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] flex items-start justify-between gap-3">
+        <div className="flex items-start gap-2.5 text-[11.5px] text-[#6B5D56] dark:text-[#C5B9B0] leading-relaxed">
+          <ShieldAlert className="w-4 h-4 text-[#B55841] dark:text-[#D47A63] shrink-0 mt-0.5" />
+          <span>
+            Nhật ký sức khỏe phục vụ theo dõi cá nhân và chuẩn bị thông tin trao đổi khi khám thai, không thay thế chẩn đoán y khoa.
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setConfirmResetOpen(true)}
+          className="text-[11px] font-semibold text-[#786962] dark:text-[#B5A89F] hover:text-[#B55841] shrink-0 cursor-pointer whitespace-nowrap"
+        >
+          Xóa ngày này
+        </button>
+      </div>
+
+      {/* 1. Mood */}
+      <section className="bg-white dark:bg-[#1E1A17] rounded-3xl p-5 border border-[#E6DDD1] dark:border-[#362E2A]">
+        <div className="flex items-center justify-between mb-3.5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-[#F6EFE2] dark:bg-[#2F281C] text-[#9E5B3B] dark:text-[#D7BA86] flex items-center justify-center">
               <Smile className="w-4.5 h-4.5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#3A2E2B]">Cảm xúc & Tâm trạng</h3>
-              <p className="text-[11px] text-[#8C7B75]">Hôm nay mẹ cảm thấy thế nào?</p>
+              <h3 className="font-editorial text-[16px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                Cảm xúc & Tâm trạng
+              </h3>
+              <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">Hôm nay mẹ cảm thấy thế nào?</p>
             </div>
           </div>
           {diaryEntry.mood && (
-            <span className="text-[11px] font-bold text-[#27AE60] bg-[#EAFBF0] px-2.5 py-1 rounded-full">
+            <span className="text-[11px] font-semibold text-[#4F6B56] dark:text-[#8DA892] whitespace-nowrap">
               Đã ghi nhận
             </span>
           )}
         </div>
 
-        {/* Mood Selector Buttons */}
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
           {moods.map((m) => {
             const isSelected = diaryEntry.mood === m.type;
             return (
               <button
                 key={m.type}
+                type="button"
                 onClick={() => handleSelectMood(m.type)}
-                className={`flex flex-col items-center justify-center py-2.5 px-1.5 rounded-2xl border transition-all cursor-pointer ${
+                className={`flex flex-col items-center justify-center py-2.5 px-1.5 rounded-2xl border transition-all cursor-pointer min-h-[44px] ${
                   isSelected
-                    ? 'bg-[#FFF6F4] border-[#C84B4B] shadow-xs scale-102 ring-1 ring-[#C84B4B]/30'
-                    : 'bg-[#FAF6F3] border-transparent hover:border-[#E8DFD8]'
+                    ? 'bg-[#F7EAE5] dark:bg-[#35231E] border-[#B55841] dark:border-[#D47A63]'
+                    : 'bg-[#FAF6F0] dark:bg-[#231E1B] border-transparent hover:border-[#E6DDD1] dark:hover:border-[#362E2A]'
                 }`}
               >
                 <span className="text-2xl mb-1">{m.emoji}</span>
-                <span className={`text-[11px] ${isSelected ? 'font-bold text-[#C84B4B]' : 'font-medium text-[#6E5D57]'}`}>
+                <span className={`text-[11px] ${isSelected ? 'font-semibold text-[#B55841] dark:text-[#D47A63]' : 'font-medium text-[#6B5D56] dark:text-[#C5B9B0]'}`}>
                   {m.label}
                 </span>
               </button>
@@ -212,19 +358,19 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
           })}
         </div>
 
-        {/* Mood Notes Input */}
-        <div className="mt-3.5 pt-3 border-t border-[#F5EFEA]">
+        <div className="mt-3.5 pt-3 border-t border-[#E6DDD1]/70 dark:border-[#362E2A]">
           <div className="flex items-center gap-2">
             <input
               type="text"
               value={moodNote}
               onChange={(e) => setMoodNote(e.target.value)}
               placeholder="Viết đôi dòng nhật ký cảm xúc hôm nay..."
-              className="flex-1 bg-[#FAF6F3] border border-[#EFEAE5] rounded-xl px-3 py-2 text-[16px] sm:text-[13px] text-[#3A2E2B] focus:outline-none focus:border-[#C84B4B]"
+              className="flex-1 bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-[16px] sm:text-[13px] text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
             />
             <button
+              type="button"
               onClick={handleSaveMoodNote}
-              className="px-3.5 py-2 bg-[#3A2E2B] hover:bg-[#2A2321] text-white rounded-xl text-xs font-semibold shrink-0 cursor-pointer"
+              className="px-4 py-2 bg-[#322622] dark:bg-[#B55841] text-white rounded-xl text-xs font-semibold shrink-0 cursor-pointer min-h-[44px]"
             >
               Lưu
             </button>
@@ -232,16 +378,208 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
         </div>
       </section>
 
-      {/* 2. Theo dõi Triệu chứng cơ thể */}
-      <section className="bg-white rounded-3xl p-5 border border-[#F0ECE9] shadow-xs">
-        <div className="flex items-center justify-between mb-3">
+      {/* 2. Sleep & Rest */}
+      <section className="bg-white dark:bg-[#1E1A17] rounded-3xl p-5 border border-[#E6DDD1] dark:border-[#362E2A]">
+        <div className="flex items-center justify-between mb-3.5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-[#EBF1EC] dark:bg-[#1E2922] text-[#263E35] dark:text-[#A7C2AC] flex items-center justify-center">
+              <Moon className="w-4.5 h-4.5" />
+            </div>
+            <div>
+              <h3 className="font-editorial text-[16px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                Giấc ngủ & Nghỉ ngơi
+              </h3>
+              <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">Theo dõi thời lượng và chất lượng giấc ngủ</p>
+            </div>
+          </div>
+          {diaryEntry.sleepHours !== undefined && (
+            <span className="text-xs font-semibold text-[#263E35] dark:text-[#A7C2AC] tabular-nums">{diaryEntry.sleepHours} giờ</span>
+          )}
+        </div>
+
+        <form onSubmit={handleSaveSleep} className="space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label className="text-[11px] font-semibold text-[#6B5D56] dark:text-[#C5B9B0] block mb-1">
+                Tổng số giờ ngủ (tối + nghỉ trưa)
+              </label>
+              <input
+                type="number"
+                step="0.5"
+                min="0"
+                max="24"
+                value={sleepHours}
+                onChange={(e) => setSleepHours(e.target.value)}
+                placeholder="VD: 7.5"
+                className="w-full bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] tabular-nums"
+              />
+            </div>
+
+            <div>
+              <label className="text-[11px] font-semibold text-[#6B5D56] dark:text-[#C5B9B0] block mb-1">
+                Chất lượng giấc ngủ
+              </label>
+              <div className="grid grid-cols-3 gap-1.5">
+                {([
+                  { id: 'good', label: 'Ngủ sâu' },
+                  { id: 'fair', label: 'Tạm ổn' },
+                  { id: 'poor', label: 'Khó ngủ' },
+                ] as { id: SleepQuality; label: string }[]).map((q) => (
+                  <button
+                    key={q.id}
+                    type="button"
+                    onClick={() => setSleepQuality(q.id)}
+                    className={`py-2 px-2 rounded-xl text-[11px] font-semibold border cursor-pointer min-h-[40px] ${
+                      sleepQuality === q.id
+                        ? 'bg-[#EBF1EC] dark:bg-[#1E2922] border-[#6D8572] text-[#263E35] dark:text-[#A7C2AC]'
+                        : 'bg-[#FAF6F0] dark:bg-[#231E1B] border-[#E6DDD1] dark:border-[#362E2A] text-[#6B5D56] dark:text-[#C5B9B0]'
+                    }`}
+                  >
+                    {q.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#FCEEEB] text-[#C84B4B] flex items-center justify-center">
+            <input
+              type="text"
+              value={sleepNote}
+              onChange={(e) => setSleepNote(e.target.value)}
+              placeholder="Ghi chú: nằm nghiêng trái với gối ôm, có thức giấc ban đêm không..."
+              className="flex-1 bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-xs text-[#322622] dark:text-[#F4EDE6]"
+            />
+            <button
+              type="submit"
+              className="px-4 py-2 bg-[#263E35] hover:bg-[#1D3029] text-[#FAF6F0] rounded-xl text-xs font-semibold shrink-0 cursor-pointer min-h-[44px]"
+            >
+              Lưu giấc ngủ
+            </button>
+          </div>
+        </form>
+      </section>
+
+      {/* 3. Nutrition & Supplements */}
+      <section className="bg-white dark:bg-[#1E1A17] rounded-3xl p-5 border border-[#E6DDD1] dark:border-[#362E2A]">
+        <div className="flex items-center justify-between mb-3.5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-[#EBF1EC] dark:bg-[#1E2922] text-[#4F6B56] dark:text-[#8DA892] flex items-center justify-center">
+              <Utensils className="w-4.5 h-4.5" />
+            </div>
+            <div>
+              <h3 className="font-editorial text-[16px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                Dinh dưỡng & Bổ sung
+              </h3>
+              <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">
+                {(diaryEntry.nutritionLogs || []).length > 0
+                  ? `${diaryEntry.nutritionLogs?.length} bữa ăn · vi chất hôm nay`
+                  : 'Ghi nhận bữa ăn và viên uống sắt, canxi, DHA'}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowAddNutrition((v) => !v)}
+            className="flex items-center gap-1 text-xs font-semibold text-[#263E35] dark:text-[#A7C2AC] bg-[#EBF1EC] dark:bg-[#1E2922] hover:bg-[#DCE7DE] px-3.5 py-2 rounded-full cursor-pointer whitespace-nowrap min-h-[40px]"
+          >
+            <Plus className="w-3.5 h-3.5" /> Thêm bữa ăn
+          </button>
+        </div>
+
+        <AnimatePresence>
+          {showAddNutrition && (
+            <motion.form
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              onSubmit={handleAddNutrition}
+              className="bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-2xl p-3.5 mb-3 space-y-2.5 overflow-hidden"
+            >
+              <div className="grid grid-cols-2 gap-2">
+                <select
+                  value={mealType}
+                  onChange={(e) => setMealType(e.target.value as NutritionLog['mealType'])}
+                  className="bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-xs font-semibold text-[#322622] dark:text-[#F4EDE6]"
+                >
+                  {Object.entries(mealLabels).map(([k, lbl]) => (
+                    <option key={k} value={k}>{lbl}</option>
+                  ))}
+                </select>
+                <input
+                  type="time"
+                  value={mealTime}
+                  onChange={(e) => setMealTime(e.target.value)}
+                  className="bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] tabular-nums"
+                />
+              </div>
+              <input
+                type="text"
+                value={mealDesc}
+                onChange={(e) => setMealDesc(e.target.value)}
+                placeholder="VD: Cháo yến mạch trứng gà + 1 ly nước cam; uống viên Sắt sau ăn..."
+                className="w-full bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-xs text-[#322622] dark:text-[#F4EDE6]"
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowAddNutrition(false)}
+                  className="px-3 py-1.5 text-xs font-semibold text-[#786962] cursor-pointer"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-[#263E35] text-[#FAF6F0] rounded-xl text-xs font-semibold cursor-pointer"
+                >
+                  Lưu dinh dưỡng
+                </button>
+              </div>
+            </motion.form>
+          )}
+        </AnimatePresence>
+
+        {(diaryEntry.nutritionLogs || []).length === 0 ? (
+          <p className="text-xs text-[#786962] dark:text-[#B5A89F] text-center py-4">Chưa có ghi chép dinh dưỡng nào trong ngày này.</p>
+        ) : (
+          <div className="space-y-2">
+            {(diaryEntry.nutritionLogs || []).map((n) => (
+              <div
+                key={n.id}
+                className="flex items-center justify-between p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B]"
+              >
+                <div className="min-w-0 pr-2">
+                  <div className="text-[11px] font-medium text-[#4F6B56] dark:text-[#8DA892] tabular-nums">
+                    {mealLabels[n.mealType]} · {n.time}
+                  </div>
+                  <p className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] mt-0.5">{n.description}</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveNutrition(n.id)}
+                  className="p-2 text-[#A3958E] hover:text-[#B55841] cursor-pointer"
+                  aria-label="Xóa mục dinh dưỡng"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* 4. Symptoms */}
+      <section className="bg-white dark:bg-[#1E1A17] rounded-3xl p-5 border border-[#E6DDD1] dark:border-[#362E2A]">
+        <div className="flex items-center justify-between mb-3.5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] flex items-center justify-center">
               <Activity className="w-4.5 h-4.5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#3A2E2B]">Triệu chứng cơ thể</h3>
-              <p className="text-[11px] text-[#8C7B75]">
+              <h3 className="font-editorial text-[16px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                Triệu chứng cơ thể
+              </h3>
+              <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">
                 {diaryEntry.symptoms.length > 0
                   ? `${diaryEntry.symptoms.length} triệu chứng được ghi nhận`
                   : 'Chưa có triệu chứng bất thường nào'}
@@ -249,15 +587,15 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
             </div>
           </div>
           <button
+            type="button"
             onClick={() => setShowAddSymptom(!showAddSymptom)}
-            className="flex items-center gap-1 text-xs font-bold text-[#C84B4B] bg-[#FCEEEB] hover:bg-[#F8DDD7] px-3 py-1.5 rounded-full transition-colors cursor-pointer"
+            className="flex items-center gap-1 text-xs font-semibold text-[#B55841] dark:text-[#D47A63] bg-[#F7EAE5] dark:bg-[#35231E] hover:bg-[#EED9D1] px-3.5 py-2 rounded-full transition-colors cursor-pointer whitespace-nowrap min-h-[40px]"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Thêm triệu chứng</span>
           </button>
         </div>
 
-        {/* Add Symptom Drawer/Form */}
         <AnimatePresence>
           {showAddSymptom && (
             <motion.form
@@ -265,21 +603,20 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               onSubmit={handleAddSymptom}
-              className="bg-[#FFF9F6] border border-[#F5DDD7] rounded-2xl p-4 mb-4 flex flex-col gap-3"
+              className="bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-2xl p-4 mb-4 flex flex-col gap-3 overflow-hidden"
             >
-              <h4 className="text-xs font-bold text-[#3A2E2B]">Ghi nhận triệu chứng mới:</h4>
+              <h4 className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6]">Ghi nhận triệu chứng mới:</h4>
 
-              {/* Quick suggestions */}
               <div className="flex flex-wrap gap-1.5">
                 {commonSymptoms.map((sym) => (
                   <button
                     key={sym}
                     type="button"
                     onClick={() => setSymptomName(sym)}
-                    className={`px-2.5 py-1 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer ${
+                    className={`px-2.5 py-1.5 rounded-lg text-[11px] font-medium border transition-colors cursor-pointer ${
                       symptomName === sym
-                        ? 'bg-[#C84B4B] text-white border-[#C84B4B]'
-                        : 'bg-white text-[#6E5D57] border-[#EAE3DE] hover:border-[#C84B4B]'
+                        ? 'bg-[#B55841] text-white border-[#B55841]'
+                        : 'bg-white dark:bg-[#1E1A17] text-[#6B5D56] dark:text-[#C5B9B0] border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#B55841]'
                     }`}
                   >
                     {sym}
@@ -287,26 +624,24 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
                 ))}
               </div>
 
-              {/* Custom Input */}
               <input
                 type="text"
                 value={symptomName}
                 onChange={(e) => setSymptomName(e.target.value)}
                 placeholder="Hoặc tự nhập tên triệu chứng..."
-                className="w-full bg-white border border-[#EFEAE5] rounded-xl px-3 py-2 text-[16px] sm:text-[13px] text-[#3A2E2B] focus:outline-none focus:border-[#C84B4B]"
+                className="w-full bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-[16px] sm:text-[13px] text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
               />
 
-              {/* Severity Level */}
               <div>
-                <label className="text-[11px] font-semibold text-[#6E5D57] block mb-1.5">
+                <label className="text-[11px] font-semibold text-[#6B5D56] dark:text-[#C5B9B0] block mb-1.5">
                   Mức độ khó chịu:
                 </label>
                 <div className="grid grid-cols-3 gap-2">
                   {(['mild', 'moderate', 'severe'] as SymptomSeverity[]).map((lvl) => {
-                    const labels: Record<SymptomSeverity, { text: string; bg: string }> = {
-                      mild: { text: 'Nhẹ (Thoáng qua)', bg: 'text-[#27AE60]' },
-                      moderate: { text: 'Vừa (Cần nghỉ ngơi)', bg: 'text-[#E67E22]' },
-                      severe: { text: 'Nặng (Rất khó chịu)', bg: 'text-[#C84B4B]' },
+                    const labels: Record<SymptomSeverity, { text: string; color: string }> = {
+                      mild: { text: 'Nhẹ', color: 'text-[#4F6B56] dark:text-[#8DA892]' },
+                      moderate: { text: 'Vừa', color: 'text-[#9E5B3B] dark:text-[#D7BA86]' },
+                      severe: { text: 'Nặng', color: 'text-[#B55841] dark:text-[#D47A63]' },
                     };
                     const isSel = symptomSeverity === lvl;
                     return (
@@ -314,39 +649,38 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
                         key={lvl}
                         type="button"
                         onClick={() => setSymptomSeverity(lvl)}
-                        className={`py-2 px-2 rounded-xl text-xs font-bold border transition-colors cursor-pointer ${
+                        className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-colors cursor-pointer min-h-[40px] ${
                           isSel
-                            ? 'bg-white border-[#C84B4B] shadow-xs ring-1 ring-[#C84B4B]/30'
-                            : 'bg-white/70 border-[#EAE3DE] text-[#6E5D57]'
+                            ? 'bg-white dark:bg-[#1E1A17] border-[#B55841] ring-1 ring-[#B55841]/30'
+                            : 'bg-white/70 dark:bg-[#1E1A17]/70 border-[#E6DDD1] dark:border-[#362E2A]'
                         }`}
                       >
-                        <span className={labels[lvl].bg}>{labels[lvl].text}</span>
+                        <span className={labels[lvl].color}>{labels[lvl].text}</span>
                       </button>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Notes */}
               <input
                 type="text"
                 value={symptomNote}
                 onChange={(e) => setSymptomNote(e.target.value)}
                 placeholder="Ghi chú thêm (thời điểm xuất hiện, cách giảm...)"
-                className="w-full bg-white border border-[#EFEAE5] rounded-xl px-3 py-2 text-[16px] sm:text-[13px] text-[#3A2E2B] focus:outline-none focus:border-[#C84B4B]"
+                className="w-full bg-white dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-[16px] sm:text-[13px] text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#B55841]"
               />
 
               <div className="flex items-center justify-end gap-2 pt-1">
                 <button
                   type="button"
                   onClick={() => setShowAddSymptom(false)}
-                  className="px-3 py-1.5 text-xs text-[#8C7B75] hover:text-[#3A2E2B] font-semibold cursor-pointer"
+                  className="px-3 py-1.5 text-xs text-[#786962] hover:text-[#322622] font-semibold cursor-pointer"
                 >
                   Hủy
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-[#C84B4B] hover:bg-[#B33E3E] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer"
+                  className="px-4 py-2 bg-[#B55841] hover:bg-[#9E4A35] text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer"
                 >
                   Lưu triệu chứng
                 </button>
@@ -355,39 +689,39 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
           )}
         </AnimatePresence>
 
-        {/* Recorded Symptoms List */}
         {diaryEntry.symptoms.length === 0 ? (
-          <div className="py-6 text-center text-[#8C7B75]">
-            <p className="text-xs">Chưa có triệu chứng khó chịu nào được lưu trong ngày hôm nay.</p>
+          <div className="py-5 text-center text-[#786962] dark:text-[#B5A89F]">
+            <p className="text-xs">Chưa có triệu chứng khó chịu nào được lưu trong ngày này.</p>
           </div>
         ) : (
           <div className="space-y-2">
             {diaryEntry.symptoms.map((sym) => {
-              const severityBadge = {
-                mild: { text: 'Mức độ nhẹ', color: 'bg-[#EAFBF0] text-[#27AE60] border-[#D1F2D9]' },
-                moderate: { text: 'Mức độ vừa', color: 'bg-[#FEF5E7] text-[#E67E22] border-[#FCE6CA]' },
-                severe: { text: 'Mức độ nặng', color: 'bg-[#FCEEEB] text-[#C84B4B] border-[#F5DDD7]' },
+              const severityMeta = {
+                mild: { text: 'Mức độ nhẹ', color: 'text-[#4F6B56] dark:text-[#8DA892]' },
+                moderate: { text: 'Mức độ vừa', color: 'text-[#9E5B3B] dark:text-[#D7BA86]' },
+                severe: { text: 'Mức độ nặng', color: 'text-[#B55841] dark:text-[#D47A63]' },
               }[sym.severity];
 
               return (
                 <div
                   key={sym.id}
-                  className="flex items-center justify-between p-3 rounded-2xl bg-[#FAF6F3] border border-[#F0ECE9]"
+                  className="flex items-center justify-between p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B]"
                 >
                   <div className="flex-1 min-w-0 pr-2">
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-xs font-bold text-[#3A2E2B] truncate">{sym.name}</h4>
-                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${severityBadge.color}`}>
-                        {severityBadge.text}
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] truncate">{sym.name}</h4>
+                      <span className={`text-[11px] font-medium ${severityMeta.color}`}>
+                        · {severityMeta.text}
                       </span>
                     </div>
                     {sym.notes && (
-                      <p className="text-[11px] text-[#6E5D57] mt-0.5 leading-snug">{sym.notes}</p>
+                      <p className="text-[11px] text-[#6B5D56] dark:text-[#C5B9B0] mt-0.5 leading-snug">{sym.notes}</p>
                     )}
                   </div>
                   <button
+                    type="button"
                     onClick={() => handleRemoveSymptom(sym.id)}
-                    className="p-1.5 text-[#BBB0A8] hover:text-[#C84B4B] transition-colors cursor-pointer"
+                    className="p-2 text-[#A3958E] hover:text-[#B55841] transition-colors cursor-pointer"
                     title="Xóa triệu chứng"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -399,29 +733,28 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
         )}
       </section>
 
-      {/* 3. Theo dõi Cân nặng & Biểu đồ chuẩn Bộ Y tế */}
-      <section className="bg-white rounded-3xl p-5 border border-[#F0ECE9] shadow-xs">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#EBF5FB] text-[#2980B9] flex items-center justify-center">
+      {/* 5. Weight */}
+      <section className="bg-white dark:bg-[#1E1A17] rounded-3xl p-5 border border-[#E6DDD1] dark:border-[#362E2A]">
+        <div className="flex items-center justify-between mb-3.5">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-[#F6EFE2] dark:bg-[#2F281C] text-[#9E5B3B] dark:text-[#D7BA86] flex items-center justify-center">
               <Scale className="w-4.5 h-4.5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#3A2E2B]">Cân nặng mẹ bầu</h3>
-              <p className="text-[11px] text-[#8C7B75]">
-                Chuẩn tăng cân theo khuyến cáo Bộ Y tế & WHO
-              </p>
+              <h3 className="font-editorial text-[16px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                Cân nặng mẹ bầu
+              </h3>
+              <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">Theo dõi xu hướng tăng cân theo tuần</p>
             </div>
           </div>
           <div className="text-right">
-            <span className="text-xs font-bold text-[#2980B9]">
+            <span className="text-xs font-semibold text-[#9E5B3B] dark:text-[#D7BA86] tabular-nums">
               {Number(totalGain) >= 0 ? `+${totalGain} kg` : `${totalGain} kg`}
             </span>
-            <span className="text-[10px] text-[#8C7B75] block">so với đầu thai kỳ</span>
+            <span className="text-[10px] text-[#786962] dark:text-[#B5A89F] block">so với đầu thai kỳ</span>
           </div>
         </div>
 
-        {/* Input Form */}
         <form onSubmit={handleSaveWeight} className="flex items-center gap-2 mb-4">
           <div className="relative flex-1">
             <input
@@ -430,43 +763,41 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
               value={inputWeight}
               onChange={(e) => setInputWeight(e.target.value)}
               placeholder="VD: 54.5"
-              className="w-full bg-[#FAF6F3] border border-[#EFEAE5] rounded-xl px-3 py-2 pr-10 text-[16px] sm:text-[14px] font-bold text-[#3A2E2B] focus:outline-none focus:border-[#2980B9]"
+              className="w-full bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 pr-10 text-[16px] sm:text-[14px] font-semibold text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#9E5B3B] tabular-nums"
             />
-            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-[#8C7B75]">
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-[#786962]">
               kg
             </span>
           </div>
           <button
             type="submit"
-            className="px-4 py-2 bg-[#2980B9] hover:bg-[#20638F] text-white rounded-xl text-xs font-bold transition-colors cursor-pointer shrink-0"
+            className="px-4 py-2 bg-[#9E5B3B] hover:bg-[#844B30] text-white rounded-xl text-xs font-semibold transition-colors cursor-pointer shrink-0 min-h-[44px]"
           >
             Lưu cân nặng
           </button>
         </form>
 
-        {/* Clinical Guideline Pill */}
-        <div className="p-3 rounded-2xl bg-[#F0F8FF] border border-[#D5EAF8] mb-3 flex items-start gap-2.5">
-          <Info className="w-4 h-4 text-[#2980B9] shrink-0 mt-0.5" />
-          <div className="text-[11px] text-[#2C3E50] leading-relaxed">
-            <strong className="font-bold">Mức tăng cân chuẩn:</strong> Mẹ có BMI bình thường nên tăng từ{' '}
-            <span className="font-bold text-[#2980B9]">10 - 12.5 kg</span> trong suốt thai kỳ (khoảng 0.4 - 0.5 kg/tuần ở tam cá nguyệt 2 và 3).
+        <div className="p-3 rounded-2xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] mb-3 flex items-start gap-2.5">
+          <Info className="w-4 h-4 text-[#9E5B3B] dark:text-[#D7BA86] shrink-0 mt-0.5" />
+          <div className="text-[11px] text-[#6B5D56] dark:text-[#C5B9B0] leading-relaxed">
+            <strong className="font-semibold text-[#322622] dark:text-[#F4EDE6]">Tham khảo Bộ Y tế & WHO:</strong> Mẹ có BMI bình thường trước mang thai thường tăng khoảng{' '}
+            <span className="font-semibold text-[#9E5B3B] dark:text-[#D7BA86]">10 - 12.5 kg</span> suốt thai kỳ (tùy tư vấn bác sĩ cá nhân).
           </div>
         </div>
 
-        {/* Recent Weight Records */}
         <div className="space-y-1.5">
-          <h4 className="text-[11px] font-bold text-[#8C7B75] uppercase tracking-wider">
+          <h4 className="text-[11px] font-semibold text-[#786962] dark:text-[#B5A89F] uppercase tracking-wider">
             Lịch sử các lần cân gần đây:
           </h4>
-          <div className="divide-y divide-[#F5EFEA]">
+          <div className="divide-y divide-[#E6DDD1]/70 dark:divide-[#362E2A]">
             {weightLogs.slice(0, 4).map((w) => (
               <div key={w.id} className="py-2 flex items-center justify-between text-xs">
-                <span className="text-[#6E5D57] font-medium">
+                <span className="text-[#6B5D56] dark:text-[#C5B9B0] font-medium">
                   {w.date} {w.week ? `(Tuần ${w.week})` : ''}
                 </span>
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-[#3A2E2B] tabular-nums">{w.weightKg} kg</span>
-                  <span className="text-[10px] text-[#27AE60] font-bold tabular-nums">
+                  <span className="font-semibold text-[#322622] dark:text-[#F4EDE6] tabular-nums">{w.weightKg} kg</span>
+                  <span className="text-[10.5px] text-[#4F6B56] dark:text-[#8DA892] font-semibold tabular-nums">
                     +{(w.weightKg - initialWeight).toFixed(1)}kg
                   </span>
                 </div>
@@ -476,35 +807,117 @@ export const HealthDiaryView: React.FC<HealthDiaryViewProps> = ({ selectedDate }
         </div>
       </section>
 
-      {/* 4. Lời dặn & Ghi chú từ Bác sĩ */}
-      <section className="bg-white rounded-3xl p-5 border border-[#F0ECE9] shadow-xs">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-xl bg-[#E8F8F5] text-[#16A085] flex items-center justify-center">
-              <Stethoscope className="w-4.5 h-4.5" />
+      {/* 6. Activity, Personal Notes, Fetal Kicks & Doctor Notes */}
+      <section className="bg-white dark:bg-[#1E1A17] rounded-3xl p-5 border border-[#E6DDD1] dark:border-[#362E2A] space-y-3.5">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-[#EBF1EC] dark:bg-[#1E2922] text-[#263E35] dark:text-[#A7C2AC] flex items-center justify-center">
+              <FileText className="w-4.5 h-4.5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#3A2E2B]">Lời dặn của Bác sĩ</h3>
-              <p className="text-[11px] text-[#8C7B75]">Ghi chú đơn thuốc hoặc chỉ định thăm khám</p>
+              <h3 className="font-editorial text-[16px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                Ghi chú vận động, Thai máy & Bác sĩ
+              </h3>
+              <p className="text-[11px] text-[#786962] dark:text-[#B5A89F]">Lưu tổng hợp lịch sử ngày {selectedDate}</p>
             </div>
           </div>
           <button
-            onClick={handleSaveDoctorNotes}
-            className="flex items-center gap-1 text-xs font-bold text-white bg-[#16A085] hover:bg-[#117A65] px-3 py-1.5 rounded-full transition-colors cursor-pointer"
+            type="button"
+            onClick={handleSaveAllNotes}
+            className="flex items-center gap-1.5 text-xs font-semibold text-[#FAF6F0] bg-[#263E35] hover:bg-[#1D3029] px-3.5 py-2 rounded-xl transition-colors cursor-pointer whitespace-nowrap min-h-[40px]"
           >
             <Save className="w-3.5 h-3.5" />
-            <span>Lưu dặn dò</span>
+            <span>Lưu ghi chú</span>
           </button>
         </div>
 
-        <textarea
-          rows={3}
-          value={doctorNotes}
-          onChange={(e) => setDoctorNotes(e.target.value)}
-          placeholder="VD: Bác sĩ dặn uống bổ sung viên sắt vào buổi sáng sau ăn 1 giờ, tránh uống cùng canxi hoặc sữa..."
-          className="w-full bg-[#FAF6F3] border border-[#EFEAE5] rounded-2xl p-3 text-[16px] sm:text-[13px] text-[#3A2E2B] leading-relaxed focus:outline-none focus:border-[#16A085]"
-        />
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="text-[11px] font-semibold text-[#6B5D56] dark:text-[#C5B9B0] flex items-center gap-1 mb-1">
+              <Baby className="w-3.5 h-3.5 text-[#B55841] dark:text-[#D47A63]" /> Số lần thai máy cảm nhận
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="200"
+              value={kickCount}
+              onChange={(e) => setKickCount(e.target.value)}
+              placeholder="VD: 12 lần trong 2 giờ tối"
+              className="w-full bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] tabular-nums"
+            />
+          </div>
+          <div>
+            <label className="text-[11px] font-semibold text-[#6B5D56] dark:text-[#C5B9B0] block mb-1">
+              Vận động / Thư giãn hôm nay
+            </label>
+            <input
+              type="text"
+              value={activityNotes}
+              onChange={(e) => setActivityNotes(e.target.value)}
+              placeholder="VD: Đi bộ nhẹ 20 phút, tập thở 10 phút"
+              className="w-full bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-xl px-3 py-2 text-xs text-[#322622] dark:text-[#F4EDE6]"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="text-[11px] font-semibold text-[#6B5D56] dark:text-[#C5B9B0] block mb-1">
+            Nhật ký cá nhân
+          </label>
+          <textarea
+            rows={2}
+            value={personalNotes}
+            onChange={(e) => setPersonalNotes(e.target.value)}
+            placeholder="Ghi chú riêng tư của mẹ trong ngày hôm nay..."
+            className="w-full bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-2xl p-3 text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#263E35]"
+          />
+        </div>
+
+        <div>
+          <label className="text-[11px] font-semibold text-[#6B5D56] dark:text-[#C5B9B0] flex items-center gap-1 mb-1">
+            <Stethoscope className="w-3.5 h-3.5 text-[#4F6B56] dark:text-[#8DA892]" /> Lời dặn & Ghi chú từ Bác sĩ
+          </label>
+          <textarea
+            rows={2}
+            value={doctorNotes}
+            onChange={(e) => setDoctorNotes(e.target.value)}
+            placeholder="VD: Bác sĩ dặn uống bổ sung viên sắt vào buổi sáng sau ăn 1 giờ..."
+            className="w-full bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] rounded-2xl p-3 text-xs text-[#322622] dark:text-[#F4EDE6] focus:outline-none focus:border-[#263E35]"
+          />
+        </div>
       </section>
+
+      {/* Confirm delete diary entry modal */}
+      <AnimatePresence>
+        {confirmResetOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#161311]/55 backdrop-blur-xs">
+            <div className="w-full max-w-sm bg-white dark:bg-[#1E1A17] rounded-3xl p-5 border border-[#E6DDD1] dark:border-[#362E2A] shadow-2xl space-y-3">
+              <h4 className="font-editorial text-base font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                Xóa nhật ký ngày {selectedDate}?
+              </h4>
+              <p className="text-xs text-[#6B5D56] dark:text-[#C5B9B0]">
+                Thao tác này sẽ xóa dữ liệu tâm trạng, triệu chứng, giấc ngủ và dinh dưỡng đã ghi trong ngày {selectedDate}.
+              </p>
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setConfirmResetOpen(false)}
+                  className="flex-1 py-2.5 rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] text-xs font-semibold text-[#786962] cursor-pointer min-h-[44px]"
+                >
+                  Hủy
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDeleteDayDiary}
+                  className="flex-1 py-2.5 rounded-xl bg-[#B55841] text-white text-xs font-semibold cursor-pointer min-h-[44px]"
+                >
+                  Xóa dữ liệu
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -1,0 +1,144 @@
+[
+  {
+    "id": "post-1",
+    "authorId": "usr-expert-lan",
+    "author": "Mẹ Nguyễn Lan",
+    "avatar": "NL",
+    "category": "birth_prep",
+    "weekTag": "Tuần 32",
+    "title": "Review chi tiết danh sách đồ đi sinh gọn nhẹ cho mẹ bầu tuần 32",
+    "content": "Sau bao ngày nghiên cứu kinh nghiệm từ các mom đi trước, mình đã gói gọn đồ đi sinh vào một giỏ duy nhất: 3 bộ quần áo cài cúc cho mẹ, 5 bộ cotton mềm cho con, tã dán sơ sinh, khăn xô và tinh dầu tràm. Các mẹ đừng mang quá nhiều đồ cồng kềnh nha!",
+    "image": "/src/assets/images/hospital_bag_1790926782533.jpg",
+    "likes": 345,
+    "likedBy": [],
+    "commentsCount": 2,
+    "timeAgo": "2 giờ trước",
+    "createdAt": "2026-11-16T05:40:42.034Z",
+    "isLiked": false,
+    "comments": [
+      {
+        "id": "c-1",
+        "authorId": "usr-mom-chi",
+        "author": "Mẹ Thùy Chi",
+        "avatar": "TC",
+        "content": "Bài viết hữu ích quá mom ơi, mình lưu lại để tuần sau sắm dần!",
+        "timeAgo": "1 giờ trước",
+        "createdAt": "2026-11-16T06:40:42.035Z"
+      },
+      {
+        "id": "c-2",
+        "authorId": "usr-mom-tra",
+        "author": "Mẹ Hương Trà",
+        "avatar": "HT",
+        "content": "Nhớ mang theo vài chiếc thìa nhỏ và cốc pha sữa ấm nữa mom nhé.",
+        "timeAgo": "30 phút trước",
+        "createdAt": "2026-11-16T07:10:42.035Z"
+      }
+    ]
+  },
+  {
+    "id": "post-2",
+    "authorId": "usr-expert-ha",
+    "author": "Bác sĩ Thu Hà",
+    "avatar": "TH",
+    "isVerified": true,
+    "category": "nutrition",
+    "weekTag": "Chuyên gia Sản khoa",
+    "title": "5 Thực phẩm vàng giúp con vào cân, mẹ không tăng cân ở 3 tháng giữa",
+    "content": "Giai đoạn tam cá nguyệt 2 là lúc thai nhi tăng tốc phát triển khung xương và cơ bắp. Để dinh dưỡng tập trung vào con mà mẹ không lo tiểu đường thai kỳ: 1. Trứng gà luộc, 2. Bột yến mạch & hạt chia, 3. Khoai lang luộc bữa phụ, 4. Ức gà & cá hồi, 5. Sữa hạt không đường.",
+    "likes": 890,
+    "likedBy": [
+      "usr-1"
+    ],
+    "commentsCount": 2,
+    "timeAgo": "4 giờ trước",
+    "createdAt": "2026-11-16T03:40:42.035Z",
+    "isLiked": true,
+    "comments": [
+      {
+        "id": "c-3",
+        "authorId": "usr-1",
+        "author": "Khánh Băng",
+        "avatar": "KB",
+        "content": "Cảm ơn bác sĩ! Em tuần 12 bắt đầu áp dụng thực đơn này được không ạ?",
+        "timeAgo": "3 giờ trước",
+        "createdAt": "2026-11-16T04:40:42.035Z"
+      },
+      {
+        "id": "c-4",
+        "authorId": "usr-expert-ha",
+        "author": "Bác sĩ Thu Hà",
+        "avatar": "TH",
+        "content": "@Khánh Băng Hoàn toàn được nhé mẹ! Hãy ăn đa dạng và uống đủ nước lọc.",
+        "timeAgo": "2 giờ trước",
+        "parentId": "c-3",
+        "replyToAuthor": "Khánh Băng",
+        "mentions": [
+          "Khánh Băng"
+        ],
+        "createdAt": "2026-11-16T05:40:42.035Z"
+      }
+    ]
+  },
+  {
+    "id": "post-3",
+    "authorId": "usr-mom-ngoc",
+    "author": "Mẹ Bích Ngọc",
+    "avatar": "BN",
+    "category": "experience",
+    "weekTag": "Tuần 12",
+    "title": "Tự nhiên hết nghén từ tuần 12 có sao không các mẹ ơi?",
+    "content": "Mấy tuần trước mình nghén không ăn uống được gì, sút mất 2kg. Tự dưng 2 hôm nay thấy người khỏe re, thèm ăn trở lại mà tự nhiên lại lo lo. Có mẹ nào cũng hết nghén đột ngột như mình không?",
+    "likes": 45,
+    "likedBy": [],
+    "commentsCount": 1,
+    "timeAgo": "5 giờ trước",
+    "createdAt": "2026-11-16T02:40:42.035Z",
+    "isLiked": false,
+    "comments": [
+      {
+        "id": "c-5",
+        "authorId": "usr-mom-vy",
+        "author": "Mẹ Phương Vy",
+        "avatar": "PV",
+        "content": "Bình thường lắm mom ơi! Tuần 12 nhau thai làm việc hoàn chỉnh nên bớt nghén đấy, chúc mừng mom nha!",
+        "timeAgo": "4 giờ trước",
+        "createdAt": "2026-11-16T03:40:42.035Z"
+      }
+    ]
+  },
+  {
+    "id": "post-4",
+    "authorId": "usr-1",
+    "author": "Khánh Băng",
+    "avatar": "KB",
+    "category": "confession",
+    "weekTag": "Tuần 24",
+    "title": "Chia sẻ nhật ký thai máy tuần 24 của Bé Bơ",
+    "content": "Hôm nay vừa uống xong cốc nước ấm và nghe nhạc Mozart thì Bé Bơ đạp liên tục 5 cái rõ rệt. Cảm giác làm mẹ thật kỳ diệu các mom ơi!",
+    "likes": 112,
+    "likedBy": [],
+    "commentsCount": 0,
+    "timeAgo": "7 giờ trước",
+    "createdAt": "2026-11-16T00:40:42.035Z",
+    "isLiked": false,
+    "comments": []
+  },
+  {
+    "id": "post-5",
+    "authorId": "usr-2",
+    "author": "Mẹ Lan Hương",
+    "avatar": "LH",
+    "category": "experience",
+    "weekTag": "Tuần 12",
+    "title": "Nhật ký siêu âm tuần 12: Con đã vẫy tay chào ba mẹ!",
+    "content": "Hôm nay đi đo độ mờ da gáy, nhìn màn hình siêu âm thấy em bé nghịch ngợm cử động hai tay hai chân mà ba mẹ rớt nước mắt vì hạnh phúc. Độ mờ da gáy 1.2mm đạt chuẩn an toàn rồi các mom ơi!",
+    "likes": 215,
+    "likedBy": [],
+    "commentsCount": 0,
+    "timeAgo": "1 ngày trước",
+    "createdAt": "2026-11-15T07:40:42.035Z",
+    "isLiked": false,
+    "comments": []
+  }
+]

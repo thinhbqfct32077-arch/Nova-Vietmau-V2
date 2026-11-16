@@ -5,7 +5,6 @@ import {
   Sparkles,
   ArrowRight,
   ArrowLeft,
-  Calendar,
   Heart,
   Baby,
   BookOpen,
@@ -23,6 +22,7 @@ import {
   formatDateVietnamese,
   toISODateString,
 } from '../../services/pregnancyCalculator';
+import { NovaBrandMark, NovaImage, NovaLotusDivider } from '../NovaBrandMark';
 import confetti from 'canvas-confetti';
 
 interface OnboardingScreenProps {
@@ -45,9 +45,9 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
   const babyNicknameInputId = useId();
   const reminderTimeInputId = useId();
 
-  // Mode: 'welcome' (slider + entry options) or 'wizard' (4-step onboarding)
+  // Mode: 'welcome' (emotional greeting + entry options) or 'wizard' (4-step onboarding)
   const [mode, setMode] = useState<'welcome' | 'wizard'>('welcome');
-  const [activeSlide, setActiveSlide] = useState(1);
+  const [activeSlide, setActiveSlide] = useState(0);
   const [step, setStep] = useState<1 | 2 | 3 | 4>(1);
 
   // Form State
@@ -81,16 +81,22 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
 
   const slides = [
     {
-      title: 'Hành trình diệu kỳ',
-      desc: 'Theo dõi sự phát triển từng ngày của thiên thần nhỏ trong bụng mẹ bằng khoa học sản khoa chuẩn mực.',
+      title: 'Hành trình nhỏ, yêu thương lớn',
+      desc: 'Từ những nhịp tim đầu tiên đến ngày con cất tiếng khóc chào đời, Nova luôn ở đây dịu dàng lắng nghe và đồng hành cùng mẹ.',
+      image: ASSETS.familyMorningImg,
+      caption: 'Ấm áp bên gia đình mỗi sớm mai',
     },
     {
-      title: 'Chào mừng tới Nova',
-      desc: 'Người bạn đồng hành ân cần, giúp mẹ an tâm chăm sóc sức khỏe thai kỳ và đón bé yêu chào đời.',
+      title: 'Từng ngày bình yên cùng con',
+      desc: 'Theo dõi tuổi thai theo tuần, ghi lại cảm xúc và lưu giữ những tấm ảnh siêu âm đầu đời trong một không gian riêng tư.',
+      image: ASSETS.homeHeroImg,
+      caption: 'Chăm sóc thân — tâm dịu nhẹ',
     },
     {
-      title: 'Kiến thức y khoa chuẩn',
-      desc: 'Được cố vấn bởi các chuyên gia sản nhi hàng đầu với lời khuyên khoa học và hoàn toàn miễn phí.',
+      title: 'An tâm với tri thức chuẩn y khoa',
+      desc: 'Thông tin được chắt lọc theo khuyến cáo Bộ Y tế & WHO, giải thích nhẹ nhàng để mẹ không lo âu giữa muôn vàn tin đồn.',
+      image: ASSETS.wellnessRitualImg,
+      caption: 'Đáng tin cậy, rõ ràng và không áp lực',
     },
   ];
 
@@ -130,7 +136,6 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
       if (status === 'pregnant') {
         setStep(2);
       } else {
-        // Skip pregnancy calculation for planning or learning
         setStep(3);
       }
     } else if (step === 2) {
@@ -156,10 +161,10 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
   const handleComplete = () => {
     try {
       confetti({
-        particleCount: 80,
-        spread: 60,
-        origin: { y: 0.7 },
-        colors: ['#C84B4B', '#F3A4B5', '#8C7B75', '#FADBD8'],
+        particleCount: 65,
+        spread: 55,
+        origin: { y: 0.72 },
+        colors: ['#B55841', '#C4A46B', '#6D8572', '#F2ECE3'],
       });
     } catch {}
 
@@ -184,107 +189,135 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
   };
 
   // -------------------------------------------------------------
-  // RENDER: WELCOME SLIDES
+  // RENDER: WELCOME EDITORIAL EXPERIENCE
   // -------------------------------------------------------------
   if (mode === 'welcome') {
+    const activeItem = slides[activeSlide];
     return (
-      <div className="flex-1 flex flex-col justify-between px-6 pt-3 pb-6 bg-[#FFFBF7] select-none overflow-y-auto no-scrollbar">
-        {/* Top Floating Art Card */}
-        <motion.div
-          animate={{ y: [-3, 3, -3] }}
-          transition={{ duration: 4, ease: 'easeInOut', repeat: Infinity }}
-          className="relative w-full rounded-[28px] overflow-hidden bg-[#E2E8E6] border border-[#D5DDD9]/60 flex flex-col items-center pt-5 pb-4 px-4 shadow-sm"
-        >
-          <div className="absolute top-0 right-0 w-44 h-44 bg-white/40 rounded-full blur-2xl pointer-events-none" />
-
-          {/* Hand & Baby Foot Illustration */}
-          <div className="relative w-full aspect-[4/3] rounded-[22px] overflow-hidden mb-3 bg-[#D9E3DF] flex items-center justify-center shadow-inner">
-            <img
-              src={ASSETS.onboardingArt}
-              alt="Mẹ và bé Nova"
-              className="w-full h-full object-cover"
-              loading="eager"
-            />
-          </div>
-
-          <div className="text-center z-10">
-            <h1 className="font-handwriting text-[36px] leading-tight text-[#3A2E2B] font-bold tracking-wide">
-              Nova Việt Mẫu
-            </h1>
-            <p className="text-[12px] font-medium text-[#6B7280] tracking-tight mt-0.5">
-              Mãi mãi bên nhau, bạn nhé!
-            </p>
-          </div>
-        </motion.div>
-
-        {/* Middle Text & Slide Indicators */}
-        <div className="flex flex-col items-center text-center mt-5 mb-4 px-2">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeSlide}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.25 }}
-              className="flex flex-col items-center"
+      <div className="flex-1 flex flex-col justify-between px-5 sm:px-8 py-5 sm:py-8 bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] select-none overflow-y-auto no-scrollbar">
+        <div className="max-w-xl w-full mx-auto flex-1 flex flex-col justify-between gap-5">
+          {/* Brand Signature Header */}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-[#F7EAE5] dark:bg-[#35231E] border border-[#E6DDD1] dark:border-[#4A3630] flex items-center justify-center text-[#B55841] dark:text-[#D47A63]">
+                <NovaBrandMark className="w-5 h-5" />
+              </div>
+              <div>
+                <span className="font-editorial font-semibold text-base text-[#322622] dark:text-[#F4EDE6] block leading-none">
+                  Nova Việt Mẫu
+                </span>
+                <span className="text-[11px] text-[#786962] dark:text-[#B5A89F]">
+                  Người bạn đồng hành cùng mẹ bầu
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={onExploreGuest}
+              className="text-xs font-medium text-[#786962] dark:text-[#B5A89F] hover:text-[#B55841] dark:hover:text-[#D47A63] transition-colors cursor-pointer py-2 px-1 whitespace-nowrap"
             >
-              <h2 className="text-[23px] font-bold text-[#3A2E2B] tracking-tight leading-snug">
-                {slides[activeSlide].title}
-              </h2>
-              <p className="text-[13px] text-[#8C7B75] mt-2 leading-relaxed max-w-[320px]">
-                {slides[activeSlide].desc}
-              </p>
-            </motion.div>
-          </AnimatePresence>
-
-          <div className="flex items-center gap-2 mt-4">
-            {slides.map((_, idx) => {
-              const isActive = activeSlide === idx;
-              return (
-                <button
-                  key={idx}
-                  onClick={() => setActiveSlide(idx)}
-                  className={`transition-all duration-300 rounded-full cursor-pointer ${
-                    isActive ? 'w-6 h-2 bg-[#C84B4B]' : 'w-2 h-2 bg-[#D1C7C2] hover:bg-[#B5A8A2]'
-                  }`}
-                  aria-label={`Trang ${idx + 1}`}
-                />
-              );
-            })}
+              Xem thử trước
+            </button>
           </div>
-        </div>
 
-        {/* 3 Explicit Action Buttons */}
-        <div className="flex flex-col gap-2.5 w-full">
-          {/* 1. Bắt đầu hành trình thai kỳ */}
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={() => {
-              setMode('wizard');
-              setStep(1);
-            }}
-            className="w-full py-3.5 px-6 rounded-2xl bg-[#C84B4B] hover:bg-[#B84040] text-white font-semibold text-[15px] shadow-md shadow-[#C84B4B]/20 transition-all flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <span>Bắt đầu hành trình thai kỳ</span>
-            <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-          </motion.button>
+          {/* Framed Warm Morning Photography */}
+          <div className="flex flex-col gap-4">
+            <div className="rounded-[24px] overflow-hidden bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] p-2.5 nova-card-shadow">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeSlide}
+                  initial={{ opacity: 0.7 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0.7 }}
+                  transition={{ duration: 0.3 }}
+                  className="relative w-full aspect-[4/3] sm:aspect-[16/10] rounded-[18px] overflow-hidden bg-[#F2ECE3] dark:bg-[#231E1B]"
+                >
+                  <NovaImage
+                    src={activeItem.image}
+                    alt={activeItem.title}
+                    className="w-full h-full object-cover"
+                    loading="eager"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-[#322622]/55 via-[#322622]/15 to-transparent pointer-events-none" />
+                  <p className="absolute bottom-3 left-3.5 right-3.5 text-[11.5px] font-medium text-[#FAF6F0]/95">
+                    {activeItem.caption}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
 
-          {/* 2. Tôi đã có tài khoản */}
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={onOpenLogin}
-            className="w-full py-3 px-6 rounded-2xl bg-white hover:bg-[#FAF6F3] text-[#3A2E2B] font-semibold text-[14px] border border-[#E5DFDB] shadow-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <span>Tôi đã có tài khoản</span>
-          </motion.button>
+            {/* Editorial Copy & Indicators */}
+            <div className="text-center px-2">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeSlide}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  transition={{ duration: 0.25 }}
+                >
+                  <h1 className="font-editorial text-[26px] sm:text-[30px] font-semibold text-[#322622] dark:text-[#F4EDE6] leading-tight">
+                    {activeItem.title}
+                  </h1>
+                  <p className="text-[13.5px] text-[#786962] dark:text-[#B5A89F] mt-2 leading-relaxed max-w-md mx-auto">
+                    {activeItem.desc}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
 
-          {/* 3. Khám phá ứng dụng trước */}
-          <button
-            onClick={onExploreGuest}
-            className="w-full py-2 text-center text-[13px] font-medium text-[#8C7B75] hover:text-[#C84B4B] transition-colors cursor-pointer"
-          >
-            Khám phá ứng dụng trước (Dùng thử ngay)
-          </button>
+              <div className="flex items-center justify-center gap-2 mt-4">
+                {slides.map((_, idx) => {
+                  const isActive = activeSlide === idx;
+                  return (
+                    <button
+                      key={idx}
+                      type="button"
+                      onClick={() => setActiveSlide(idx)}
+                      className={`transition-all duration-300 rounded-full cursor-pointer min-h-[16px] flex items-center justify-center px-0.5 ${
+                        isActive ? 'w-7' : 'w-2.5'
+                      }`}
+                      aria-label={`Trang giới thiệu ${idx + 1}`}
+                    >
+                      <span
+                        className={`block h-2 rounded-full transition-all duration-300 ${
+                          isActive
+                            ? 'w-7 bg-[#B55841] dark:bg-[#D47A63]'
+                            : 'w-2 bg-[#E6DDD1] dark:bg-[#362E2A] hover:bg-[#C4A46B]'
+                        }`}
+                      />
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Calm Action Stack */}
+          <div className="flex flex-col gap-2.5 w-full">
+            <motion.button
+              whileTap={{ scale: 0.985 }}
+              type="button"
+              onClick={() => {
+                setMode('wizard');
+                setStep(1);
+              }}
+              className="w-full py-3.5 px-6 rounded-2xl bg-[#B55841] hover:bg-[#9E4A35] dark:bg-[#D47A63] dark:hover:bg-[#C36A53] text-white font-semibold text-[15px] transition-colors flex items-center justify-center gap-2 cursor-pointer min-h-[48px] whitespace-nowrap"
+            >
+              <span>Bắt đầu hành trình cùng Nova</span>
+              <ArrowRight className="w-4 h-4 stroke-[2.2]" />
+            </motion.button>
+
+            <motion.button
+              whileTap={{ scale: 0.985 }}
+              type="button"
+              onClick={onOpenLogin}
+              className="w-full py-3 px-6 rounded-2xl bg-[#FFFFFF] dark:bg-[#1E1A17] hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B] text-[#322622] dark:text-[#F4EDE6] font-semibold text-[14px] border border-[#E6DDD1] dark:border-[#362E2A] transition-colors flex items-center justify-center gap-2 cursor-pointer min-h-[46px] whitespace-nowrap"
+            >
+              <span>Tôi đã có tài khoản</span>
+            </motion.button>
+
+            <NovaLotusDivider label="Riêng tư · An toàn trên thiết bị" className="mt-1" />
+          </div>
         </div>
       </div>
     );
@@ -294,583 +327,527 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({
   // RENDER: 4-STEP ONBOARDING WIZARD
   // -------------------------------------------------------------
   return (
-    <div className="flex-1 flex flex-col justify-between px-5 pt-3 pb-6 bg-[#FFFBF7] select-none overflow-y-auto no-scrollbar">
-      {/* Top Header with Progress */}
-      <div className="w-full mb-4">
-        <div className="flex items-center justify-between mb-3">
-          <button
-            onClick={handleBackStep}
-            className="w-9 h-9 rounded-full bg-white border border-[#EBE4DF] flex items-center justify-center text-[#5C4A42] hover:bg-[#F7F2EE] active:scale-95 transition-all cursor-pointer shadow-xs"
-            aria-label="Quay lại"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </button>
-          <div className="text-center">
-            <span className="text-[11px] font-semibold tracking-wider text-[#C84B4B] uppercase">
-              Hành Trình Mẹ Bầu
-            </span>
-            <h3 className="text-[14px] font-bold text-[#3A2E2B]">Bước {step} / 4</h3>
+    <div className="flex-1 flex flex-col justify-between px-5 sm:px-8 pt-4 pb-6 bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] select-none overflow-y-auto no-scrollbar">
+      <div className="max-w-lg w-full mx-auto flex-1 flex flex-col justify-between">
+        {/* Top Header with Gentle Progress */}
+        <div className="w-full mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <button
+              type="button"
+              onClick={handleBackStep}
+              className="w-10 h-10 rounded-full bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-[#322622] dark:text-[#F4EDE6] hover:bg-[#F2ECE3] dark:hover:bg-[#231E1B] transition-colors cursor-pointer"
+              aria-label="Quay lại"
+            >
+              <ArrowLeft className="w-4 h-4" />
+            </button>
+            <div className="text-center">
+              <span className="text-[11px] font-semibold tracking-wider text-[#B55841] dark:text-[#D47A63] uppercase">
+                Làm quen nhẹ nhàng
+              </span>
+              <h3 className="text-[14px] font-semibold text-[#322622] dark:text-[#F4EDE6] tabular-nums">
+                Bước {step} / 4
+              </h3>
+            </div>
+            <button
+              type="button"
+              onClick={onExploreGuest}
+              className="text-xs text-[#786962] dark:text-[#B5A89F] hover:text-[#B55841] font-medium cursor-pointer py-2 px-1 whitespace-nowrap"
+            >
+              Bỏ qua
+            </button>
           </div>
-          <button
-            onClick={onExploreGuest}
-            className="text-[12px] text-[#8C7B75] hover:text-[#C84B4B] font-medium cursor-pointer"
-          >
-            Bỏ qua
-          </button>
+
+          <div className="w-full h-1.5 bg-[#E6DDD1] dark:bg-[#362E2A] rounded-full overflow-hidden">
+            <motion.div
+              className="h-full bg-[#B55841] dark:bg-[#D47A63] rounded-full"
+              initial={{ width: '25%' }}
+              animate={{ width: `${(step / 4) * 100}%` }}
+              transition={{ duration: 0.3 }}
+            />
+          </div>
         </div>
 
-        {/* Progress Bar */}
-        <div className="w-full h-1.5 bg-[#EFE8E2] rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-[#C84B4B] rounded-full"
-            initial={{ width: '25%' }}
-            animate={{ width: `${(step / 4) * 100}%` }}
-            transition={{ duration: 0.3 }}
-          />
-        </div>
-      </div>
+        {/* Main Step Content */}
+        <div className="flex-1 flex flex-col justify-center my-auto">
+          <AnimatePresence mode="wait">
+            {/* BƯỚC 1: XÁC ĐỊNH TÌNH TRẠNG */}
+            {step === 1 && (
+              <motion.div
+                key="step-1"
+                initial={{ opacity: 0, x: 16 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -16 }}
+                className="flex flex-col gap-4"
+              >
+                <div className="text-center mb-1">
+                  <h2 className="font-editorial text-[24px] font-semibold text-[#322622] dark:text-[#F4EDE6] leading-tight">
+                    Hiện tại bạn đang ở giai đoạn nào?
+                  </h2>
+                  <p className="text-[13px] text-[#786962] dark:text-[#B5A89F] mt-1.5 leading-relaxed">
+                    Nova sẽ điều chỉnh cẩm nang, thực đơn và gợi ý chăm sóc vừa vặn với nhịp sống của bạn.
+                  </p>
+                </div>
 
-      {/* Main Step Content */}
-      <div className="flex-1 flex flex-col justify-center my-auto">
-        <AnimatePresence mode="wait">
-          {/* ========================================================= */}
-          {/* BƯỚC 1: XÁC ĐỊNH TÌNH TRẠNG */}
-          {/* ========================================================= */}
-          {step === 1 && (
-            <motion.div
-              key="step-1"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="flex flex-col gap-4"
-            >
-              <div className="text-center mb-1">
-                <h2 className="text-[22px] font-bold text-[#3A2E2B] leading-tight">
-                  Tình trạng hiện tại của bạn
-                </h2>
-                <p className="text-[13px] text-[#8C7B75] mt-1.5 leading-relaxed">
-                  Nova sẽ điều chỉnh cẩm nang, chế độ dinh dưỡng và bài tập phù hợp nhất.
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-3">
-                {/* Option 1: Đang mang thai */}
-                <button
-                  onClick={() => setStatus('pregnant')}
-                  className={`p-4 rounded-2xl border text-left transition-all flex items-start gap-3.5 cursor-pointer ${
-                    status === 'pregnant'
-                      ? 'bg-white border-[#C84B4B] shadow-sm ring-1 ring-[#C84B4B]'
-                      : 'bg-white/80 border-[#E8E1DC] hover:border-[#D1C7C2]'
-                  }`}
-                >
-                  <div className="w-11 h-11 rounded-xl bg-[#FCEEEB] text-[#C84B4B] flex items-center justify-center shrink-0">
-                    <Baby className="w-6 h-6" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-[15px] font-bold text-[#3A2E2B]">Tôi đang mang thai</h4>
-                      {status === 'pregnant' && (
-                        <CheckCircle2 className="w-5 h-5 text-[#C84B4B]" />
-                      )}
+                <div className="flex flex-col gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setStatus('pregnant')}
+                    className={`p-4 rounded-2xl border text-left transition-colors flex items-start gap-3.5 cursor-pointer ${
+                      status === 'pregnant'
+                        ? 'bg-[#FFFFFF] dark:bg-[#1E1A17] border-[#B55841] dark:border-[#D47A63] ring-1 ring-[#B55841] dark:ring-[#D47A63]'
+                        : 'bg-[#FFFFFF]/80 dark:bg-[#1E1A17] border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#C4A46B]'
+                    }`}
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] flex items-center justify-center shrink-0">
+                      <Baby className="w-6 h-6" />
                     </div>
-                    <p className="text-[12px] text-[#8C7B75] mt-0.5 leading-snug">
-                      Tính tuổi thai tự động, theo dõi từng tuần và nhắc lịch khám chuẩn sản khoa.
-                    </p>
-                  </div>
-                </button>
-
-                {/* Option 2: Chuẩn bị mang thai */}
-                <button
-                  onClick={() => setStatus('planning')}
-                  className={`p-4 rounded-2xl border text-left transition-all flex items-start gap-3.5 cursor-pointer ${
-                    status === 'planning'
-                      ? 'bg-white border-[#C84B4B] shadow-sm ring-1 ring-[#C84B4B]'
-                      : 'bg-white/80 border-[#E8E1DC] hover:border-[#D1C7C2]'
-                  }`}
-                >
-                  <div className="w-11 h-11 rounded-xl bg-[#FEF5E7] text-[#D35400] flex items-center justify-center shrink-0">
-                    <Heart className="w-6 h-6" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-[15px] font-bold text-[#3A2E2B]">
-                        Tôi đang chuẩn bị mang thai
-                      </h4>
-                      {status === 'planning' && (
-                        <CheckCircle2 className="w-5 h-5 text-[#C84B4B]" />
-                      )}
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-[15px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                          Tôi đang mang thai
+                        </h4>
+                        {status === 'pregnant' && (
+                          <CheckCircle2 className="w-5 h-5 text-[#B55841] dark:text-[#D47A63]" />
+                        )}
+                      </div>
+                      <p className="text-[12.5px] text-[#786962] dark:text-[#B5A89F] mt-0.5 leading-snug">
+                        Theo dõi từng tuần tuổi thai, ngày dự sinh và nhắc lịch khám nhẹ nhàng.
+                      </p>
                     </div>
-                    <p className="text-[12px] text-[#8C7B75] mt-0.5 leading-snug">
-                      Dinh dưỡng tiền sản, bổ sung axit folic và canh ngày rụng trứng chuẩn y khoa.
-                    </p>
-                  </div>
-                </button>
+                  </button>
 
-                {/* Option 3: Tìm hiểu kiến thức */}
-                <button
-                  onClick={() => setStatus('learning')}
-                  className={`p-4 rounded-2xl border text-left transition-all flex items-start gap-3.5 cursor-pointer ${
-                    status === 'learning'
-                      ? 'bg-white border-[#C84B4B] shadow-sm ring-1 ring-[#C84B4B]'
-                      : 'bg-white/80 border-[#E8E1DC] hover:border-[#D1C7C2]'
-                  }`}
-                >
-                  <div className="w-11 h-11 rounded-xl bg-[#EBF5FB] text-[#2980B9] flex items-center justify-center shrink-0">
-                    <BookOpen className="w-6 h-6" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-[15px] font-bold text-[#3A2E2B]">
-                        Tôi muốn tìm hiểu kiến thức
-                      </h4>
-                      {status === 'learning' && (
-                        <CheckCircle2 className="w-5 h-5 text-[#C84B4B]" />
-                      )}
+                  <button
+                    type="button"
+                    onClick={() => setStatus('planning')}
+                    className={`p-4 rounded-2xl border text-left transition-colors flex items-start gap-3.5 cursor-pointer ${
+                      status === 'planning'
+                        ? 'bg-[#FFFFFF] dark:bg-[#1E1A17] border-[#B55841] dark:border-[#D47A63] ring-1 ring-[#B55841] dark:ring-[#D47A63]'
+                        : 'bg-[#FFFFFF]/80 dark:bg-[#1E1A17] border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#C4A46B]'
+                    }`}
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-[#F2ECE3] dark:bg-[#231E1B] text-[#9E5B3B] dark:text-[#D7BA86] flex items-center justify-center shrink-0">
+                      <Heart className="w-6 h-6" />
                     </div>
-                    <p className="text-[12px] text-[#8C7B75] mt-0.5 leading-snug">
-                      Tra cứu cẩm nang 40 tuần phát triển và kinh nghiệm chăm sóc mẹ & bé.
-                    </p>
-                  </div>
-                </button>
-              </div>
-            </motion.div>
-          )}
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-[15px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                          Tôi đang chuẩn bị đón bé
+                        </h4>
+                        {status === 'planning' && (
+                          <CheckCircle2 className="w-5 h-5 text-[#B55841] dark:text-[#D47A63]" />
+                        )}
+                      </div>
+                      <p className="text-[12.5px] text-[#786962] dark:text-[#B5A89F] mt-0.5 leading-snug">
+                        Chuẩn bị sức khỏe tiền thai kỳ, axit folic và nhịp sinh hoạt thư thái.
+                      </p>
+                    </div>
+                  </button>
 
-          {/* ========================================================= */}
-          {/* BƯỚC 2: NHẬP THÔNG TIN THAI KỲ (CHỈ KHI ĐANG MANG THAI) */}
-          {/* ========================================================= */}
-          {step === 2 && (
-            <motion.div
-              key="step-2"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="flex flex-col gap-3.5"
-            >
-              <div className="text-center">
-                <h2 className="text-[21px] font-bold text-[#3A2E2B] leading-tight">
-                  Thông tin thai kỳ của mẹ
-                </h2>
-                <p className="text-[12px] text-[#8C7B75] mt-1">
-                  Chọn phương pháp tính tuổi thai phù hợp và thuận tiện nhất với mẹ.
-                </p>
-              </div>
+                  <button
+                    type="button"
+                    onClick={() => setStatus('learning')}
+                    className={`p-4 rounded-2xl border text-left transition-colors flex items-start gap-3.5 cursor-pointer ${
+                      status === 'learning'
+                        ? 'bg-[#FFFFFF] dark:bg-[#1E1A17] border-[#B55841] dark:border-[#D47A63] ring-1 ring-[#B55841] dark:ring-[#D47A63]'
+                        : 'bg-[#FFFFFF]/80 dark:bg-[#1E1A17] border-[#E6DDD1] dark:border-[#362E2A] hover:border-[#C4A46B]'
+                    }`}
+                  >
+                    <div className="w-11 h-11 rounded-xl bg-[#EBF1EC] dark:bg-[#1E2922] text-[#263E35] dark:text-[#8DA892] flex items-center justify-center shrink-0">
+                      <BookOpen className="w-6 h-6" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-[15px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                          Tôi muốn đọc cẩm nang & tìm hiểu
+                        </h4>
+                        {status === 'learning' && (
+                          <CheckCircle2 className="w-5 h-5 text-[#B55841] dark:text-[#D47A63]" />
+                        )}
+                      </div>
+                      <p className="text-[12.5px] text-[#786962] dark:text-[#B5A89F] mt-0.5 leading-snug">
+                        Tra cứu kiến thức 40 tuần thai kỳ và kinh nghiệm chăm sóc mẹ & bé.
+                      </p>
+                    </div>
+                  </button>
+                </div>
+              </motion.div>
+            )}
 
-              {/* 3 Calculation Method Tabs */}
-              <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#EFE9E4] rounded-xl text-[12px] font-medium">
-                <button
-                  onClick={() => setCalcMethod('lmp')}
-                  className={`py-2 px-1 rounded-lg transition-all text-center cursor-pointer ${
-                    calcMethod === 'lmp'
-                      ? 'bg-white text-[#C84B4B] font-bold shadow-xs'
-                      : 'text-[#6B7280] hover:text-[#3A2E2B]'
-                  }`}
-                >
-                  Kỳ kinh cuối
-                </button>
-                <button
-                  onClick={() => setCalcMethod('edd')}
-                  className={`py-2 px-1 rounded-lg transition-all text-center cursor-pointer ${
-                    calcMethod === 'edd'
-                      ? 'bg-white text-[#C84B4B] font-bold shadow-xs'
-                      : 'text-[#6B7280] hover:text-[#3A2E2B]'
-                  }`}
-                >
-                  Ngày dự sinh
-                </button>
-                <button
-                  onClick={() => setCalcMethod('ultrasound')}
-                  className={`py-2 px-1 rounded-lg transition-all text-center cursor-pointer ${
-                    calcMethod === 'ultrasound'
-                      ? 'bg-white text-[#C84B4B] font-bold shadow-xs'
-                      : 'text-[#6B7280] hover:text-[#3A2E2B]'
-                  }`}
-                >
-                  Siêu âm
-                </button>
-              </div>
+            {/* BƯỚC 2: THÔNG TIN THAI KỲ */}
+            {step === 2 && (
+              <motion.div
+                key="step-2"
+                initial={{ opacity: 0, x: 16 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -16 }}
+                className="flex flex-col gap-3.5"
+              >
+                <div className="text-center">
+                  <h2 className="font-editorial text-[23px] font-semibold text-[#322622] dark:text-[#F4EDE6] leading-tight">
+                    Tuổi thai của mẹ hôm nay
+                  </h2>
+                  <p className="text-[12.5px] text-[#786962] dark:text-[#B5A89F] mt-1">
+                    Chọn cách tính thuận tiện nhất với giấy khám thai của mẹ.
+                  </p>
+                </div>
 
-              {/* Method 1: LMP (Kỳ kinh cuối) */}
-              {calcMethod === 'lmp' && (
-                <div className="p-3.5 bg-white rounded-2xl border border-[#E8E1DC] shadow-xs flex flex-col gap-2.5">
-                  <label htmlFor={lmpInputId} className="text-[13px] font-semibold text-[#3A2E2B]">
-                    Ngày đầu tiên của kỳ kinh cuối (LMP):
-                  </label>
-                  <div className="relative">
+                {/* 3 Calculation Method Tabs */}
+                <div className="grid grid-cols-3 gap-1.5 p-1 bg-[#F2ECE3] dark:bg-[#231E1B] rounded-xl text-[12px] font-medium border border-[#E6DDD1] dark:border-[#362E2A]">
+                  {[
+                    { id: 'lmp' as const, label: 'Kỳ kinh cuối' },
+                    { id: 'edd' as const, label: 'Ngày dự sinh' },
+                    { id: 'ultrasound' as const, label: 'Theo siêu âm' },
+                  ].map((m) => (
+                    <button
+                      key={m.id}
+                      type="button"
+                      onClick={() => setCalcMethod(m.id)}
+                      className={`py-2 px-1 rounded-lg transition-all text-center cursor-pointer whitespace-nowrap ${
+                        calcMethod === m.id
+                          ? 'bg-[#FFFFFF] dark:bg-[#1E1A17] text-[#B55841] dark:text-[#D47A63] font-semibold'
+                          : 'text-[#786962] dark:text-[#B5A89F] hover:text-[#322622] dark:hover:text-[#F4EDE6]'
+                      }`}
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+
+                {calcMethod === 'lmp' && (
+                  <div className="p-4 bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] flex flex-col gap-2.5">
+                    <label htmlFor={lmpInputId} className="text-[13px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                      Ngày đầu tiên của kỳ kinh cuối (LMP)
+                    </label>
                     <input
                       id={lmpInputId}
                       type="date"
                       value={lmpDate}
                       max={toISODateString(new Date())}
                       onChange={(e) => setLmpDate(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[16px] sm:text-[14px] font-medium focus:outline-hidden focus:ring-2 focus:ring-[#C84B4B]/30"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] bg-[#FAF6F0] dark:bg-[#231E1B] text-[#322622] dark:text-[#F4EDE6] text-[15px] font-medium"
                     />
+                    <p className="text-[11.5px] text-[#786962] dark:text-[#B5A89F] leading-relaxed">
+                      Áp dụng quy tắc Naegele (280 ngày) theo hướng dẫn của Bộ Y tế & ACOG.
+                    </p>
                   </div>
-                  <p className="text-[11px] text-[#8C7B75] leading-relaxed">
-                    💡 Quy tắc Naegele (280 ngày): Chu kỳ 28 ngày chuẩn y khoa theo khuyến cáo của Bộ
-                    Y tế & ACOG.
-                  </p>
-                </div>
-              )}
+                )}
 
-              {/* Method 2: EDD (Ngày dự sinh do bác sĩ xác định) */}
-              {calcMethod === 'edd' && (
-                <div className="p-3.5 bg-white rounded-2xl border border-[#E8EDC] shadow-xs flex flex-col gap-2.5">
-                  <label htmlFor={eddInputId} className="text-[13px] font-semibold text-[#3A2E2B]">
-                    Ngày dự sinh do bác sĩ xác định:
-                  </label>
-                  <div className="relative">
+                {calcMethod === 'edd' && (
+                  <div className="p-4 bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] flex flex-col gap-2.5">
+                    <label htmlFor={eddInputId} className="text-[13px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                      Ngày dự sinh do bác sĩ xác định
+                    </label>
                     <input
                       id={eddInputId}
                       type="date"
                       value={eddDate}
                       onChange={(e) => setEddDate(e.target.value)}
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[16px] sm:text-[14px] font-medium focus:outline-hidden focus:ring-2 focus:ring-[#C84B4B]/30"
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] bg-[#FAF6F0] dark:bg-[#231E1B] text-[#322622] dark:text-[#F4EDE6] text-[15px] font-medium"
                     />
-                  </div>
-                  <p className="text-[11px] text-[#8C7B75] leading-relaxed">
-                    💡 Ưu tiên ngày dự sinh lâm sàng trên phiếu khám thai hoặc kết quả siêu âm 3 tháng
-                    đầu.
-                  </p>
-                </div>
-              )}
-
-              {/* Method 3: Siêu âm */}
-              {calcMethod === 'ultrasound' && (
-                <div className="p-3.5 bg-white rounded-2xl border border-[#E8E1DC] shadow-xs flex flex-col gap-2.5">
-                  <div className="flex flex-col gap-1">
-                    <label htmlFor={scanDateInputId} className="text-[12px] font-semibold text-[#3A2E2B]">
-                      Ngày siêu âm gần nhất:
-                    </label>
-                    <input
-                      id={scanDateInputId}
-                      type="date"
-                      value={scanDate}
-                      max={toISODateString(new Date())}
-                      onChange={(e) => setScanDate(e.target.value)}
-                      className="w-full px-3 py-2 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[16px] sm:text-[14px] font-medium"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label htmlFor={scanWeeksInputId} className="text-[11px] font-semibold text-[#3A2E2B]">
-                        Tuần thai lúc khám:
-                      </label>
-                      <input
-                        id={scanWeeksInputId}
-                        type="number"
-                        min={1}
-                        max={42}
-                        value={scanWeeks}
-                        onChange={(e) => setScanWeeks(Number(e.target.value))}
-                        className="w-full px-3 py-2 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[16px] sm:text-[14px] font-medium"
-                      />
-                    </div>
-                    <div>
-                      <label htmlFor={scanDaysInputId} className="text-[11px] font-semibold text-[#3A2E2B]">
-                        Số ngày lẻ (0-6):
-                      </label>
-                      <input
-                        id={scanDaysInputId}
-                        type="number"
-                        min={0}
-                        max={6}
-                        value={scanDays}
-                        onChange={(e) => setScanDays(Number(e.target.value))}
-                        className="w-full px-3 py-2 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[16px] sm:text-[14px] font-medium"
-                      />
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Live Calculation Preview Card */}
-              <div className="p-3.5 rounded-2xl bg-linear-to-br from-[#FFF5F5] to-[#FFF0F2] border border-[#FADBD8] shadow-xs">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-[11px] font-bold text-[#C84B4B] uppercase tracking-wider">
-                    Kết quả tính toán lâm sàng
-                  </span>
-                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-white text-[#C84B4B] border border-[#FADBD8]">
-                    Tam cá nguyệt {currentCalc.trimester}
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-3">
-                  <div className="text-[32px] leading-none">
-                    {currentCalc.fruitComparison.fruitEmoji}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-[18px] font-bold text-[#3A2E2B]">
-                      Tuần {currentCalc.weeks} ngày {currentCalc.days}
-                    </h3>
-                    <p className="text-[12px] text-[#8C7B75]">
-                      Bé to bằng{' '}
-                      <span className="font-semibold text-[#C84B4B]">
-                        {currentCalc.fruitComparison.fruitName}
-                      </span>{' '}
-                      · Dự sinh: {formatDateVietnamese(currentCalc.dueDate)}
+                    <p className="text-[11.5px] text-[#786962] dark:text-[#B5A89F] leading-relaxed">
+                      Ưu tiên ngày dự sinh trên phiếu khám thai hoặc siêu âm 3 tháng đầu.
                     </p>
                   </div>
-                </div>
-
-                {currentCalc.warningMessage && (
-                  <p className="mt-2 text-[11px] text-[#C0392B] font-medium bg-white/80 p-2 rounded-lg border border-[#FADBD8]">
-                    ⚠️ {currentCalc.warningMessage}
-                  </p>
-                )}
-              </div>
-            </motion.div>
-          )}
-
-          {/* ========================================================= */}
-          {/* BƯỚC 3: THÔNG TIN CÁ NHÂN TÙY CHỌN */}
-          {/* ========================================================= */}
-          {step === 3 && (
-            <motion.div
-              key="step-3"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="flex flex-col gap-3.5"
-            >
-              <div className="text-center">
-                <h2 className="text-[21px] font-bold text-[#3A2E2B] leading-tight">
-                  Để Nova đồng hành cùng mẹ
-                </h2>
-                <p className="text-[12px] text-[#8C7B75] mt-1">
-                  Thông tin thân thương giúp bác sĩ Nova xưng hô và chăm sóc chu đáo hơn.
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-3 bg-white p-4 rounded-2xl border border-[#E8E1DC] shadow-xs">
-                {/* Tên mẹ */}
-                <div>
-                  <label htmlFor={momNameInputId} className="block text-[12px] font-semibold text-[#3A2E2B] mb-1">
-                    Tên gọi hoặc biệt danh của mẹ:
-                  </label>
-                  <input
-                    id={momNameInputId}
-                    type="text"
-                    value={momName}
-                    onChange={(e) => setMomName(e.target.value)}
-                    placeholder="Ví dụ: Khánh Băng, Mẹ Thảo..."
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[16px] sm:text-[14px] font-medium focus:ring-2 focus:ring-[#C84B4B]/30"
-                  />
-                </div>
-
-                {/* Tên bé */}
-                {status === 'pregnant' && (
-                  <div>
-                    <label htmlFor={babyNicknameInputId} className="block text-[12px] font-semibold text-[#3A2E2B] mb-1">
-                      Biệt danh con yêu:
-                    </label>
-                    <input
-                      id={babyNicknameInputId}
-                      type="text"
-                      value={babyNickname}
-                      onChange={(e) => setBabyNickname(e.target.value)}
-                      placeholder="Ví dụ: Bé Bơ, Bé Dâu, Cún Yêu..."
-                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[16px] sm:text-[14px] font-medium focus:ring-2 focus:ring-[#C84B4B]/30"
-                    />
-                  </div>
                 )}
 
-                {/* Giới tính bé */}
-                {status === 'pregnant' && (
-                  <div>
-                    <span className="block text-[12px] font-semibold text-[#3A2E2B] mb-1.5">
-                      Giới tính dự kiến của con:
-                    </span>
-                    <div className="grid grid-cols-3 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setBabyGender('boy')}
-                        className={`py-2 rounded-xl text-[12px] font-semibold border transition-all cursor-pointer ${
-                          babyGender === 'boy'
-                            ? 'bg-[#EBF5FB] border-[#2980B9] text-[#2980B9]'
-                            : 'bg-white border-[#E8E1DC] text-[#6B7280]'
-                        }`}
-                      >
-                        👦 Bé trai
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setBabyGender('girl')}
-                        className={`py-2 rounded-xl text-[12px] font-semibold border transition-all cursor-pointer ${
-                          babyGender === 'girl'
-                            ? 'bg-[#FCEEEB] border-[#C84B4B] text-[#C84B4B]'
-                            : 'bg-white border-[#E8E1DC] text-[#6B7280]'
-                        }`}
-                      >
-                        👧 Bé gái
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setBabyGender('surprise')}
-                        className={`py-2 rounded-xl text-[12px] font-semibold border transition-all cursor-pointer ${
-                          babyGender === 'surprise'
-                            ? 'bg-[#FEF5E7] border-[#D35400] text-[#D35400]'
-                            : 'bg-white border-[#E8E1DC] text-[#6B7280]'
-                        }`}
-                      >
-                        🎁 Giữ bí mật
-                      </button>
+                {calcMethod === 'ultrasound' && (
+                  <div className="p-4 bg-[#FFFFFF] dark:bg-[#1E1A17] rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] flex flex-col gap-2.5">
+                    <div className="flex flex-col gap-1">
+                      <label htmlFor={scanDateInputId} className="text-[12px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                        Ngày siêu âm gần nhất
+                      </label>
+                      <input
+                        id={scanDateInputId}
+                        type="date"
+                        value={scanDate}
+                        max={toISODateString(new Date())}
+                        onChange={(e) => setScanDate(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] bg-[#FAF6F0] dark:bg-[#231E1B] text-[#322622] dark:text-[#F4EDE6] text-[14px] font-medium"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-2.5">
+                      <div>
+                        <label htmlFor={scanWeeksInputId} className="text-[11.5px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                          Tuần thai lúc khám
+                        </label>
+                        <input
+                          id={scanWeeksInputId}
+                          type="number"
+                          min={1}
+                          max={42}
+                          value={scanWeeks}
+                          onChange={(e) => setScanWeeks(Number(e.target.value))}
+                          className="w-full px-3 py-2 rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] bg-[#FAF6F0] dark:bg-[#231E1B] text-[#322622] dark:text-[#F4EDE6] text-[14px] font-medium mt-1"
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor={scanDaysInputId} className="text-[11.5px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                          Số ngày lẻ (0–6)
+                        </label>
+                        <input
+                          id={scanDaysInputId}
+                          type="number"
+                          min={0}
+                          max={6}
+                          value={scanDays}
+                          onChange={(e) => setScanDays(Number(e.target.value))}
+                          className="w-full px-3 py-2 rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] bg-[#FAF6F0] dark:bg-[#231E1B] text-[#322622] dark:text-[#F4EDE6] text-[14px] font-medium mt-1"
+                        />
+                      </div>
                     </div>
                   </div>
                 )}
 
-                {/* Giờ nhắc uống nước đầu ngày */}
-                <div>
-                  <label htmlFor={reminderTimeInputId} className="block text-[12px] font-semibold text-[#3A2E2B] mb-1">
-                    Giờ nhắc cốc nước ấm đầu ngày:
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-[#8C7B75]" />
-                    <input
-                      id={reminderTimeInputId}
-                      type="time"
-                      value={drinkReminderTime}
-                      onChange={(e) => setDrinkReminderTime(e.target.value)}
-                      className="px-3 py-1.5 rounded-lg border border-[#D5CDC7] bg-[#FFFBF7] text-[#3A2E2B] text-[13px] font-medium"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* Privacy Shield Note */}
-              <div className="flex items-center gap-2.5 p-3 rounded-xl bg-[#F0F7F4] border border-[#D0E7DC] text-[#2D6A4F] text-[11px] leading-relaxed">
-                <ShieldCheck className="w-5 h-5 shrink-0 text-[#2D6A4F]" />
-                <span>
-                  Nova không thu thập số CCCD hay định vị nhạy cảm. Dữ liệu của mẹ được lưu trữ an
-                  toàn trực tiếp trên thiết bị.
-                </span>
-              </div>
-            </motion.div>
-          )}
-
-          {/* ========================================================= */}
-          {/* BƯỚC 4: XÁC NHẬN HỒ SƠ */}
-          {/* ========================================================= */}
-          {step === 4 && (
-            <motion.div
-              key="step-4"
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              className="flex flex-col gap-3.5"
-            >
-              <div className="text-center">
-                <div className="w-12 h-12 rounded-full bg-[#FCEEEB] text-[#C84B4B] mx-auto flex items-center justify-center mb-2 shadow-xs">
-                  <Sparkles className="w-6 h-6" />
-                </div>
-                <h2 className="text-[22px] font-bold text-[#3A2E2B] leading-tight">
-                  Hồ sơ thai kỳ đã sẵn sàng!
-                </h2>
-                <p className="text-[12px] text-[#8C7B75] mt-1">
-                  Mẹ kiểm tra lại thông tin trước khi bắt đầu nhé.
-                </p>
-              </div>
-
-              {/* Summary Card */}
-              <div className="p-4 rounded-2xl bg-white border border-[#E8E1DC] shadow-xs flex flex-col gap-3">
-                <div className="flex items-center justify-between pb-3 border-b border-[#F0EAE5]">
-                  <div>
-                    <h4 className="text-[16px] font-bold text-[#3A2E2B]">{momName}</h4>
-                    <p className="text-[12px] text-[#8C7B75]">
-                      {status === 'pregnant' ? `Bé ${babyNickname}` : 'Hành trình tiền thai kỳ'}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setStep(status === 'pregnant' ? 2 : 1)}
-                    className="p-1.5 rounded-lg text-[#C84B4B] hover:bg-[#FCEEEB] transition-colors cursor-pointer flex items-center gap-1 text-[11px] font-semibold"
-                  >
-                    <Edit3 className="w-3.5 h-3.5" />
-                    <span>Sửa</span>
-                  </button>
-                </div>
-
-                {status === 'pregnant' ? (
-                  <div className="grid grid-cols-2 gap-3 text-left">
-                    <div className="p-2.5 rounded-xl bg-[#FFFBF7] border border-[#F0EAE5]">
-                      <span className="text-[10px] text-[#8C7B75] uppercase tracking-wider block font-semibold">
-                        Tuổi thai hôm nay
-                      </span>
-                      <span className="text-[15px] font-bold text-[#C84B4B]">
+                {/* Live Calculation Preview Card */}
+                <div className="p-4 rounded-2xl bg-[#F2ECE3] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A]">
+                  <p className="text-[11px] font-semibold text-[#786962] dark:text-[#B5A89F] uppercase tracking-wider mb-2">
+                    Ước tính hiện tại · Tam cá nguyệt {currentCalc.trimester}
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-2xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex items-center justify-center text-2xl shrink-0">
+                      {currentCalc.fruitComparison.fruitEmoji}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-editorial text-[20px] font-semibold text-[#322622] dark:text-[#F4EDE6] tabular-nums">
                         Tuần {currentCalc.weeks} ngày {currentCalc.days}
-                      </span>
-                    </div>
-
-                    <div className="p-2.5 rounded-xl bg-[#FFFBF7] border border-[#F0EAE5]">
-                      <span className="text-[10px] text-[#8C7B75] uppercase tracking-wider block font-semibold">
-                        Ngày dự sinh (EDD)
-                      </span>
-                      <span className="text-[15px] font-bold text-[#3A2E2B]">
-                        {formatDateVietnamese(currentCalc.dueDate)}
-                      </span>
-                    </div>
-
-                    <div className="p-2.5 rounded-xl bg-[#FFFBF7] border border-[#F0EAE5]">
-                      <span className="text-[10px] text-[#8C7B75] uppercase tracking-wider block font-semibold">
-                        Giai đoạn thai kỳ
-                      </span>
-                      <span className="text-[13px] font-semibold text-[#3A2E2B]">
-                        Tam cá nguyệt {currentCalc.trimester}
-                      </span>
-                    </div>
-
-                    <div className="p-2.5 rounded-xl bg-[#FFFBF7] border border-[#F0EAE5]">
-                      <span className="text-[10px] text-[#8C7B75] uppercase tracking-wider block font-semibold">
-                        Kích thước bé
-                      </span>
-                      <span className="text-[13px] font-semibold text-[#3A2E2B]">
-                        {currentCalc.fruitComparison.fruitEmoji} {currentCalc.fruitComparison.fruitName}
-                      </span>
+                      </h3>
+                      <p className="text-[12px] text-[#786962] dark:text-[#B5A89F]">
+                        Bé bằng{' '}
+                        <span className="font-semibold text-[#B55841] dark:text-[#D47A63]">
+                          {currentCalc.fruitComparison.fruitName}
+                        </span>{' '}
+                        · Dự sinh {formatDateVietnamese(currentCalc.dueDate)}
+                      </p>
                     </div>
                   </div>
-                ) : (
-                  <div className="p-3 rounded-xl bg-[#FFFBF7] border border-[#F0EAE5] text-[13px] text-[#5C4A42]">
-                    Chế độ {status === 'planning' ? 'Tiền thai kỳ' : 'Tra cứu cẩm nang'} sẵn sàng.
-                  </div>
-                )}
-              </div>
 
-              {/* Free Forever Banner */}
-              <div className="p-3 rounded-xl bg-[#FEF9E7] border border-[#F7DC6F] text-[#7D6608] text-[11px] leading-relaxed text-center">
-                ✨ Toàn bộ theo dõi nước uống, hoạt động chăm sóc và cẩm nang 40 tuần đều hoàn toàn
-                miễn phí trọn đời!
-              </div>
-            </motion.div>
+                  {currentCalc.warningMessage && (
+                    <p className="mt-2.5 text-[11.5px] text-[#A2402E] dark:text-[#E08975] font-medium bg-[#FFFFFF] dark:bg-[#1E1A17] p-2.5 rounded-xl border border-[#E6DDD1] dark:border-[#362E2A]">
+                      {currentCalc.warningMessage}
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+            )}
+
+            {/* BƯỚC 3: THÔNG TIN CÁ NHÂN */}
+            {step === 3 && (
+              <motion.div
+                key="step-3"
+                initial={{ opacity: 0, x: 16 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -16 }}
+                className="flex flex-col gap-3.5"
+              >
+                <div className="text-center">
+                  <h2 className="font-editorial text-[23px] font-semibold text-[#322622] dark:text-[#F4EDE6] leading-tight">
+                    Để Nova gọi tên thân thương
+                  </h2>
+                  <p className="text-[12.5px] text-[#786962] dark:text-[#B5A89F] mt-1">
+                    Giúp lời chào mỗi sáng và các gợi ý thêm phần gần gũi.
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-3 bg-[#FFFFFF] dark:bg-[#1E1A17] p-4 rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A]">
+                  <div>
+                    <label htmlFor={momNameInputId} className="block text-[12px] font-semibold text-[#322622] dark:text-[#F4EDE6] mb-1">
+                      Tên gọi hoặc biệt danh của mẹ
+                    </label>
+                    <input
+                      id={momNameInputId}
+                      type="text"
+                      value={momName}
+                      onChange={(e) => setMomName(e.target.value)}
+                      placeholder="Ví dụ: Khánh Băng, Mẹ Thảo..."
+                      className="w-full px-3.5 py-2.5 rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] bg-[#FAF6F0] dark:bg-[#231E1B] text-[#322622] dark:text-[#F4EDE6] text-[14px] font-medium"
+                    />
+                  </div>
+
+                  {status === 'pregnant' && (
+                    <div>
+                      <label htmlFor={babyNicknameInputId} className="block text-[12px] font-semibold text-[#322622] dark:text-[#F4EDE6] mb-1">
+                        Tên thân mật ở nhà của bé
+                      </label>
+                      <input
+                        id={babyNicknameInputId}
+                        type="text"
+                        value={babyNickname}
+                        onChange={(e) => setBabyNickname(e.target.value)}
+                        placeholder="Ví dụ: Bé Bơ, Bé Gạo, Bé Dâu..."
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] bg-[#FAF6F0] dark:bg-[#231E1B] text-[#322622] dark:text-[#F4EDE6] text-[14px] font-medium"
+                      />
+                    </div>
+                  )}
+
+                  {status === 'pregnant' && (
+                    <div>
+                      <span className="block text-[12px] font-semibold text-[#322622] dark:text-[#F4EDE6] mb-1.5">
+                        Giới tính dự kiến của bé
+                      </span>
+                      <div className="grid grid-cols-3 gap-2">
+                        {[
+                          { id: 'boy' as const, label: 'Bé trai' },
+                          { id: 'girl' as const, label: 'Bé gái' },
+                          { id: 'surprise' as const, label: 'Giữ bất ngờ' },
+                        ].map((g) => (
+                          <button
+                            key={g.id}
+                            type="button"
+                            onClick={() => setBabyGender(g.id)}
+                            className={`py-2.5 px-2 rounded-xl text-[12px] font-semibold border transition-colors cursor-pointer whitespace-nowrap ${
+                              babyGender === g.id
+                                ? 'bg-[#F7EAE5] dark:bg-[#35231E] border-[#B55841] dark:border-[#D47A63] text-[#B55841] dark:text-[#D47A63]'
+                                : 'bg-[#FAF6F0] dark:bg-[#231E1B] border-[#E6DDD1] dark:border-[#362E2A] text-[#786962] dark:text-[#B5A89F]'
+                            }`}
+                          >
+                            {g.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div>
+                    <label htmlFor={reminderTimeInputId} className="block text-[12px] font-semibold text-[#322622] dark:text-[#F4EDE6] mb-1">
+                      Giờ gợi ý ly nước ấm đầu ngày
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <Clock className="w-4 h-4 text-[#786962] dark:text-[#B5A89F]" />
+                      <input
+                        id={reminderTimeInputId}
+                        type="time"
+                        value={drinkReminderTime}
+                        onChange={(e) => setDrinkReminderTime(e.target.value)}
+                        className="px-3 py-1.5 rounded-xl border border-[#E6DDD1] dark:border-[#362E2A] bg-[#FAF6F0] dark:bg-[#231E1B] text-[#322622] dark:text-[#F4EDE6] text-[13px] font-medium"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2.5 p-3 rounded-xl bg-[#EBF1EC] dark:bg-[#1E2922] border border-[#D4E2D7] dark:border-[#2E3F34] text-[#263E35] dark:text-[#A7C2AC] text-[11.5px] leading-relaxed">
+                  <ShieldCheck className="w-5 h-5 shrink-0" />
+                  <span>
+                    Thông tin của mẹ được lưu giữ an toàn trên thiết bị và chỉ phục vụ cá nhân hóa nội dung thai kỳ.
+                  </span>
+                </div>
+              </motion.div>
+            )}
+
+            {/* BƯỚC 4: XÁC NHẬN HỒ SƠ */}
+            {step === 4 && (
+              <motion.div
+                key="step-4"
+                initial={{ opacity: 0, x: 16 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -16 }}
+                className="flex flex-col gap-3.5"
+              >
+                <div className="text-center">
+                  <div className="w-12 h-12 rounded-2xl bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] mx-auto flex items-center justify-center mb-2">
+                    <Sparkles className="w-6 h-6" />
+                  </div>
+                  <h2 className="font-editorial text-[24px] font-semibold text-[#322622] dark:text-[#F4EDE6] leading-tight">
+                    Góc bình yên của mẹ đã sẵn sàng
+                  </h2>
+                  <p className="text-[12.5px] text-[#786962] dark:text-[#B5A89F] mt-1">
+                    Xem nhanh thông tin trước khi vào trang chủ nhé.
+                  </p>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-[#FFFFFF] dark:bg-[#1E1A17] border border-[#E6DDD1] dark:border-[#362E2A] flex flex-col gap-3">
+                  <div className="flex items-center justify-between pb-3 border-b border-[#E6DDD1] dark:border-[#362E2A]">
+                    <div>
+                      <h4 className="font-editorial text-[17px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                        {momName || 'Mẹ bầu Nova'}
+                      </h4>
+                      <p className="text-[12px] text-[#786962] dark:text-[#B5A89F]">
+                        {status === 'pregnant' ? `Đồng hành cùng ${babyNickname || 'Bé Yêu'}` : 'Hành trình chăm sóc sức khỏe'}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setStep(status === 'pregnant' ? 2 : 1)}
+                      className="px-2.5 py-1.5 rounded-xl text-[#B55841] dark:text-[#D47A63] hover:bg-[#F7EAE5] dark:hover:bg-[#35231E] transition-colors cursor-pointer flex items-center gap-1 text-[12px] font-semibold"
+                    >
+                      <Edit3 className="w-3.5 h-3.5" />
+                      <span>Chỉnh lại</span>
+                    </button>
+                  </div>
+
+                  {status === 'pregnant' ? (
+                    <div className="grid grid-cols-2 gap-2.5 text-left">
+                      <div className="p-3 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A]">
+                        <span className="text-[10.5px] text-[#786962] dark:text-[#B5A89F] block">Tuổi thai hôm nay</span>
+                        <span className="text-[14px] font-semibold text-[#B55841] dark:text-[#D47A63] tabular-nums">
+                          Tuần {currentCalc.weeks} ngày {currentCalc.days}
+                        </span>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A]">
+                        <span className="text-[10.5px] text-[#786962] dark:text-[#B5A89F] block">Ngày dự sinh</span>
+                        <span className="text-[14px] font-semibold text-[#322622] dark:text-[#F4EDE6] tabular-nums">
+                          {formatDateVietnamese(currentCalc.dueDate)}
+                        </span>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A]">
+                        <span className="text-[10.5px] text-[#786962] dark:text-[#B5A89F] block">Giai đoạn</span>
+                        <span className="text-[13px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                          Tam cá nguyệt {currentCalc.trimester}
+                        </span>
+                      </div>
+
+                      <div className="p-3 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A]">
+                        <span className="text-[10.5px] text-[#786962] dark:text-[#B5A89F] block">Kích thước bé</span>
+                        <span className="text-[13px] font-semibold text-[#322622] dark:text-[#F4EDE6]">
+                          {currentCalc.fruitComparison.fruitEmoji} {currentCalc.fruitComparison.fruitName}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="p-3 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-[13px] text-[#322622] dark:text-[#F4EDE6]">
+                      Chế độ {status === 'planning' ? 'Chuẩn bị mang thai' : 'Tìm hiểu cẩm nang'} đã sẵn sàng.
+                    </div>
+                  )}
+                </div>
+
+                <p className="text-[12px] text-[#786962] dark:text-[#B5A89F] text-center leading-relaxed px-2">
+                  Nhật ký chăm sóc, theo dõi nước ấm và cẩm nang 40 tuần đều miễn phí để mẹ an tâm sử dụng mỗi ngày.
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* Bottom Primary CTA */}
+        <div className="w-full mt-5">
+          {step < 4 ? (
+            <motion.button
+              whileTap={{ scale: 0.985 }}
+              type="button"
+              onClick={handleNextStep}
+              disabled={step === 2 && !currentCalc.isValid}
+              className={`w-full py-3.5 px-6 rounded-2xl font-semibold text-[15px] transition-colors flex items-center justify-center gap-2 cursor-pointer min-h-[48px] ${
+                step === 2 && !currentCalc.isValid
+                  ? 'bg-[#E6DDD1] dark:bg-[#362E2A] text-[#786962] cursor-not-allowed'
+                  : 'bg-[#B55841] hover:bg-[#9E4A35] dark:bg-[#D47A63] dark:hover:bg-[#C36A53] text-white'
+              }`}
+            >
+              <span>Tiếp tục</span>
+              <ArrowRight className="w-4 h-4 stroke-[2.2]" />
+            </motion.button>
+          ) : (
+            <motion.button
+              whileTap={{ scale: 0.985 }}
+              type="button"
+              onClick={handleComplete}
+              className="w-full py-3.5 px-6 rounded-2xl bg-[#B55841] hover:bg-[#9E4A35] dark:bg-[#D47A63] dark:hover:bg-[#C36A53] text-white font-semibold text-[15px] transition-colors flex items-center justify-center gap-2 cursor-pointer min-h-[48px]"
+            >
+              <span>Mở không gian của mẹ</span>
+              <ArrowRight className="w-4 h-4 stroke-[2.2]" />
+            </motion.button>
           )}
-        </AnimatePresence>
-      </div>
-
-      {/* Bottom Action Button */}
-      <div className="w-full mt-4">
-        {step < 4 ? (
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={handleNextStep}
-            disabled={step === 2 && !currentCalc.isValid}
-            className={`w-full py-3.5 px-6 rounded-2xl font-semibold text-[15px] shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer ${
-              step === 2 && !currentCalc.isValid
-                ? 'bg-[#E0D7D1] text-[#9E9089] cursor-not-allowed shadow-none'
-                : 'bg-[#C84B4B] hover:bg-[#B84040] text-white shadow-[#C84B4B]/20'
-            }`}
-          >
-            <span>Tiếp tục</span>
-            <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-          </motion.button>
-        ) : (
-          <motion.button
-            whileTap={{ scale: 0.97 }}
-            onClick={handleComplete}
-            className="w-full py-3.5 px-6 rounded-2xl bg-[#C84B4B] hover:bg-[#B84040] text-white font-bold text-[15px] shadow-md shadow-[#C84B4B]/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
-          >
-            <span>Hoàn tất và vào ứng dụng</span>
-            <ArrowRight className="w-4 h-4 stroke-[2.5]" />
-          </motion.button>
-        )}
+        </div>
       </div>
     </div>
   );

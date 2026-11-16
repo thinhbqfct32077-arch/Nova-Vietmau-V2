@@ -1,5 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import {
   Home,
   Heart,
@@ -10,13 +9,28 @@ import {
   Mic,
   Crown,
   PhoneCall,
-  Sparkles,
-  Stethoscope,
   ChevronRight,
-  ShieldAlert,
+  Search,
+  Sun,
+  Moon,
+  Bell,
+  Compass,
+  Calendar,
+  CheckSquare,
+  Camera,
+  FileBarChart2,
+  BookOpen,
+  HeartHandshake,
+  ClipboardList,
+  Baby,
+  Award,
+  ShieldCheck,
+  WifiOff,
 } from 'lucide-react';
 import { ScreenType, UserProfile } from '../types';
 import { ASSETS } from '../data/mockData';
+import { ThemeMode } from '../services/storageService';
+import { NovaBrandMark, NovaImage } from './NovaBrandMark';
 
 interface PhoneFrameProps {
   children: React.ReactNode;
@@ -28,6 +42,12 @@ interface PhoneFrameProps {
   user?: UserProfile;
   isVip?: boolean;
   cartCount?: number;
+  unreadNotificationsCount?: number;
+  themeMode?: ThemeMode;
+  onToggleTheme?: () => void;
+  onOpenGlobalSearch?: () => void;
+  onOpenNotifications?: () => void;
+  isOnline?: boolean;
   onOpenEmergency?: () => void;
   onOpenVipModal?: () => void;
 }
@@ -40,10 +60,15 @@ export const PhoneFrame: React.FC<PhoneFrameProps> = ({
   user,
   isVip = false,
   cartCount = 0,
+  unreadNotificationsCount = 0,
+  themeMode = 'light',
+  onToggleTheme,
+  onOpenGlobalSearch,
+  onOpenNotifications,
+  isOnline = true,
   onOpenEmergency,
   onOpenVipModal,
 }) => {
-  const isVideoScreen = activeScreen === 'video';
   const showNav =
     activeScreen !== 'onboarding' &&
     activeScreen !== 'chat' &&
@@ -56,187 +81,279 @@ export const PhoneFrame: React.FC<PhoneFrameProps> = ({
     { id: 'care' as ScreenType, label: 'Chăm sóc & Nhật ký', icon: Heart },
     { id: 'video' as ScreenType, label: 'Video thai giáo', icon: PlayCircle },
     { id: 'community' as ScreenType, label: 'Cộng đồng mẹ bầu', icon: Users },
-    { id: 'shop' as ScreenType, label: 'Cửa hàng mẹ & bé', icon: ShoppingBag, badge: cartCount > 0 ? cartCount : undefined },
+    {
+      id: 'shop' as ScreenType,
+      label: 'Cửa hàng mẹ & bé',
+      icon: ShoppingBag,
+      badge: cartCount > 0 ? cartCount : undefined,
+    },
     { id: 'profile' as ScreenType, label: 'Hồ sơ thai kỳ', icon: User },
   ];
 
+  const isStaff = user?.role === 'admin' || user?.role === 'moderator';
+
+  const ecosystemLinks: { id: ScreenType; label: string; icon: React.ComponentType<{ className?: string }> }[] = [
+    { id: 'journey', label: 'Hành trình 40 tuần', icon: Compass },
+    { id: 'weekly', label: 'Thai kỳ theo tuần', icon: Calendar },
+    { id: 'checklist', label: 'Checklist mẹ bầu', icon: CheckSquare },
+    { id: 'memories', label: 'Kỷ niệm & Siêu âm', icon: Camera },
+    { id: 'report', label: 'Báo cáo sức khỏe', icon: FileBarChart2 },
+    { id: 'library', label: 'Thư viện y khoa', icon: BookOpen },
+    { id: 'family', label: 'Nova Family', icon: HeartHandshake },
+    { id: 'birth_plan', label: 'Kế hoạch đi sinh', icon: ClipboardList },
+    { id: 'postpartum', label: 'Sau sinh & Em bé', icon: Baby },
+    ...(user?.rewardsEnabled !== false
+      ? [{ id: 'rewards' as ScreenType, label: 'Ghi nhận nhẹ nhàng', icon: Award }]
+      : []),
+    ...(isStaff ? [{ id: 'admin' as ScreenType, label: 'Quản trị & Kiểm duyệt', icon: ShieldCheck }] : []),
+  ];
+
   return (
-    <div className="min-h-screen w-full bg-[#FAF7F2] text-[#3A2E2B] flex flex-row overflow-hidden font-sans">
-      {/* 
-        DESKTOP NAVIGATION SIDEBAR (Visible on Windows / macOS / iPad screens: lg and above) 
-        Takes advantage of the full desktop monitor width!
-      */}
+    <div className="min-h-screen w-full bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6] flex flex-row overflow-hidden font-sans print:block print:overflow-visible print:bg-white">
       {showNav && (
         <aside
           aria-label="Thanh điều hướng ứng dụng máy tính"
-          className="hidden lg:flex w-72 shrink-0 h-screen bg-white border-r border-[#EFEAE5] flex-col justify-between p-5 z-30 select-none shadow-xs"
+          className="hidden lg:flex w-72 shrink-0 h-screen bg-[#FFFFFF] dark:bg-[#1E1A17] border-r border-[#E6DDD1] dark:border-[#362E2A] flex-col justify-between p-4 z-30 select-none print:hidden"
         >
-          {/* Top Brand & User profile */}
-          <div className="flex flex-col gap-5">
-            {/* Logo */}
-            <div
-              onClick={() => onNavigateToScreen && onNavigateToScreen('home')}
-              className="flex items-center gap-3 cursor-pointer group"
-            >
-              <div className="w-11 h-11 rounded-2xl bg-gradient-to-tr from-[#C84B4B] to-[#E26D6D] flex items-center justify-center text-white shadow-md shadow-[#C84B4B]/25 group-hover:scale-105 transition-transform">
-                <Heart className="w-6 h-6 fill-white" />
-              </div>
-              <div className="flex flex-col">
-                <span className="font-extrabold text-[18px] text-[#3A2E2B] tracking-tight leading-none">
-                  Nova Việt Mẫu
-                </span>
-                <span className="text-[11px] font-medium text-[#8C7B75] mt-1">
-                  Đồng hành thai kỳ thông minh
-                </span>
+          <div className="flex flex-col gap-4 overflow-y-auto no-scrollbar pr-0.5">
+            {/* Editorial Logo & Utility Actions */}
+            <div className="flex items-center justify-between gap-2">
+              <button
+                type="button"
+                onClick={() => onNavigateToScreen?.('home')}
+                className="flex items-center gap-2.5 cursor-pointer group min-w-0 text-left focus:outline-none"
+              >
+                <div className="w-10 h-10 rounded-2xl bg-[#F7EAE5] dark:bg-[#35231E] border border-[#E6DDD1] dark:border-[#4A3630] flex items-center justify-center text-[#B55841] dark:text-[#D47A63] shrink-0 transition-colors group-hover:bg-[#B55841] group-hover:text-white">
+                  <NovaBrandMark className="w-5 h-5" />
+                </div>
+                <div className="min-w-0">
+                  <span className="font-editorial font-semibold text-[16px] text-[#322622] dark:text-[#F4EDE6] tracking-tight block leading-none truncate">
+                    Nova Việt Mẫu
+                  </span>
+                  <span className="text-[11px] font-medium text-[#786962] dark:text-[#B5A89F] mt-1 block truncate">
+                    Đồng hành cùng mẹ
+                  </span>
+                </div>
+              </button>
+
+              <div className="flex items-center gap-1 shrink-0">
+                {onToggleTheme && (
+                  <button
+                    type="button"
+                    onClick={onToggleTheme}
+                    aria-label="Chuyển giao diện Sáng/Tối"
+                    title="Chuyển giao diện Sáng/Tối"
+                    className="w-9 h-9 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-[#786962] dark:text-[#B5A89F] flex items-center justify-center hover:border-[#B55841]/40 hover:text-[#322622] dark:hover:text-[#F4EDE6] transition-colors cursor-pointer"
+                  >
+                    {themeMode === 'dark' ? (
+                      <Sun className="w-4 h-4 text-[#D7BA86]" />
+                    ) : (
+                      <Moon className="w-4 h-4" />
+                    )}
+                  </button>
+                )}
+                {onOpenNotifications && (
+                  <button
+                    type="button"
+                    onClick={onOpenNotifications}
+                    aria-label="Thông báo"
+                    title="Thông báo"
+                    className="relative w-9 h-9 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-[#786962] dark:text-[#B5A89F] flex items-center justify-center hover:border-[#B55841]/40 hover:text-[#322622] dark:hover:text-[#F4EDE6] transition-colors cursor-pointer"
+                  >
+                    <Bell className="w-4 h-4" />
+                    {unreadNotificationsCount > 0 && (
+                      <span className="absolute -top-1 -right-1 min-w-[16px] h-4 px-1 bg-[#B55841] text-white text-[9px] font-bold rounded-full flex items-center justify-center tabular-nums">
+                        {unreadNotificationsCount > 9 ? '9+' : unreadNotificationsCount}
+                      </span>
+                    )}
+                  </button>
+                )}
               </div>
             </div>
 
+            {/* Global Search Trigger */}
+            {onOpenGlobalSearch && (
+              <button
+                type="button"
+                onClick={onOpenGlobalSearch}
+                className="w-full px-3 py-2.5 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-xs text-[#786962] dark:text-[#B5A89F] flex items-center gap-2 hover:border-[#B55841]/50 cursor-pointer transition-colors"
+              >
+                <Search className="w-3.5 h-3.5 text-[#B55841] dark:text-[#D47A63] shrink-0" />
+                <span className="truncate">Tìm tuần thai, bài viết, video...</span>
+              </button>
+            )}
+
             {/* User Profile Card */}
-            <div
-              onClick={() => onNavigateToScreen && onNavigateToScreen('profile')}
-              className="bg-[#FFFBF7] p-3.5 rounded-2xl border border-[#F2ECE7] flex items-center gap-3 cursor-pointer hover:border-[#E8DFD8] transition-colors"
+            <button
+              type="button"
+              onClick={() => onNavigateToScreen?.('profile')}
+              className="w-full bg-[#F2ECE3] dark:bg-[#231E1B] p-3 rounded-2xl border border-[#E6DDD1] dark:border-[#362E2A] flex items-center gap-3 cursor-pointer hover:border-[#B55841]/40 transition-colors text-left"
             >
-              <div className="relative">
-                <img
+              <div className="relative shrink-0">
+                <NovaImage
                   src={user?.avatar || ASSETS.motherAvatar}
                   alt={user?.name || 'Mẹ Bầu'}
-                  className="w-11 h-11 rounded-full object-cover border-2 border-white shadow-xs"
+                  className="w-10 h-10 rounded-full object-cover border border-[#FFFFFF] dark:border-[#362E2A]"
                 />
-                {isVip ? (
-                  <span className="absolute -top-1 -right-1 w-4.5 h-4.5 bg-[#D4AF37] rounded-full text-white flex items-center justify-center shadow-xs">
+                {isVip && (
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#C4A46B] rounded-full text-white flex items-center justify-center">
                     <Crown className="w-2.5 h-2.5 fill-current" />
                   </span>
-                ) : (
-                  <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-[#2ECC71] rounded-full border-2 border-white" />
                 )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                  <h4 className="text-xs font-bold text-[#3A2E2B] truncate">
+                  <h4 className="text-xs font-semibold text-[#322622] dark:text-[#F4EDE6] truncate">
                     {user?.name || 'Khánh Băng'}
                   </h4>
-                  {isVip && (
-                    <span className="text-[9px] font-black bg-[#D4AF37] text-white px-1 rounded-sm">
-                      VIP
+                  {user?.role === 'admin' && (
+                    <span className="text-[9px] font-bold text-[#B55841] dark:text-[#D47A63] uppercase shrink-0">
+                      · Admin
+                    </span>
+                  )}
+                  {user?.role === 'moderator' && (
+                    <span className="text-[9px] font-bold text-[#6D8572] dark:text-[#8DA892] uppercase shrink-0">
+                      · Điều phối
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-[#8C7B75] truncate mt-0.5">
-                  Tuần {user?.pregnancyWeek || 24} · {user?.babyNickname || 'Bé Bơ'}
+                <p className="text-[11px] text-[#786962] dark:text-[#B5A89F] truncate mt-0.5 tabular-nums">
+                  {user?.pregnancyStatus === 'postpartum'
+                    ? 'Chế độ Sau sinh & Bé'
+                    : `Tuần ${user?.pregnancyWeek || 24} · ${user?.babyNickname || 'Bé Bơ'}`}
                 </p>
               </div>
+            </button>
+
+            {/* Primary Navigation Links */}
+            <div className="pt-1">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#786962] dark:text-[#B5A89F] px-2 mb-1.5">
+                Không gian mỗi ngày
+              </p>
+              <nav className="flex flex-col gap-1">
+                {navItems.map((item) => {
+                  const isActive = activeScreen === item.id;
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => onNavigateToScreen?.(item.id)}
+                      className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer whitespace-nowrap min-h-[40px] ${
+                        isActive
+                          ? 'bg-[#B55841] dark:bg-[#D47A63] text-white'
+                          : 'text-[#5A4C46] dark:text-[#CFC4BC] hover:bg-[#FAF6F0] dark:hover:bg-[#231E1B] hover:text-[#322622] dark:hover:text-[#F4EDE6]'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <Icon className="w-4 h-4 shrink-0" />
+                        <span className="truncate">{item.label}</span>
+                      </div>
+                      {item.badge !== undefined && (
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full tabular-nums ${
+                            isActive
+                              ? 'bg-white text-[#B55841]'
+                              : 'bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63]'
+                          }`}
+                        >
+                          {item.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
             </div>
 
-            {/* Desktop Navigation Links */}
-            <nav className="flex flex-col gap-1.5">
-              {navItems.map((item) => {
-                const isActive = activeScreen === item.id;
-                const Icon = item.icon;
-
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => onNavigateToScreen && onNavigateToScreen(item.id)}
-                    className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
-                      isActive
-                        ? 'bg-[#C84B4B] text-white shadow-sm shadow-[#C84B4B]/25'
-                        : 'text-[#6E5D57] hover:bg-[#FAF6F3] hover:text-[#3A2E2B]'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <Icon className={`w-4.5 h-4.5 ${isActive ? 'stroke-[2.4]' : 'stroke-[1.8]'}`} />
-                      <span>{item.label}</span>
-                    </div>
-                    {item.badge !== undefined && (
-                      <span
-                        className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                          isActive
-                            ? 'bg-white text-[#C84B4B]'
-                            : 'bg-[#C84B4B] text-white'
-                        }`}
-                      >
-                        {item.badge}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </nav>
+            {/* Ecosystem Hub Sub-links */}
+            <div className="pt-3 border-t border-[#E6DDD1] dark:border-[#362E2A]">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-[#786962] dark:text-[#B5A89F] px-2 mb-1.5">
+                Hành trình & Gia đình
+              </p>
+              <div className="flex flex-col gap-0.5">
+                {ecosystemLinks.map((item) => {
+                  const isActive = activeScreen === item.id;
+                  const Icon = item.icon;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => onNavigateToScreen?.(item.id)}
+                      className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] font-medium transition-colors cursor-pointer text-left whitespace-nowrap ${
+                        isActive
+                          ? 'bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] font-semibold'
+                          : 'text-[#5A4C46] dark:text-[#CFC4BC] hover:bg-[#FAF6F0] dark:hover:bg-[#231E1B]'
+                      }`}
+                    >
+                      <Icon className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
-          {/* Bottom Actions: VIP & Emergency SOS */}
-          <div className="flex flex-col gap-2.5 pt-4 border-t border-[#F0ECE9]">
-            {/* VIP Upgrade Banner / Status */}
+          {/* Bottom Actions */}
+          <div className="flex flex-col gap-2 pt-3 border-t border-[#E6DDD1] dark:border-[#362E2A]">
             {!isVip && onOpenVipModal && (
               <button
+                type="button"
                 onClick={onOpenVipModal}
-                className="w-full p-3 rounded-2xl bg-gradient-to-r from-[#2F2725] to-[#3A2E2B] text-white flex items-center justify-between hover:scale-[1.01] transition-transform cursor-pointer shadow-xs border border-[#D4AF37]/30"
+                className="w-full p-2.5 rounded-xl bg-[#263E35] hover:bg-[#1E312A] text-[#FAF6F0] flex items-center justify-between cursor-pointer border border-[#C4A46B]/35 transition-colors"
               >
-                <div className="flex items-center gap-2.5 text-left">
-                  <div className="w-7 h-7 rounded-lg bg-[#D4AF37] text-[#2A2321] flex items-center justify-center shrink-0">
-                    <Crown className="w-4 h-4 fill-current" />
-                  </div>
-                  <div>
-                    <span className="text-[11px] font-bold block text-[#FDF5E6]">
-                      Nâng cấp Nova VIP
-                    </span>
-                    <span className="text-[9.5px] text-white/70">
-                      Hỏi đáp AI không giới hạn
-                    </span>
-                  </div>
+                <div className="flex items-center gap-2 text-left min-w-0">
+                  <Crown className="w-4 h-4 text-[#D7BA86] fill-current shrink-0" />
+                  <span className="text-[11.5px] font-semibold truncate">Đặc quyền Nova VIP</span>
                 </div>
-                <ChevronRight className="w-4 h-4 text-[#D4AF37]" />
+                <ChevronRight className="w-4 h-4 text-[#D7BA86] shrink-0" />
               </button>
             )}
 
-            {/* Quick Nova AI Voice Assistant Button */}
             {onOpenVoiceChat && (
               <button
+                type="button"
                 onClick={onOpenVoiceChat}
-                className="w-full py-2.5 px-3 rounded-2xl bg-[#FFF5F2] hover:bg-[#FFEAE4] text-[#C84B4B] border border-[#FADCD5] text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                className="w-full py-2.5 px-3 rounded-xl bg-[#F7EAE5] dark:bg-[#35231E] hover:bg-[#EFE0D9] dark:hover:bg-[#422C26] text-[#B55841] dark:text-[#D47A63] border border-[#E6DDD1] dark:border-[#4A3630] text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer whitespace-nowrap"
               >
-                <Mic className="w-4 h-4 text-[#C84B4B]" />
-                <span>Trò chuyện với Nova AI</span>
+                <Mic className="w-4 h-4 shrink-0" />
+                <span>Tâm sự cùng Nova AI</span>
               </button>
             )}
 
-            {/* Emergency Hotline 115 */}
             <button
-              onClick={() => {
-                if (onOpenEmergency) {
-                  onOpenEmergency();
-                } else if (onNavigateToScreen) {
-                  onNavigateToScreen('emergency');
-                }
-              }}
-              className="w-full py-2.5 px-3 rounded-2xl bg-[#E74C3C] hover:bg-[#C0392B] text-white text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer shadow-xs"
+              type="button"
+              onClick={() => (onOpenEmergency ? onOpenEmergency() : onNavigateToScreen?.('emergency'))}
+              className="w-full py-2 px-3 rounded-xl bg-[#FAF6F0] dark:bg-[#231E1B] hover:bg-[#F7EAE5] dark:hover:bg-[#35231E] text-[#A2402E] dark:text-[#E08975] border border-[#E6DDD1] dark:border-[#362E2A] text-xs font-semibold flex items-center justify-center gap-2 transition-colors cursor-pointer whitespace-nowrap"
             >
-              <PhoneCall className="w-3.5 h-3.5" />
-              <span>Cấp cứu sản khoa (115)</span>
+              <PhoneCall className="w-3.5 h-3.5 shrink-0" />
+              <span>Hỗ trợ khẩn cấp (115)</span>
             </button>
           </div>
         </aside>
       )}
 
-      {/* 
-        MAIN VIEWPORT CANVAS
-        - On Mobile Portrait & Landscape: Full width/height 100dvh
-        - On Desktop (Windows): Occupies the remaining full window with a generous max-w-5xl/6xl centered content width!
-      */}
-      <main className="flex-1 h-screen overflow-hidden flex flex-col bg-[#FFFBF7] relative">
+      {/* Main Viewport Canvas */}
+      <main className="flex-1 h-screen overflow-hidden flex flex-col bg-[#FAF6F0] dark:bg-[#161311] relative print:h-auto print:overflow-visible print:bg-white">
+        {!isOnline && (
+          <div className="bg-[#F2ECE3] dark:bg-[#231E1B] border-b border-[#E6DDD1] dark:border-[#362E2A] px-4 py-1.5 text-[11px] font-medium text-[#786962] dark:text-[#D7BA86] flex items-center justify-center gap-2 shrink-0 print:hidden">
+            <WifiOff className="w-3.5 h-3.5 shrink-0" />
+            <span>Đang ngoại tuyến — hiển thị dữ liệu đã lưu gần nhất trên thiết bị.</span>
+          </div>
+        )}
         <div
-          className={`flex-1 w-full h-full flex flex-col overflow-hidden ${
+          className={`flex-1 w-full h-full flex flex-col overflow-hidden print:h-auto print:overflow-visible ${
             activeScreen === 'video'
-              ? 'bg-black text-white'
-              : 'bg-[#FFFBF7] text-[#3A2E2B]'
+              ? 'bg-[#120F0E] text-white'
+              : 'bg-[#FAF6F0] dark:bg-[#161311] text-[#322622] dark:text-[#F4EDE6]'
           }`}
           style={{
             paddingTop: 'env(safe-area-inset-top, 0px)',
             paddingBottom: 'env(safe-area-inset-bottom, 0px)',
           }}
         >
-          {/* Centered responsive shell on Desktop/Landscape */}
-          <div className="flex-1 w-full h-full flex flex-col overflow-hidden mx-auto max-w-none lg:max-w-5xl xl:max-w-6xl">
+          <div className="flex-1 w-full h-full flex flex-col overflow-hidden mx-auto max-w-none lg:max-w-5xl xl:max-w-6xl print:max-w-none print:h-auto print:overflow-visible">
             {children}
           </div>
         </div>

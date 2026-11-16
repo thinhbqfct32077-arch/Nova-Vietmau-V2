@@ -1,0 +1,307 @@
+[
+  {
+    "id": "prod-1",
+    "name": "Tinh dầu hữu cơ ngừa rạn da mẹ bầu",
+    "brand": "Nova Botanicals (Demo)",
+    "price": 250000,
+    "formattedPrice": "250.000đ",
+    "originalPrice": 310000,
+    "formattedOriginalPrice": "310.000đ",
+    "reviewsCount": 0,
+    "category": "maternal_care",
+    "image": "/src/assets/images/stretch_oil_1790926274279.jpg",
+    "description": "Hỗn hợp dầu thực vật hữu cơ giàu Vitamin E và Omega 3-6-9 giúp tăng độ đàn hồi da vùng bụng, hông và đùi trong suốt thai kỳ.",
+    "benefits": [
+      "Chiết xuất dầu hạt tầm xuân & jojoba dịu nhẹ",
+      "Thấm nhanh, không gây bết dính quần áo",
+      "Không hương liệu tổng hợp, thân thiện làn da nhạy cảm"
+    ],
+    "inStock": true,
+    "stockCount": 24,
+    "isDemo": true
+  },
+  {
+    "id": "prod-2",
+    "name": "Vòng thạch anh hồng thư giãn tinh thần",
+    "brand": "Nova Wellness (Demo)",
+    "price": 490000,
+    "formattedPrice": "490.000đ",
+    "reviewsCount": 0,
+    "category": "maternal_care",
+    "image": "/src/assets/images/quartz_bracelet_1790926260400.jpg",
+    "description": "Vòng đá thạch anh hồng tự nhiên kết hợp charm bạc tối giản mang lại cảm giác bình an và điểm nhấn dịu dàng cho mẹ bầu.",
+    "benefits": [
+      "Đá thạch anh hồng gia công bo tròn êm tay",
+      "Kèm hộp nhung bảo quản chống trầy xước",
+      "Phù hợp làm quà tặng kỷ niệm thai kỳ"
+    ],
+    "inStock": true,
+    "stockCount": 12,
+    "isDemo": true
+  },
+  {
+    "id": "prod-3",
+    "name": "Viên uống Vitamin tổng hợp & DHA Prenatal",
+    "brand": "Nova Nutrition (Demo)",
+    "price": 385000,
+    "formattedPrice": "385.000đ",
+    "originalPrice": 440000,
+    "formattedOriginalPrice": "440.000đ",
+    "reviewsCount": 0,
+    "category": "maternal_nutrition",
+    "image": "/src/assets/images/shop_maternal_vitamins_1794814184824.jpg",
+    "description": "Sản phẩm minh họa bổ sung Acid Folic, Sắt, Canxi và DHA hỗ trợ nhu cầu vi chất cho phụ nữ mang thai (tham khảo ý kiến bác sĩ trước khi dùng).",
+    "benefits": [
+      "Bổ sung Acid Folic & DHA hàm lượng cân đối",
+      "Viên nang mềm dễ nuốt, hạn chế cảm giác buồn nôn",
+      "Đóng lọ 60 viên dùng trong 30 ngày"
+    ],
+    "inStock": true,
+    "stockCount": 30,
+    "isDemo": true
+  },
+  {
+    "id": "prod-4",
+    "name": "Ngũ cốc hạt dinh dưỡng không đường cho mẹ bầu",
+    "brand": "Nova Kitchen (Demo)",
+    "price": 215000,
+    "formattedPrice": "215.000đ",
+    "reviewsCount": 0,
+    "category": "maternal_nutrition",
+    "image": "/src/assets/images/shop_maternal_vitamins_1794814184824.jpg",
+    "description": "Bột ngũ cốc rang xay từ 12 loại hạt óc chó, hạnh nhân, yến mạch và đậu đỏ giúp mẹ bầu bổ sung chất xơ và năng lượng lành mạnh.",
+    "benefits": [
+      "Không đường tinh luyện, phù hợp kiểm soát đường huyết",
+      "Giàu chất xơ tự nhiên giúp giảm táo bón thai kỳ",
+      "Hộp 500g chia gói tiện lợi mang theo đi làm"
+    ],
+    "inStock": true,
+    "stockCount": 18,
+    "isDemo": true
+  },
+  {
+    "id": "prod-5",
+    "name": "Gối ôm chữ U công thái học nâng đỡ toàn thân",
+    "brand": "Nova Sleep (Demo)",
+    "price": 290000,
+    "formattedPrice": "290.000đ",
+    "originalPrice": 360000,
+    "formattedOriginalPrice": "360.000đ",
+    "reviewsCount": 0,
+    "category": "pregnancy_gear",
+    "image": "/src/assets/images/u_pillow_1790926286791.jpg",
+    "description": "Thiết kế chữ U nâng đỡ đồng thời đầu, lưng, bụng bầu và khớp gối, hỗ trợ tư thế nằm nghiêng trái thoải mái suốt đêm.",
+    "benefits": [
+      "Bông gòn vi sợi đàn hồi êm ái, không xẹp lún nhanh",
+      "Vỏ cotton thoáng khí có khóa kéo tháo giặt dễ dàng",
+      "Tận dụng làm gối chặn hoặc gối tựa cho bé bú sau sinh"
+    ],
+    "inStock": true,
+    "stockCount": 15,
+    "isDemo": true
+  },
+  {
+    "id": "prod-6",
+    "name": "Sổ tay Nhật ký Mẹ và Bé 40 tuần thai kỳ",
+    "brand": "Nova Studio (Demo)",
+    "price": 85000,
+    "formattedPrice": "85.000đ",
+    "originalPrice": 110000,
+    "formattedOriginalPrice": "110.000đ",
+    "reviewsCount": 0,
+    "category": "pregnancy_gear",
+    "image": "/src/assets/images/journal_book_1790926220651.jpg",
+    "description": "Cuốn sổ lưu giữ ảnh siêu âm, cảm xúc từng tuần thai và danh sách câu hỏi chuẩn bị trước mỗi lần đi khám bác sĩ.",
+    "benefits": [
+      "Giấy kem chống lóa 120gsm viết êm tay, không lem mực",
+      "Có sẵn bảng theo dõi cân nặng và các mốc khám thai",
+      "Tặng kèm bộ nhãn dán trang trí cột mốc thai kỳ"
+    ],
+    "inStock": true,
+    "stockCount": 42,
+    "isDemo": true
+  },
+  {
+    "id": "prod-7",
+    "name": "Bộ nhộng chũn Swaddle & khăn xô sợi tre sơ sinh",
+    "brand": "Nova Baby (Demo)",
+    "price": 265000,
+    "formattedPrice": "265.000đ",
+    "originalPrice": 320000,
+    "formattedOriginalPrice": "320.000đ",
+    "reviewsCount": 0,
+    "category": "newborn_essentials",
+    "image": "/src/assets/images/shop_newborn_swaddle_1794814184572.jpg",
+    "description": "Combo nhộng chũn co giãn 4 chiều giúp bé sơ sinh hạn chế giật mình phản xạ Moro và ngủ sâu giấc hơn trong những tháng đầu đời.",
+    "benefits": [
+      "Chất vải modal sợi tre mềm mịn, thấm hút mồ hôi",
+      "Khóa kéo 2 chiều thuận tiện thay tã ban đêm",
+      "Kèm 2 khăn xô đa năng kích thước 80x80cm"
+    ],
+    "inStock": true,
+    "stockCount": 20,
+    "isDemo": true
+  },
+  {
+    "id": "prod-8",
+    "name": "Giỏ đồ đi sinh gọn nhẹ 10 món thiết yếu",
+    "brand": "Nova Baby (Demo)",
+    "price": 680000,
+    "formattedPrice": "680.000đ",
+    "originalPrice": 790000,
+    "formattedOriginalPrice": "790.000đ",
+    "reviewsCount": 0,
+    "category": "newborn_essentials",
+    "image": "/src/assets/images/hospital_bag_1790926782533.jpg",
+    "description": "Bộ giỏ chuẩn bị sẵn quần áo sơ sinh, bao tay chân, mũ thóp, khăn sữa và tã lót theo đúng checklist đi sinh cơ bản.",
+    "benefits": [
+      "Đóng túi zip phân loại sạch sẽ từng nhóm đồ dùng",
+      "Sẵn sàng xách đi viện ngay khi có dấu hiệu chuyển dạ",
+      "Phù hợp cho bé từ sơ sinh đến 3 tháng tuổi"
+    ],
+    "inStock": true,
+    "stockCount": 9,
+    "isDemo": true
+  },
+  {
+    "id": "prod-9",
+    "name": "Váy bầu cotton thoáng mát thiết kế mở cho con bú",
+    "brand": "Nova Wear (Demo)",
+    "price": 320000,
+    "formattedPrice": "320.000đ",
+    "originalPrice": 390000,
+    "formattedOriginalPrice": "390.000đ",
+    "reviewsCount": 0,
+    "category": "apparel",
+    "image": "/src/assets/images/shop_maternity_apparel_1794814184710.jpg",
+    "description": "Đầm bầu dáng suông nhẹ nhàng từ vải cotton dệt kim thoáng khí, có đường mở ngực kín đáo tiện sử dụng cả trước và sau sinh.",
+    "benefits": [
+      "Co giãn thoải mái theo vòng bụng từ tháng thứ 4 đến 9",
+      "Chất liệu cotton thấm hút, không gây bí nóng mùa hè",
+      "Thiết kế túi hông tiện dụng đựng điện thoại, khăn giấy"
+    ],
+    "inStock": true,
+    "stockCount": 16,
+    "isDemo": true
+  },
+  {
+    "id": "prod-10",
+    "name": "Set 2 bộ body liền thân cotton hữu cơ cho bé",
+    "brand": "Nova Wear (Demo)",
+    "price": 195000,
+    "formattedPrice": "195.000đ",
+    "reviewsCount": 0,
+    "category": "apparel",
+    "image": "/src/assets/images/shop_maternity_apparel_1794814184710.jpg",
+    "description": "Quần áo liền thân cúc bấm đũng cho bé sơ sinh (0–3 tháng), đường may lộn trái hạn chế cọ xát làn da non nớt.",
+    "benefits": [
+      "Vải cotton hữu cơ mềm mại, không chất huỳnh quang",
+      "Nút bấm nhựa an toàn không rỉ sét khi giặt nhiều lần",
+      "Màu trung tính phù hợp cho cả bé trai và bé gái"
+    ],
+    "inStock": true,
+    "stockCount": 22,
+    "isDemo": true
+  },
+  {
+    "id": "prod-11",
+    "name": "Bộ chăm sóc vệ sinh bé & nhiệt kế đo nước tắm",
+    "brand": "Nova Hygiene (Demo)",
+    "price": 175000,
+    "formattedPrice": "175.000đ",
+    "originalPrice": 210000,
+    "formattedOriginalPrice": "210.000đ",
+    "reviewsCount": 0,
+    "category": "baby_hygiene",
+    "image": "/src/assets/images/shop_baby_hygiene_1794814185165.jpg",
+    "description": "Bộ dụng cụ chăm sóc hàng ngày gồm nhiệt kế đo nhiệt độ nước tắm, bấm móng tay đầu tròn, lược chải tóc mềm và gạc rơ lưỡi.",
+    "benefits": [
+      "Đầu bấm móng bo tròn an toàn cho ngón tay bé nhỏ",
+      "Nhiệt kế giúp kiểm soát nước tắm chuẩn 37°C",
+      "Kèm hộp đựng gọn gàng dễ mang đi du lịch"
+    ],
+    "inStock": true,
+    "stockCount": 28,
+    "isDemo": true
+  },
+  {
+    "id": "prod-12",
+    "name": "Set 3 khăn tắm sợi tre 6 lớp siêu thấm cho bé",
+    "brand": "Nova Hygiene (Demo)",
+    "price": 145000,
+    "formattedPrice": "145.000đ",
+    "reviewsCount": 0,
+    "category": "baby_hygiene",
+    "image": "/src/assets/images/shop_baby_hygiene_1794814185165.jpg",
+    "description": "Khăn tắm dệt 6 lớp từ sợi tre tự nhiên mềm mượt, thấm khô nhanh sau khi tắm mà không làm trầy da bé.",
+    "benefits": [
+      "Kích thước rộng 105x105cm quấn trọn cơ thể bé",
+      "Không xổ lông sau nhiều lần giặt máy nhẹ",
+      "Khô thoáng tự nhiên, hạn chế mùi ẩm mốc"
+    ],
+    "inStock": true,
+    "stockCount": 35,
+    "isDemo": true
+  },
+  {
+    "id": "prod-13",
+    "name": "Bộ lục lạc gỗ tự nhiên & sách vải kích thích thị giác",
+    "brand": "Nova Play (Demo)",
+    "price": 185000,
+    "formattedPrice": "185.000đ",
+    "originalPrice": 230000,
+    "formattedOriginalPrice": "230.000đ",
+    "reviewsCount": 0,
+    "category": "toys_development",
+    "image": "/src/assets/images/shop_baby_toys_1794814186144.jpg",
+    "description": "Đồ chơi phát triển giác quan sớm cho bé 0–6 tháng gồm sách vải tương phản đen-trắng và lục lạc gỗ mài nhẵn an toàn.",
+    "benefits": [
+      "Hỗ trợ kích thích thị giác tương phản giai đoạn đầu",
+      "Gỗ sồi mài mịn, không sơn hóa chất độc hại",
+      "Sách vải có tiếng sột soạt nhẹ thu hút thính giác bé"
+    ],
+    "inStock": true,
+    "stockCount": 19,
+    "isDemo": true
+  },
+  {
+    "id": "prod-14",
+    "name": "Túi chườm thảo dược ấm bụng & muối chườm sau sinh",
+    "brand": "Nova Postpartum (Demo)",
+    "price": 240000,
+    "formattedPrice": "240.000đ",
+    "originalPrice": 295000,
+    "formattedOriginalPrice": "295.000đ",
+    "reviewsCount": 0,
+    "category": "postpartum",
+    "image": "/src/assets/images/shop_postpartum_care_1794814186422.jpg",
+    "description": "Túi chườm gừng, ngải cứu và muối biển thiên nhiên giúp giữ ấm vùng bụng và lưng dưới, hỗ trợ mẹ thư giãn cơ thể sau sinh.",
+    "benefits": [
+      "Vỏ túi vải bố dày dặn, giữ nhiệt lâu an toàn",
+      "Hương thảo mộc tự nhiên dịu nhẹ giúp thư giãn",
+      "Phù hợp cho mẹ sinh thường và sinh mổ (sau khi lành vết thương)"
+    ],
+    "inStock": true,
+    "stockCount": 14,
+    "isDemo": true
+  },
+  {
+    "id": "prod-15",
+    "name": "Máy hâm sữa & tiệt trùng bình sữa cầm tay đa năng",
+    "brand": "Nova Postpartum (Demo)",
+    "price": 540000,
+    "formattedPrice": "540.000đ",
+    "reviewsCount": 0,
+    "category": "postpartum",
+    "image": "/src/assets/images/shop_postpartum_care_1794814186422.jpg",
+    "description": "Thiết bị hỗ trợ mẹ sau sinh hâm sữa chuẩn 37–40°C vào ban đêm nhanh chóng và giữ nhiệt ổn định cho bé.",
+    "benefits": [
+      "Giữ nhiệt thông minh, không làm mất chất dinh dưỡng sữa mẹ",
+      "Màn hình hiển thị nhiệt độ rõ ràng ban đêm",
+      "Chất liệu nhựa PP không chứa BPA"
+    ],
+    "inStock": false,
+    "stockCount": 0,
+    "isDemo": true
+  }
+]

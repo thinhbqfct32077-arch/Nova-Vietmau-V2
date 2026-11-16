@@ -6,9 +6,7 @@ import {
   CheckCircle2,
   Sparkles,
   ShieldCheck,
-  Zap,
   ArrowRight,
-  HeartHandshake,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -41,7 +39,7 @@ export const VipSubscriptionModal: React.FC<VipSubscriptionModalProps> = ({
           particleCount: 70,
           spread: 70,
           origin: { y: 0.6 },
-          colors: ['#D4AF37', '#C84B4B', '#FCEEEB', '#FFD700'],
+          colors: ['#C4A46B', '#B55841', '#6D8572', '#F2ECE3'],
         });
       } catch {
         // ignore
@@ -65,7 +63,7 @@ export const VipSubscriptionModal: React.FC<VipSubscriptionModalProps> = ({
       desc: 'Áp dụng tự động cho sổ tay, gối bầu, tinh dầu và đồ sơ sinh.',
     },
     {
-      title: 'Tắt toàn bộ quảng cáo & Độc quyền kết nối Bác sĩ y tế',
+      title: 'Trải nghiệm tinh gọn & Kết nối chuyên gia ưu tiên',
       desc: 'Ưu tiên kết nối phòng khám và nhận tư vấn chuyên môn khi cần.',
     },
   ];
@@ -79,7 +77,7 @@ export const VipSubscriptionModal: React.FC<VipSubscriptionModalProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-black/60 backdrop-blur-xs cursor-pointer"
+          className="absolute inset-0 bg-[#161311]/60 backdrop-blur-xs cursor-pointer"
         />
 
         {/* Slide-Up Sheet */}
@@ -88,94 +86,82 @@ export const VipSubscriptionModal: React.FC<VipSubscriptionModalProps> = ({
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
           transition={{ type: 'spring', damping: 28, stiffness: 350 }}
-          className="relative w-full max-h-[92%] bg-[#FFFBF7] rounded-t-[36px] p-6 shadow-2xl flex flex-col z-10 border-t border-[#F0ECE9] overflow-y-auto no-scrollbar"
+          className="relative w-full max-h-[92%] bg-[#FAF6F0] dark:bg-[#1E1A17] rounded-t-[36px] p-6 shadow-2xl flex flex-col z-10 border-t border-[#E6DDD1] dark:border-[#362E2A] overflow-y-auto no-scrollbar"
         >
           {/* Drag Handle */}
-          <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-3" />
+          <div className="w-10 h-1 bg-[#D6CCC0] dark:bg-[#4A403B] rounded-full mx-auto mb-3" />
 
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-5 w-8 h-8 rounded-full bg-white/80 border border-gray-200 text-[#8C7B75] flex items-center justify-center hover:bg-gray-100 cursor-pointer"
+            aria-label="Đóng"
+            className="absolute top-4 right-5 w-9 h-9 rounded-full bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-[#786962] dark:text-[#B5A89F] flex items-center justify-center hover:bg-[#F2ECE3] dark:hover:bg-[#2F2824] transition-colors cursor-pointer"
           >
-            <X className="w-4 h-4 stroke-[2.5]" />
+            <X className="w-4 h-4 stroke-[2.2]" />
           </button>
 
           {/* Top VIP Banner Header */}
           <div className="text-center pt-2 pb-4">
-            {/* Gold Crown Badge with Shimmer & Rotating Halo */}
+            {/* Warm Champagne Crown Badge */}
             <div className="relative inline-flex items-center justify-center mb-3">
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
-                className="absolute inset-0 rounded-full blur-xl pointer-events-none"
-                style={{
-                  background:
-                    'conic-gradient(from 0deg, rgba(212,175,55,0.4), rgba(245,215,127,0.8), rgba(212,175,55,0.4))',
-                }}
-              />
-              <motion.div
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-[#B38728] via-[#FBF5B7] to-[#DAA520] p-0.5 shadow-lg relative"
-              >
-                <div className="w-full h-full rounded-[14px] bg-[#2A2321] flex items-center justify-center text-[#F5D77F]">
-                  <Crown className="w-8 h-8 stroke-[2.2] drop-shadow-md" />
+              <div className="w-16 h-16 rounded-2xl bg-[#F6EFE2] dark:bg-[#2F281C] border border-[#E5D4B3] dark:border-[#4A3F2B] p-1 shadow-sm flex items-center justify-center">
+                <div className="w-full h-full rounded-[12px] bg-[#322622] dark:bg-[#161311] flex items-center justify-center text-[#D7BA86]">
+                  <Crown className="w-7 h-7 stroke-[2]" />
                 </div>
-              </motion.div>
+              </div>
             </div>
 
-            <div className="inline-block bg-[#FCEEEB] text-[#C84B4B] text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-1.5 shadow-2xs">
-              ĐẶC QUYỀN CAO CẤP
+            <div className="inline-block bg-[#F6EFE2] dark:bg-[#2F281C] border border-[#E5D4B3] dark:border-[#4A3F2B] text-[#9E5B3B] dark:text-[#D7BA86] text-[10.5px] font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
+              Đặc quyền đồng hành
             </div>
 
-            <h2 className="text-[22px] font-extrabold text-[#3A2E2B] tracking-tight leading-snug">
+            <h2 className="font-editorial text-[24px] font-bold text-[#322622] dark:text-[#F4EDE6] tracking-tight leading-snug">
               Nâng cấp Nova VIP
             </h2>
-            <p className="text-[13px] text-[#8C7B75] mt-1">
+            <p className="text-[13px] text-[#6B5D56] dark:text-[#C5B9B0] mt-1">
               Đồng hành không giới hạn cùng Trợ lý AI và Chuyên gia
             </p>
           </div>
 
           {/* Plan Switcher (Monthly vs Yearly) */}
-          <div className="bg-[#EFEAE5] p-1 rounded-2xl flex items-center mb-5">
+          <div className="bg-[#F2ECE3] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] p-1 rounded-2xl flex items-center mb-5">
             <button
               onClick={() => setBillingCycle('monthly')}
-              className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+              className={`flex-1 min-h-[40px] py-2 rounded-xl text-xs font-bold transition-all cursor-pointer tabular-nums whitespace-nowrap ${
                 billingCycle === 'monthly'
-                  ? 'bg-white text-[#3A2E2B] shadow-sm'
-                  : 'text-[#8C7B75] hover:text-[#3A2E2B]'
+                  ? 'bg-white dark:bg-[#1E1A17] text-[#322622] dark:text-[#F4EDE6] shadow-xs'
+                  : 'text-[#786962] dark:text-[#B5A89F] hover:text-[#322622] dark:hover:text-[#F4EDE6]'
               }`}
             >
-              Gói tháng: 99.000đ
+              Gói tháng · 99.000đ
             </button>
             <button
               onClick={() => setBillingCycle('yearly')}
-              className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer relative ${
+              className={`flex-1 min-h-[40px] py-2 rounded-xl text-xs font-bold transition-all cursor-pointer relative tabular-nums whitespace-nowrap ${
                 billingCycle === 'yearly'
-                  ? 'bg-[#C84B4B] text-white shadow-sm'
-                  : 'text-[#8C7B75] hover:text-[#3A2E2B]'
+                  ? 'bg-[#B55841] text-white shadow-xs'
+                  : 'text-[#786962] dark:text-[#B5A89F] hover:text-[#322622] dark:hover:text-[#F4EDE6]'
               }`}
             >
-              <span>Gói năm: 890.000đ</span>
-              <span className="absolute -top-2 -right-1 bg-[#D4AF37] text-[#2C2416] text-[9px] font-black px-1.5 py-0.2 rounded-full uppercase">
-                Tiết kiệm 25%
+              <span>Gói năm · 890.000đ</span>
+              <span className="absolute -top-2 -right-1 bg-[#C4A46B] text-[#261D19] text-[9px] font-extrabold px-1.5 py-0.5 rounded-full uppercase">
+                -25%
               </span>
             </button>
           </div>
 
           {/* VIP Perks List */}
-          <div className="bg-white rounded-3xl p-4 ios-card-shadow border border-[#F2ECE7] mb-5 space-y-3.5">
+          <div className="bg-white dark:bg-[#231E1B] rounded-3xl p-4 border border-[#E6DDD1] dark:border-[#362E2A] mb-5 space-y-3.5">
             {perks.map((perk, idx) => (
               <div key={idx} className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-full bg-[#FCEEEB] text-[#C84B4B] flex items-center justify-center shrink-0 mt-0.5">
-                  <CheckCircle2 className="w-4 h-4 stroke-[2.5]" />
+                <div className="w-6 h-6 rounded-full bg-[#F7EAE5] dark:bg-[#35231E] text-[#B55841] dark:text-[#D47A63] flex items-center justify-center shrink-0 mt-0.5">
+                  <CheckCircle2 className="w-4 h-4 stroke-[2.2]" />
                 </div>
                 <div>
-                  <h4 className="text-[13px] font-bold text-[#3A2E2B] leading-tight">
+                  <h4 className="text-[13px] font-bold text-[#322622] dark:text-[#F4EDE6] leading-snug">
                     {perk.title}
                   </h4>
-                  <p className="text-[11px] text-[#8C7B75] leading-normal mt-0.5">
+                  <p className="text-[11.5px] text-[#6B5D56] dark:text-[#C5B9B0] leading-normal mt-0.5">
                     {perk.desc}
                   </p>
                 </div>
@@ -186,15 +172,15 @@ export const VipSubscriptionModal: React.FC<VipSubscriptionModalProps> = ({
           {/* Primary Action Button */}
           <div className="flex flex-col gap-2.5">
             <motion.button
-              whileHover={{ scale: 1.015 }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ type: 'spring', stiffness: 450, damping: 20 }}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.97 }}
+              transition={{ type: 'spring', stiffness: 450, damping: 22 }}
               onClick={handleSubscribeClick}
               disabled={isProcessing || isVip}
-              className={`w-full py-4 rounded-2xl font-bold text-[15px] shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all animate-shimmer-sweep ${
+              className={`w-full min-h-[48px] py-3.5 rounded-2xl font-bold text-[15px] shadow-sm flex items-center justify-center gap-2 cursor-pointer transition-colors whitespace-nowrap tabular-nums ${
                 isVip
-                  ? 'bg-[#2ECC71] text-white shadow-emerald-500/20'
-                  : 'bg-gradient-to-r from-[#C84B4B] via-[#D15545] to-[#B38728] text-white shadow-[#C84B4B]/35'
+                  ? 'bg-[#4F6B56] text-white'
+                  : 'bg-[#B55841] hover:bg-[#9E4A35] text-white'
               }`}
             >
               {isProcessing ? (
@@ -205,17 +191,17 @@ export const VipSubscriptionModal: React.FC<VipSubscriptionModalProps> = ({
               ) : isVip ? (
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-5 h-5" />
-                  <span>Mẹ đang là Hội viên VIP Nova!</span>
+                  <span>Mẹ đang là Hội viên VIP Nova</span>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-[#FDF5E6]" />
+                  <Sparkles className="w-4 h-4 text-[#F6EFE2]" />
                   <span>
                     {billingCycle === 'monthly'
-                      ? 'Đăng ký ngay - 99k/tháng'
-                      : 'Đăng ký ngay - 890k/năm'}
+                      ? 'Đăng ký ngay · 99k/tháng'
+                      : 'Đăng ký ngay · 890k/năm'}
                   </span>
-                  <ArrowRight className="w-4 h-4 stroke-[2.5]" />
+                  <ArrowRight className="w-4 h-4 stroke-[2.2]" />
                 </div>
               )}
             </motion.button>
@@ -227,25 +213,24 @@ export const VipSubscriptionModal: React.FC<VipSubscriptionModalProps> = ({
                   onClose();
                   onNavigateToPayment();
                 }}
-                className="w-full py-2.5 text-[12.5px] font-bold text-[#3A2E2B] bg-white border border-[#E8DFD5] hover:bg-[#FDF9F6] rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs"
+                className="w-full min-h-[44px] py-2.5 text-[12.5px] font-bold text-[#322622] dark:text-[#F4EDE6] bg-white dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] hover:bg-[#F2ECE3] dark:hover:bg-[#2F2824] rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
               >
                 <span>Thanh toán qua VietQR, MoMo, Thẻ ngân hàng</span>
-                <ArrowRight className="w-3.5 h-3.5 text-[#C84B4B]" />
+                <ArrowRight className="w-3.5 h-3.5 text-[#B55841] dark:text-[#D47A63]" />
               </button>
             )}
 
-            {/* Tiếp tục dùng bản Miễn phí (Minh bạch, không áp lực) */}
+            {/* Free Forever Transparency */}
             <button
               type="button"
               onClick={onClose}
-              className="w-full py-2.5 text-[13px] font-semibold text-[#8C7B75] hover:text-[#3A2E2B] transition-colors cursor-pointer text-center"
+              className="w-full min-h-[40px] py-2 text-[13px] font-semibold text-[#786962] dark:text-[#B5A89F] hover:text-[#322622] dark:hover:text-[#F4EDE6] transition-colors cursor-pointer text-center"
             >
               Tiếp tục sử dụng bản Miễn phí
             </button>
 
-            {/* Apple Guarantee Footnote & Free Forever Transparency */}
-            <div className="p-2.5 rounded-xl bg-[#FDF9F6] border border-[#F2ECE7] text-center text-[10.5px] text-[#8C7B75] leading-relaxed">
-              ✨ Tính tuổi thai, nước uống, nhắc nhở và cẩm nang 40 tuần luôn miễn phí 100% trọn đời. Gói VIP là tiện ích mở rộng tùy chọn.
+            <div className="p-3 rounded-xl bg-[#F2ECE3] dark:bg-[#231E1B] border border-[#E6DDD1] dark:border-[#362E2A] text-center text-[11px] text-[#6B5D56] dark:text-[#C5B9B0] leading-relaxed">
+              Tính tuổi thai, theo dõi nước uống, nhắc nhở và cẩm nang 40 tuần luôn miễn phí 100% trọn đời. Gói VIP là tiện ích mở rộng tùy chọn.
             </div>
           </div>
         </motion.div>
@@ -253,3 +238,4 @@ export const VipSubscriptionModal: React.FC<VipSubscriptionModalProps> = ({
     </AnimatePresence>
   );
 };
+

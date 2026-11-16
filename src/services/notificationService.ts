@@ -5,13 +5,65 @@
 
 import { HealthReminder } from '../types';
 
+export function shouldReminderTriggerAt(reminder: HealthReminder, now: Date): boolean {
+  if (!reminder.isEnabled) return false;
+
+  const currentHours = now.getHours().toString().padStart(2, '0');
+  const currentMinutes = now.getMinutes().toString().padStart(2, '0');
+  const currentTimeStr = `${currentHours}:${currentMinutes}`;
+  if (reminder.time !== currentTimeStr) return false;
+
+  const todayDateStr = `${now.getFullYear()}-${(now.getMonth() + 1)
+    .toString()
+    .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+  const currentDayOfWeek = now.getDay();
+
+  if (reminder.frequency === 'once') {
+    return !reminder.date || reminder.date === todayDateStr;
+  }
+
+  // For repeating schedules, if an explicit start date is provided, do not fire before start date
+  if (reminder.date && todayDateStr < reminder.date) {
+    return false;
+  }
+
+  if (reminder.frequency === 'daily') {
+    return true;
+  }
+
+  if (reminder.frequency === 'weekly') {
+    if (Array.isArray(reminder.daysOfWeek) && reminder.daysOfWeek.length > 0) {
+      return reminder.daysOfWeek.includes(currentDayOfWeek);
+    }
+    if (reminder.date) {
+      const [y, m, d] = reminder.date.split('-').map(Number);
+      if (y && m && d) {
+        const startDay = new Date(y, m - 1, d).getDay();
+        return startDay === currentDayOfWeek;
+      }
+    }
+    return true;
+  }
+
+  if (reminder.frequency === 'custom_days' && Array.isArray(reminder.daysOfWeek)) {
+    return reminder.daysOfWeek.includes(currentDayOfWeek);
+  }
+
+  return false;
+}
+
+export interface PlatformNotificationGuide {
+  platformLabel: string;
+  title: string;
+  steps: string[];
+}
+
 class NotificationService {
   private audioCtx: AudioContext | null = null;
   private intervalId: number | null = null;
   private lastTriggeredMap: Record<string, string> = {};
 
   constructor() {
-    // Listen for user interaction to unlock AudioContext if needed
     if (typeof window !== 'undefined') {
       const unlockAudio = () => {
         this.initAudio();
@@ -35,10 +87,6 @@ class NotificationService {
     }
   }
 
-  /**
-   * Play a celestial, gentle harp/bell chime using Web Audio API synthesis
-   * Frequencies: 528Hz (mi/solfeggio tone) -> 660Hz -> 792Hz
-   */
   public playChime(volume = 0.3) {
     try {
       this.initAudio();
@@ -60,7 +108,6 @@ class NotificationService {
         osc.type = 'sine';
         osc.frequency.setValueAtTime(freq, now + delay);
 
-        // Soft acoustic attack and long gentle natural decay
         gain.gain.setValueAtTime(0, now + delay);
         gain.gain.linearRampToValueAtTime(volume, now + delay + 0.04);
         gain.gain.exponentialRampToValueAtTime(0.0001, now + delay + 1.8);
@@ -76,9 +123,6 @@ class NotificationService {
     }
   }
 
-  /**
-   * Play soothing 432Hz ambient meditation drone for relaxation / yoga / music therapy
-   */
   public createAmbientStream(durationSec = 600): { stop: () => void } {
     try {
       this.initAudio();
@@ -93,7 +137,7 @@ class NotificationService {
       osc1.frequency.setValueAtTime(baseFreq, this.audioCtx.currentTime);
 
       osc2.type = 'triangle';
-      osc2.frequency.setValueAtTime(baseFreq * 1.5, this.audioCtx.currentTime); // Perfect fifth harmonic
+      osc2.frequency.setValueAtTime(baseFreq * 1.5, this.audioCtx.currentTime);
 
       gain.gain.setValueAtTime(0.001, this.audioCtx.currentTime);
       gain.gain.linearRampToValueAtTime(0.12, this.audioCtx.currentTime + 3);
@@ -131,26 +175,17 @@ class NotificationService {
     }
   }
 
-  /**
-   * Check if Web Notification API is supported by the current browser
-   */
   public isNotificationSupported(): boolean {
     return typeof window !== 'undefined' && 'Notification' in window;
   }
 
-  /**
-   * Get current permission status ('granted', 'denied', or 'default')
-   */
-  public getPermissionStatus(): NotificationPermission {
-    if (!this.isNotificationSupported()) return 'denied';
+  public getPermissionStatus(): NotificationPermission | 'unsupported' {
+    if (!this.isNotificationSupported()) return 'unsupported';
     return Notification.permission;
   }
 
-  /**
-   * Request permission from user
-   */
-  public async requestPermission(): Promise<NotificationPermission> {
-    if (!this.isNotificationSupported()) return 'denied';
+  public async requestPermission(): Promise<NotificationPermission | 'unsupported'> {
+    if (!this.isNotificationSupported()) return 'unsupported';
     try {
       const status = await Notification.requestPermission();
       return status;
@@ -159,24 +194,58 @@ class NotificationService {
     }
   }
 
-  /**
-   * Trigger both system notification (if granted) and in-app event + audio chime
-   */
+  public getPlatformNotificationGuide(): PlatformNotificationGuide {
+    const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+    const isAndroid = /Android/i.test(ua);
+
+    if (isIOS) {
+      return {
+        platformLabel: 'iOS (iPhone / iPad)',
+        title: 'Hướng dẫn bật thông báo trên iOS',
+        steps: [
+          'Nhấn nút Chia sẻ (biểu tượng mũi tên lên) trên Safari và chọn "Thêm vào MH chính".',
+          'Mở ứng dụng Nova Việt Mẫu từ màn hình chính.',
+          'Vào Cài đặt iPhone -> Thông báo -> Nova Việt Mẫu -> Bật Cho phép thông báo.',
+        ],
+      };
+    }
+
+    if (isAndroid) {
+      return {
+        platformLabel: 'Android (Chrome / Trình duyệt)',
+        title: 'Hướng dẫn bật thông báo trên Android',
+        steps: [
+          'Chạm biểu tượng ổ khóa (hoặc Cài đặt trang web) bên cạnh thanh địa chỉ trình duyệt.',
+          'Chọn Quyền -> Thông báo -> Chuyển sang "Cho phép".',
+          'Nếu thông báo hệ thống vẫn bị tắt, mở Cài đặt Android -> Ứng dụng -> Chrome -> Thông báo để bật.',
+        ],
+      };
+    }
+
+    return {
+      platformLabel: 'Windows / Desktop',
+      title: 'Hướng dẫn bật thông báo trên trình duyệt máy tính',
+      steps: [
+        'Nhấn vào biểu tượng ổ khóa / cài đặt bên trái thanh địa chỉ (URL).',
+        'Tìm mục Thông báo (Notifications) và chọn "Cho phép" (Allow).',
+        'Kiểm tra Windows Settings -> System -> Notifications để đảm bảo trình duyệt không bị tắt thông báo.',
+      ],
+    };
+  }
+
   public triggerReminderAlert(reminder: HealthReminder): void {
-    // 1. Play soothing chime
     this.playChime(0.35);
 
-    // 2. Gentle vibration if supported on mobile
     if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
       try {
         navigator.vibrate([200, 100, 200, 100, 300]);
       } catch {}
     }
 
-    // 3. System notification if granted
     if (this.isNotificationSupported() && Notification.permission === 'granted') {
       try {
-        const notif = new Notification(`⏰ Nhắc nhở: ${reminder.title}`, {
+        const notif = new Notification(`Nhắc nhở: ${reminder.title}`, {
           body: reminder.notes || 'Đã đến giờ chăm sóc sức khỏe mẹ và bé cùng Nova!',
           icon: '/favicon.ico',
           badge: '/favicon.ico',
@@ -193,7 +262,6 @@ class NotificationService {
       }
     }
 
-    // 4. In-app custom event for UI toast/modal
     if (typeof window !== 'undefined') {
       window.dispatchEvent(
         new CustomEvent('nova_health_alert', {
@@ -206,9 +274,6 @@ class NotificationService {
     }
   }
 
-  /**
-   * Start background checker for active reminders
-   */
   public startReminderWatcher(getReminders: () => HealthReminder[]) {
     if (this.intervalId) return;
 
@@ -217,7 +282,6 @@ class NotificationService {
       const currentHours = now.getHours().toString().padStart(2, '0');
       const currentMinutes = now.getMinutes().toString().padStart(2, '0');
       const currentTimeStr = `${currentHours}:${currentMinutes}`;
-      const currentDayOfWeek = now.getDay(); // 0 is Sunday, 1 is Monday ...
       const todayDateStr = `${now.getFullYear()}-${(now.getMonth() + 1)
         .toString()
         .padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
@@ -225,22 +289,8 @@ class NotificationService {
       const reminders = getReminders();
 
       reminders.forEach((r) => {
-        if (!r.isEnabled) return;
-        if (r.time !== currentTimeStr) return;
+        if (!shouldReminderTriggerAt(r, now)) return;
 
-        // Check frequency condition
-        let shouldTrigger = false;
-        if (r.frequency === 'daily') {
-          shouldTrigger = true;
-        } else if (r.frequency === 'once') {
-          shouldTrigger = !r.date || r.date === todayDateStr;
-        } else if (r.frequency === 'custom_days' && Array.isArray(r.daysOfWeek)) {
-          shouldTrigger = r.daysOfWeek.includes(currentDayOfWeek);
-        }
-
-        if (!shouldTrigger) return;
-
-        // Debounce so we only trigger once per minute per reminder
         const triggerKey = `${r.id}_${todayDateStr}_${currentTimeStr}`;
         if (this.lastTriggeredMap[triggerKey]) return;
 
@@ -249,9 +299,10 @@ class NotificationService {
       });
     };
 
-    // Run check immediately and then every 20 seconds
     checkReminders();
-    this.intervalId = window.setInterval(checkReminders, 20000);
+    if (typeof window !== 'undefined') {
+      this.intervalId = window.setInterval(checkReminders, 20000);
+    }
   }
 
   public stopReminderWatcher() {
